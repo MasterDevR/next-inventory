@@ -35,6 +35,7 @@ const Page = () => {
         });
 
         if (result?.error !== null) {
+          console.log("resut: ", result);
           alert("Invalid Credentials.");
           setIsLoading(false);
         }

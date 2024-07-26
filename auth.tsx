@@ -29,7 +29,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         }
         console.log("user not Found: ", user);
 
-        return null;
+        return user;
       },
     }),
   ],
