@@ -6,7 +6,7 @@ interface userData {
   dept_code: string;
   role: string;
 }
-
+const baseUrl = process.env.NEXT_PUBLIC_BASE_URL;
 export const { handlers, signIn, signOut, auth } = NextAuth({
   trustHost: true,
   pages: { signIn: "/auth/sigin" },
@@ -18,14 +18,11 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         password: { type: "password", placeholder: "Password" },
       },
       async authorize(credentials): Promise<userData | null> {
-        const res = await fetch(
-          "https://next-inventory-kappa.vercel.app/api/login",
-          {
-            method: "POST",
-            body: JSON.stringify(credentials),
-            headers: { "Content-Type": "application/json" },
-          }
-        );
+        const res = await fetch(`${baseUrl}/api/login`, {
+          method: "POST",
+          body: JSON.stringify(credentials),
+          headers: { "Content-Type": "application/json" },
+        });
         const user = await res.json();
         if (res.ok && user) {
           return user.data;
