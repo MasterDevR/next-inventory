@@ -18,6 +18,3 @@ const landingPage = () => {
 };
 
 export default landingPage;
-export function generateStaticParams() {
-  return [{ slug: [""] }];
-}
