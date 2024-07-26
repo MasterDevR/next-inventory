@@ -3,6 +3,7 @@ import User from "@/components/model/user"; // Adjust the import to match your s
 import bcrypt from "bcrypt";
 
 export async function POST(req: Request) {
+  console.log("im in");
   try {
     await connection();
     const { username, password } = await req.json();

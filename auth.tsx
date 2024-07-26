@@ -18,11 +18,14 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         password: { type: "password", placeholder: "Password" },
       },
       async authorize(credentials): Promise<userData | null> {
-        const res = await fetch("http://localhost:3000/api/login", {
-          method: "POST",
-          body: JSON.stringify(credentials),
-          headers: { "Content-Type": "application/json" },
-        });
+        const res = await fetch(
+          "https://next-inventory-kappa.vercel.app/api/login",
+          {
+            method: "POST",
+            body: JSON.stringify(credentials),
+            headers: { "Content-Type": "application/json" },
+          }
+        );
         const user = await res.json();
         if (res.ok && user) {
           return user.data;
