@@ -4,7 +4,7 @@ import bcrypt from "bcrypt";
 
 export async function POST(req: Request) {
   try {
-    const conn = await connection();
+    await connection();
     const { username, password } = await req.json();
 
     const user = await User.findOne({ dept_id: username });
@@ -24,7 +24,6 @@ export async function POST(req: Request) {
         dept_code: user.dept_code,
         role: user.role,
       },
-      connection: conn,
     });
   } catch (err) {
     console.error("Error during login:", err);

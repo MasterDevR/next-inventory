@@ -4,6 +4,7 @@ import React, { useEffect, useState } from "react";
 import { FaLockOpen, FaLock, FaRegUserCircle } from "react-icons/fa";
 import LoginFormImage from "./login-form-image";
 import { signIn } from "next-auth/react";
+
 const Page = () => {
   const [isLocked, setIsLocked] = useState<boolean>(false);
   const [isLoading, setIsLoading] = useState<boolean>(false);
@@ -23,7 +24,6 @@ const Page = () => {
       if (isLoading) {
         return;
       } else {
-        console.log("adsfas");
         setIsLoading(true);
         const formData = new FormData(e.currentTarget);
         const userId = formData.get("userID");
