@@ -4,7 +4,7 @@ import React, { useEffect, useState } from "react";
 import { FaLockOpen, FaLock, FaRegUserCircle } from "react-icons/fa";
 import LoginFormImage from "./login-form-image";
 import { signIn } from "next-auth/react";
-const LoginForm = () => {
+const Page = () => {
   const [isLocked, setIsLocked] = useState<boolean>(false);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const { status } = useSession();
@@ -28,11 +28,16 @@ const LoginForm = () => {
         const formData = new FormData(e.currentTarget);
         const userId = formData.get("userID");
         const password = formData.get("password");
-        await signIn("credentials", {
+        const result = await signIn("credentials", {
           username: userId,
           password: password,
           redirect: false,
         });
+
+        if (result?.error !== null) {
+          alert("Invalid Credentials.");
+          setIsLoading(false);
+        }
       }
     } catch (err) {
       console.log("Caught Errro : ", err);
@@ -96,4 +101,4 @@ const LoginForm = () => {
   );
 };
 
-export default LoginForm;
+export default Page;

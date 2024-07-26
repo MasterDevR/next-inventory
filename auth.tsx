@@ -9,6 +9,7 @@ interface userData {
 
 export const { handlers, signIn, signOut, auth } = NextAuth({
   trustHost: true,
+  pages: { signIn: "/auth/sigin" },
   providers: [
     CredentialsProvider({
       name: "Credentials",
