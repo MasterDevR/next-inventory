@@ -1,6 +1,12 @@
-import { SessionProvider as NextAuthSessionProvider } from "next-auth/react";
+"use client";
+import {
+  SessionProvider as NextAuthSessionProvider,
+  useSession,
+} from "next-auth/react";
 import React, { ReactNode } from "react";
-import Wrapper from "@/components/ui/wrapper/login-wrapper";
+import Wrapper from "../../ui/wrapper/wrapper";
+import { useEffect } from "react";
+import { useRouter } from "next/navigation";
 interface SessionProviderProps {
   children: ReactNode;
 }

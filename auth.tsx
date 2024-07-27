@@ -27,7 +27,6 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         if (res.ok && user) {
           return user.data;
         }
-        console.log("user not Found: ", user);
 
         return user;
       },

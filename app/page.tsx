@@ -1,15 +1,12 @@
 "use client";
-import React from "react";
-import LoginForm from "@/app/auth/signin/LoginForm";
-import { useSession } from "next-auth/react";
-import LandingPage from "@/components/ui/landing-page.tsx/landing-page";
 
-const Page = () => {
-  const { status } = useSession();
-
+const ProtectedPage = () => {
   return (
-    <div>{status === "authenticated" ? <LandingPage /> : <LoginForm />}</div>
+    <div className="w-full">
+      <h1>Protected Content</h1>
+      <p>This content is only visible to authenticated users.</p>
+    </div>
   );
 };
 
-export default Page;
+export default ProtectedPage;

@@ -1,21 +1,17 @@
 "use client";
-import { signOut, useSession } from "next-auth/react";
-import React, { useEffect, useState } from "react";
+import React, { use, useEffect, useState } from "react";
 import { FaLockOpen, FaLock, FaRegUserCircle } from "react-icons/fa";
-import LoginFormImage from "./login-form-image";
-import { signIn } from "next-auth/react";
+import { signIn, useSession } from "next-auth/react";
+import { useRouter } from "next/navigation";
 
-const Page = () => {
+const LoginForm = () => {
+  const router = useRouter();
   const [isLocked, setIsLocked] = useState<boolean>(false);
   const [isLoading, setIsLoading] = useState<boolean>(false);
-  const { status } = useSession();
   const showPassword = () => {
     setIsLocked(!isLocked);
   };
 
-  useEffect(() => {
-    console.log(status);
-  }, [status]);
   const submitHandler = async (
     e: React.FormEvent<HTMLFormElement>
   ): Promise<void> => {
@@ -35,18 +31,20 @@ const Page = () => {
         });
 
         if (result?.error !== null) {
-          setIsLoading(false);
         }
+        router.push("/");
       }
     } catch (err) {
       console.log("Caught Errro : ", err);
+    } finally {
+      setIsLoading(false);
     }
   };
 
   return (
     <div className="flex h-screen items-center justify-center bg-white md:bg-zinc-50">
       <div className="flex w-full max-w-lg flex-col items-center justify-center gap-y-8 rounded-2xl bg-white p-10 md:w-8/12 md:shadow-xl">
-        <LoginFormImage />
+        {/* <LoginFormImage /> */}
         <form className="flex w-full flex-col gap-y-3" onSubmit={submitHandler}>
           <div>
             <input
@@ -100,4 +98,4 @@ const Page = () => {
   );
 };
 
-export default Page;
+export default LoginForm;

@@ -1,0 +1,7 @@
+############## Page Layout ###################
+
+modify Page Layout on ui/wrapper/wrapper.tsx
+
+ctrl + shift + f  pagelayout
+
+#############################################
