@@ -23,6 +23,8 @@ export async function POST(req: Request) {
       .then(function (result) {
         return result;
       });
+    console.log("result : ", result);
+    console.log("result : ", user.password);
     if (!user && !result) {
       return Response.json({ status: 404, message: "Invalid Credentials" });
     }
@@ -36,8 +38,7 @@ export async function POST(req: Request) {
         role: user.role,
       },
     });
-  } catch (err) {
-    console.error("Error during login:", err);
+  } catch (err: any) {
     return new Response(
       JSON.stringify({ status: 500, message: "Internal server error" }),
       { status: 500 }

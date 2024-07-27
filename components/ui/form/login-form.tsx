@@ -73,7 +73,6 @@ const LoginForm = () => {
               type="text"
               placeholder="Username"
               name="userID"
-              defaultValue={"000-000-000"}
             />
             <FaRegUserCircle
               size={"1.1rem"}
@@ -87,7 +86,6 @@ const LoginForm = () => {
               id="password"
               placeholder="Password"
               name="password"
-              defaultValue={"password"}
             />
             {isLocked ? (
               <FaLockOpen
