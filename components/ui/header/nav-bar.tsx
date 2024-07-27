@@ -1,19 +1,30 @@
 "use client";
 import useInventoryStore from "@/components/store/store";
-import { signOut } from "next-auth/react";
+import { signOut, useSession } from "next-auth/react";
 import Link from "next/link";
-import React from "react";
+import React, { useEffect } from "react";
 import Image from "next/image";
 import { MdMenuOpen } from "react-icons/md";
 const NavBar = () => {
-  const { updateTheme } = useInventoryStore();
+  const { updateTheme, updateShowSideBar } = useInventoryStore();
+  const { data: session } = useSession();
+
+  const sideBardHandler = () => {
+    updateShowSideBar();
+  };
   return (
-    <div className="navbar shadow-lg sticky top-0 z-10">
+    <div className="navbar shadow-lg sticky top-0 z-50">
       <div className="flex-1">
-        <MdMenuOpen size={"1.5rem"} className="ml-5" />
+        <MdMenuOpen
+          size={"1.5rem"}
+          className="ml-5"
+          onClick={sideBardHandler}
+        />
       </div>
       {/* user name */}
-      <h1 className="mx-5">asdfas</h1>
+      <h1 className="mx-5 font-bold tracking-widest">
+        {session?.user?.department}
+      </h1>
 
       {/*  */}
       <div className="flex-none">
@@ -60,13 +71,7 @@ const NavBar = () => {
               </label>
             </li>
             <li>
-              <button
-                onClick={() =>
-                  signOut({ redirect: true, callbackUrl: "/auth" })
-                }
-              >
-                Logout
-              </button>
+              <button onClick={() => signOut()}>Logout</button>
             </li>
           </ul>
         </div>

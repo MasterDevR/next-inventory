@@ -2,9 +2,11 @@
 import React, { use, useEffect, useState } from "react";
 import { FaLockOpen, FaLock, FaRegUserCircle } from "react-icons/fa";
 import { signIn, useSession } from "next-auth/react";
-import { useRouter } from "next/navigation";
-
+import { usePathname, useRouter } from "next/navigation";
+import Image from "next/image";
 const LoginForm = () => {
+  const pathname = usePathname();
+
   const router = useRouter();
   const [isLocked, setIsLocked] = useState<boolean>(false);
   const [isLoading, setIsLoading] = useState<boolean>(false);
@@ -31,8 +33,13 @@ const LoginForm = () => {
         });
 
         if (result?.error !== null) {
+          return;
         }
-        router.push("/");
+        if (pathname !== "/") {
+          router.push(pathname);
+        } else {
+          router.push("/");
+        }
       }
     } catch (err) {
       console.log("Caught Errro : ", err);
@@ -42,9 +49,22 @@ const LoginForm = () => {
   };
 
   return (
-    <div className="flex h-screen items-center justify-center bg-white md:bg-zinc-50">
+    <div className="flex h-screen items-center justify-center ">
       <div className="flex w-full max-w-lg flex-col items-center justify-center gap-y-8 rounded-2xl bg-white p-10 md:w-8/12 md:shadow-xl">
-        {/* <LoginFormImage /> */}
+        <div className="flex flex-col items-center gap-y-5">
+          <Image
+            src="/images/inventory.png"
+            alt="Universidad_de_Manila_seal.png"
+            width="0"
+            height="0"
+            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+            priority
+            style={{ width: "100%", height: "auto" }}
+          />
+          <h1 className="text-2xl font-black tracking-widest text-green-950">
+            UDM SYSTEM
+          </h1>
+        </div>
         <form className="flex w-full flex-col gap-y-3" onSubmit={submitHandler}>
           <div>
             <input

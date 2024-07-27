@@ -23,6 +23,7 @@ export async function POST(req: Request) {
       data: {
         id: user._id,
         dept_code: user.dept_code,
+        department: user.department,
         role: user.role,
       },
     });

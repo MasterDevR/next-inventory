@@ -5,11 +5,11 @@ interface userData {
   id: string;
   dept_code: string;
   role: string;
+  department: string;
 }
 const baseUrl = process.env.NEXT_PUBLIC_BASE_URL;
 export const { handlers, signIn, signOut, auth } = NextAuth({
   trustHost: true,
-  pages: { signIn: "/auth/sigin" },
   providers: [
     CredentialsProvider({
       name: "Credentials",
@@ -39,6 +39,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         token.id = u.id;
         token.dept_code = u.dept_code;
         token.role = u.role;
+        token.department = u.department;
       }
       return token;
     },
@@ -48,6 +49,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         session.user.id = token.id;
         session.user.dept_code = token.dept_code;
         session.user.role = token.role;
+        session.user.department = token.department;
       }
       return session;
     },
