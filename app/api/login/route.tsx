@@ -25,7 +25,7 @@ export async function POST(req: Request) {
       });
     console.log("result : ", result);
     console.log("result : ", user.password);
-    if (!user && !result) {
+    if (!user || !result) {
       return Response.json({ status: 404, message: "Invalid Credentials" });
     }
 
