@@ -18,22 +18,17 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         password: { type: "password", placeholder: "Password" },
       },
       async authorize(credentials): Promise<userData | null> {
-        try {
-          const res = await fetch(`${baseUrl}/api/login`, {
-            method: "POST",
-            body: JSON.stringify(credentials),
-            headers: { "Content-Type": "application/json" },
-          });
-          const user = await res.json();
-          if (!res.ok && !user) {
-            return null;
-          }
-
-          return user.data;
-        } catch (err: any) {
-          console.log("Caught Error ", err.message);
-          return null;
+        const res = await fetch(`${baseUrl}/api/login`, {
+          method: "POST",
+          body: JSON.stringify(credentials),
+          headers: { "Content-Type": "application/json" },
+        });
+        const user = await res.json();
+        if (!res.ok && !user) {
+          return user;
         }
+
+        return user.data;
       },
     }),
   ],
