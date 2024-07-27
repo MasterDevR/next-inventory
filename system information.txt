@@ -5,3 +5,9 @@ modify Page Layout on ui/wrapper/wrapper.tsx
 ctrl + shift + f  pagelayout
 
 #############################################
+
+########### nextauth session modification ######
+
+go to types/next-auth.d.ts
+
+##################################################
