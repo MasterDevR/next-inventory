@@ -24,6 +24,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
           headers: { "Content-Type": "application/json" },
         });
         const user = await res.json();
+        console.log("console from auth tsx : ", user);
         if (res.ok && user) {
           return user.data;
         }
@@ -41,6 +42,8 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         token.role = u.role;
         token.department = u.department;
       }
+      console.log("token from auth token: ", token);
+
       return token;
     },
     async session({ session, token }: { session: any; token: any }) {
@@ -51,6 +54,8 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         session.user.role = token.role;
         session.user.department = token.department;
       }
+      console.log("session from auth session: ", session);
+
       return session;
     },
   },

@@ -7,8 +7,11 @@ import Image from "next/image";
 import { MdMenuOpen } from "react-icons/md";
 const NavBar = () => {
   const { updateTheme, updateShowSideBar } = useInventoryStore();
-  const { data: session } = useSession();
+  const session = useSession();
 
+  useEffect(() => {
+    console.log(session.data?.user);
+  }, [session]);
   const sideBardHandler = () => {
     updateShowSideBar();
   };
@@ -23,7 +26,7 @@ const NavBar = () => {
       </div>
       {/* user name */}
       <h1 className="mx-5 font-bold tracking-widest">
-        {session?.user?.department}
+        {session.data?.user?.dept_code}
       </h1>
 
       {/*  */}

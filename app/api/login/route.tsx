@@ -1,14 +1,23 @@
 import { connection } from "@/components/util/db/mongodb";
 import User from "@/components/model/user"; // Adjust the import to match your setup
 import bcrypt from "bcrypt";
-
+import encryptPassword from "@/components/util/bcrypt/encrypt-password";
 export async function POST(req: Request) {
   console.log("im in");
   try {
     await connection();
     const { username, password } = await req.json();
 
+    // const res = await encryptPassword("password");
     const user = await User.findOne({ dept_id: username });
+    // const newUser = await User.create({
+    //   password: res,
+    //   dept_id: "000-000-111",
+    //   dept_code: "CET",
+    //   department: "College Of Engineering And Technology",
+    //   role: "user",
+    // });
+    // console.log(newUser);
     const result = await bcrypt
       .compare(password, user.password)
       .then(function (result) {
