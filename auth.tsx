@@ -1,13 +1,9 @@
+import axios from "axios";
 import NextAuth from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 
-interface userData {
-  id: string;
-  dept_code: string;
-  role: string;
-  department: string;
-}
 const baseUrl = process.env.NEXT_PUBLIC_BASE_URL;
+
 export const { handlers, signIn, signOut, auth } = NextAuth({
   trustHost: true,
   providers: [
@@ -17,41 +13,29 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         username: { type: "text", placeholder: "Username" },
         password: { type: "password", placeholder: "Password" },
       },
-      async authorize(credentials): Promise<userData | null> {
-        const res = await fetch(`${baseUrl}/api/login`, {
-          method: "POST",
-          body: JSON.stringify(credentials),
-          headers: { "Content-Type": "application/json" },
+      async authorize(credentials) {
+        const response = await axios.post(`${baseUrl}/login`, {
+          credentials: {
+            username: credentials.username,
+            password: credentials.password,
+          },
         });
-        const user = await res.json();
-        if (!res.ok && !user) {
-          return user;
-        }
 
-        return user.data;
+        const user = response.data; // Adjusted to match your response structure
+
+        if (user) {
+          return user.data.useData;
+        }
+        return null;
       },
     }),
   ],
   callbacks: {
     async jwt({ token, user }) {
-      if (user) {
-        const u = user as userData;
-        token.id = u.id;
-        token.dept_code = u.dept_code;
-        token.role = u.role;
-        token.department = u.department;
-      }
-
-      return token;
+      return { ...token, ...user };
     },
-    async session({ session, token }: { session: any; token: any }) {
-      if (token) {
-        session.user.id = token.id;
-        session.user.dept_code = token.dept_code;
-        session.user.role = token.role;
-        session.user.department = token.department;
-      }
-
+    async session({ session, token }) {
+      session.user = token;
       return session;
     },
   },

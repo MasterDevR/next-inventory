@@ -12,29 +12,38 @@ type WrapperProps = {
 };
 
 const Wrapper = ({ children }: WrapperProps) => {
-  const { theme } = useInventoryStore();
+  const { theme, showSideBar } = useInventoryStore();
   const { data: session, status } = useSession();
   const router = useRouter();
   const pathname = usePathname();
 
-  useEffect(() => {
-    console.log(pathname);
-  }, [pathname]);
+  // useEffect(() => {
+  //   console.log(pathname);
+  // }, [pathname]);
 
-  // if (status === "loading") {
-  //   return <div>Loading...</div>;
-  // }
+  if (status === "loading") {
+    return <div>Loading...</div>;
+  }
   // PageLayout
   return (
     <Fragment>
       {session ? (
-        <div className="h-screen" data-theme={`${theme ? "dark" : "light"}`}>
+        <div
+          className={`${
+            theme !== true ? "text-black" : "text-white"
+          } h-screen ${theme === true ? "bg-custom-bg" : "bg-white"}  `}
+        >
           <NavBar />
-          <main className="h-full w-12/12  flex ">
+          <main className={`h-full w-12/12  flex  `}>
             <SideBar />
-            <section className={` w-screen overflow-auto  `}>
+            <section
+              className={` w-screen overflow-auto ${
+                showSideBar ? "absolute" : " relative"
+              } lg:relative`}
+            >
               <div
-                className={`container m-auto mt-5 mb-20 h-screen shadow-white shadow-lg bg-blue-300 `}
+                className={`container m-auto mt-5 mb-20 h-screen   shadow-lg text-inherit `}
+                data-theme={`${theme === true ? "dim" : "pastel"}`}
               >
                 {children}
               </div>
@@ -42,7 +51,9 @@ const Wrapper = ({ children }: WrapperProps) => {
           </main>
         </div>
       ) : (
-        <LoginForm />
+        <div className="bg-white dark:bg-custom-bg w-screen h-screen">
+          <LoginForm />
+        </div>
       )}
     </Fragment>
   );

@@ -5,6 +5,7 @@ import { signIn, useSession } from "next-auth/react";
 import { usePathname, useRouter } from "next/navigation";
 import Image from "next/image";
 const LoginForm = () => {
+  const session = useSession();
   const pathname = usePathname();
 
   const router = useRouter();
@@ -32,6 +33,7 @@ const LoginForm = () => {
           redirect: false,
         });
 
+        console.log(session);
         if (result?.error !== null) {
           return;
         }

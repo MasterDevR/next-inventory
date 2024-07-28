@@ -5,9 +5,10 @@ import { useEffect } from "react";
 
 const ProtectedPage = () => {
   const session = useSession();
-  useEffect(() => {
-    console.log(session);
-  }, [session]);
+  // useEffect(() => {
+  //   console.log(session);
+  //   console.log(session.data?.user.department);
+  // }, [session]);
   return (
     <div className="w-full">
       <h1>Protected Content</h1>
