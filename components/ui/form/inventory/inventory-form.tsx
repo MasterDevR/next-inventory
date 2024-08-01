@@ -5,6 +5,9 @@ import SuccessToast from "../../toast/success";
 import OpenItemListBtn from "../../button/open-modal";
 import HideModal from "../../button/hide-modal";
 import axios from "axios";
+import { useSession } from "next-auth/react";
+import SuccesModal from "../../moda/success";
+import StockType from "./select-stock-type";
 interface FormData {
   name: string;
   description: string;
@@ -17,40 +20,54 @@ interface FormData {
   image: string;
 }
 const InventoryForm = () => {
-  const [isSuccess, setIsSuccess] = useState(false);
+  const [isSuccess, setIsSuccess] = useState<boolean>(false);
+  const session = useSession();
+  const [isMessage, setmessage] = useState<string>();
+  const [status, setStatus] = useState<number>();
   const submitHandler = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     try {
       const formData = new FormData(e.currentTarget);
       const form = e.currentTarget;
+
+      const token = session.data?.user.accessToken;
       const response = await axios.post(
         `${process.env.NEXT_PUBLIC_BASE_URL}/admin/create-new-supply`,
         formData,
         {
           headers: {
             "Content-Type": "multipart/form-data",
+            Authorization: `Bearer ${token}`,
           },
         }
       );
-      console.log(response);
 
-      if (response.status === 200) {
-        console.log("time to reset");
-        form.reset();
+      console.log(response.data);
+      setIsSuccess(true);
+      setmessage(response.data.message);
+      setStatus(response.data.status);
+      const itemListTable = document.getElementById(
+        `success`
+      ) as HTMLDialogElement | null;
+      if (itemListTable) {
+        itemListTable.showModal();
       }
-    } catch (err) {
-      console.log("Cauth ERROR ", err);
-    } finally {
-      setIsSuccess(false);
+    } catch (err: any) {
+      console.log(err.message);
     }
   };
 
   return (
     <dialog id="add-stock" className="modal">
-      {isSuccess && <SuccessToast message="Adding Success." />}
+      {isSuccess && (
+        <SuccesModal
+          message={`${isMessage}`}
+          setIsSuccess={setIsSuccess}
+          status={status}
+        />
+      )}
       <div className="modal-box max-w-5xl">
-        <div className="flex items-center justify-between">
-          <OpenItemListBtn title="Open" />
+        <div className="relative float-end">
           <HideModal id="add-stock" />
         </div>
         <h3 className="pt-2 text-center text-lg font-bold tracking-widest text-black">
@@ -73,6 +90,18 @@ const InventoryForm = () => {
               />
               <label className={styles.userLabel} htmlFor="userInput">
                 Item
+              </label>
+            </div>
+            <div className={`${styles.inputGroup} `}>
+              <input
+                type="number"
+                id="userInput"
+                className={styles.input}
+                name="price"
+                required
+              />
+              <label className={styles.userLabel} htmlFor="userInput">
+                Price
               </label>
             </div>
             <div className={styles.inputGroup}>
@@ -125,7 +154,7 @@ const InventoryForm = () => {
             </div>
             <div className={styles.inputGroup}>
               <input
-                type="text"
+                type="number"
                 id="userInput"
                 className={styles.input}
                 name="quantity"
@@ -149,7 +178,7 @@ const InventoryForm = () => {
             </div>
             <div className={styles.inputGroup}>
               <input
-                type="text"
+                type="number"
                 id="userInput"
                 className={styles.input}
                 name="consume"
@@ -161,13 +190,28 @@ const InventoryForm = () => {
             </div>
             <div className={styles.inputGroup}>
               <input
-                type="file"
+                type="text"
                 id="userInput"
                 className={styles.input}
+                name="distributor"
+                required
+              />
+              <label className={styles.userLabel} htmlFor="userInput">
+                Distributor
+              </label>
+            </div>
+            <div className={styles.inputGroup}>
+              <input
+                type="file"
+                id="userInput"
+                className="file-input file-input-bordered w-full max-w-xs"
                 name="image"
                 required
                 accept="image/jpeg, image/png"
               />
+            </div>
+            <div className={styles.inputGroup}>
+              <StockType />
             </div>
             <button
               className="btn btn-success mt-5 w-full font-bold text-white"

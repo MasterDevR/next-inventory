@@ -16,7 +16,7 @@ const OpenItemListBtn = ({ id, title }: modalProps) => {
   };
   return (
     <button
-      className="w-auto rounded-lg border-2 border-emerald-500 p-2 text-emerald-500 transition-all delay-75 ease-in-out hover:bg-emerald-500 hover:text-white"
+      className="w-full rounded-lg border-2 border-emerald-500 p-2 text-emerald-500 transition-all delay-75 ease-in-out hover:bg-emerald-500 hover:text-white"
       onClick={btnHandler}
     >
       {`${title}`}

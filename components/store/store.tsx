@@ -6,14 +6,14 @@ type State = {
 };
 
 type Action = {
-  updateTheme: () => void;
+  updateTheme: (bool: boolean) => void;
   updateShowSideBar: () => void;
 };
 
-const useInventoryStore = create<State & Action>((set, get) => ({
+const useInventoryStore = create<State & Action>((set) => ({
   theme: false,
   showSideBar: false,
-  updateTheme: () => set((state) => ({ theme: !state.theme })),
+  updateTheme: (bool) => set({ theme: bool }),
   updateShowSideBar: () =>
     set((state) => ({ showSideBar: !state.showSideBar })),
 }));

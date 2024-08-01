@@ -3,8 +3,9 @@ import useInventoryStore from "@/components/store/store";
 import { signOut, useSession } from "next-auth/react";
 import Link from "next/link";
 import React, { useEffect } from "react";
-import Image from "next/image";
 import { MdMenuOpen } from "react-icons/md";
+import UserIcon from "../user/user-icon";
+
 const NavBar = () => {
   const { updateTheme, updateShowSideBar, theme } = useInventoryStore();
   const session = useSession();
@@ -15,6 +16,17 @@ const NavBar = () => {
   const sideBardHandler = () => {
     updateShowSideBar();
   };
+
+  const updateThemeHandler = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.checked) {
+      localStorage.setItem("theme", "true");
+      updateTheme(true);
+    } else {
+      localStorage.removeItem("theme");
+      updateTheme(false);
+    }
+  };
+
   return (
     <div className="navbar shadow-lg sticky top-0 z-50 bg-inherit">
       <div className="flex-1">
@@ -33,22 +45,7 @@ const NavBar = () => {
       {/*  */}
       <div className="flex-none">
         <div className="dropdown dropdown-end  ">
-          <div
-            tabIndex={0}
-            role="button"
-            className="btn btn-ghost btn-circle avatar"
-          >
-            {/* user image */}
-
-            <div className="w-10 rounded-full">
-              <Image
-                height={50}
-                width={50}
-                alt="Tailwind CSS Navbar component"
-                src="https://firebasestorage.googleapis.com/v0/b/inventory-f426a.appspot.com/o/item-image%2Fnotebook.jpg%20%22%20%22%201722180341626?alt=media&token=ede52a19-bc84-4c7a-bd8c-ec0756e97a05"
-              />
-            </div>
-          </div>
+          <UserIcon />
           <ul
             tabIndex={0}
             className={`${
@@ -62,17 +59,14 @@ const NavBar = () => {
               <Link href={"setting"}>Settings</Link>
             </li>
             <li>
-              <label
-                className="label cursor-pointer space-x-4 "
-                onClick={() => {
-                  updateTheme();
-                }}
-              >
+              <label className="label cursor-pointer space-x-4 ">
                 Dark Mode
                 <input
                   type="checkbox"
                   className="toggle toggle-accent"
-                  defaultChecked={false}
+                  id="mode"
+                  defaultChecked={theme}
+                  onChange={updateThemeHandler}
                 />
               </label>
             </li>

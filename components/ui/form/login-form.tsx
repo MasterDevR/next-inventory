@@ -33,15 +33,16 @@ const LoginForm = () => {
           redirect: false,
         });
 
+        console.log(result);
         console.log(session);
-        if (result?.error !== null) {
-          return;
-        }
-        if (pathname !== "/") {
-          router.push(pathname);
-        } else {
-          router.push("/");
-        }
+        // if (result?.error !== null) {
+        //   return;
+        // }
+        // if (pathname !== "/") {
+        //   router.push(pathname);
+        // } else {
+        //   router.push("/");
+        // }
       }
     } catch (err) {
       console.log("Caught Errro : ", err);

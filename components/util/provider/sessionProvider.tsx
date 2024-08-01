@@ -5,16 +5,19 @@ import {
 } from "next-auth/react";
 import React, { ReactNode } from "react";
 import Wrapper from "../../ui/wrapper/wrapper";
-import { useEffect } from "react";
-import { useRouter } from "next/navigation";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+
 interface SessionProviderProps {
   children: ReactNode;
 }
 
+const queryClient = new QueryClient();
 const SessionProvider = ({ children }: SessionProviderProps) => {
   return (
     <NextAuthSessionProvider>
-      <Wrapper>{children}</Wrapper>
+      <QueryClientProvider client={queryClient}>
+        <Wrapper>{children}</Wrapper>
+      </QueryClientProvider>
     </NextAuthSessionProvider>
   );
 };

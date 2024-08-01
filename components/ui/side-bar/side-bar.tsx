@@ -11,11 +11,11 @@ const SideBar = () => {
     <aside
       className={`top-0 left-0 h-full shadow-2xl transition-all duration-300 ease-in-out z-40 lg:relative ${
         showSideBar ? "w-4/6  lg:w-2/12   " : "w-0 lg:w-24   "
-      } overflow-hidden flex justify-center ${
-        theme === true ? "bg-custom-bg" : " bg-white"
+      } overflow-hidden flex justify-center  ${
+        theme === true ? "bg-custom-bg" : " bg-gray-100 "
       }`}
     >
-      <div className="relative top-20 flex flex-col w-5/6 space-y-2">
+      <div className="relative top-20 flex flex-col w-5/6 space-y-2 ">
         {adminLink.map((item) => {
           return (
             <li
@@ -28,10 +28,12 @@ const SideBar = () => {
             >
               <Link
                 href={item.href}
-                className={`${!showSideBar ? "self-center" : "self-start"} `}
+                className={`${
+                  !showSideBar ? "self-center" : "self-start"
+                } hover:self-start`}
               >
                 {item.icon}
-                <span className={`${!showSideBar ? "hidden " : "block"}`}>
+                <span className={`${!showSideBar ? "hidden" : "block"}`}>
                   {item.name}
                 </span>
               </Link>

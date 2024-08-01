@@ -9,13 +9,17 @@ const config: Config = {
   ],
   theme: {
     extend: {
+      container: {
+        center: true,
+        padding: "2rem",
+      },
       colors: {
         "custom-bg": "#1F2633",
       },
     },
   },
   daisyui: {
-    themes: ["pastel", "dim"],
+    themes: ["light", "dim"],
   },
   plugins: [require("daisyui")],
 };

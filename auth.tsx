@@ -21,15 +21,16 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
           },
         });
 
-        const user = response.data; // Adjusted to match your response structure
-
+        const user = response.data;
+        console.log(" user ", user.data.userData);
         if (user) {
-          return user.data.useData;
+          return user.data.userData;
         }
         return null;
       },
     }),
   ],
+
   callbacks: {
     async jwt({ token, user }) {
       return { ...token, ...user };
