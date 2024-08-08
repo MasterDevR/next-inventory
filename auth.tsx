@@ -22,7 +22,6 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         });
 
         const user = response.data;
-        console.log(" user ", user.data.userData);
         if (user) {
           return user.data.userData;
         }
