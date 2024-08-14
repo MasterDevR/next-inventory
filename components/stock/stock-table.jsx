@@ -5,6 +5,7 @@ import useInventoryStore from "../store/store";
 import Image from "next/image";
 import DeleteStockBtn from "@/components/ui/button/delete-stock-btn";
 import EditBtn from "@/components/ui/button/edit-item-btn";
+
 const InventoryTable = () => {
   const { theme } = useInventoryStore();
   const { data, isLoading } = useFetchData({
@@ -23,10 +24,6 @@ const InventoryTable = () => {
       </div>
     );
   }
-  const editHandler = (item) => {
-    document.getElementById(`edi-modal`).showModal();
-    console.log(item);
-  };
 
   return (
     <Fragment>
@@ -81,28 +78,23 @@ const InventoryTable = () => {
                     )}
                   </td>
                   <td className="relative">
-                    <div
-                      className={`absolute z-10 p-2 w-32 bg-white rounded-md shadow-lg flex flex-col justify-center items-center gap-y-3 text-white ${
-                        selectedItemId === item.id ? "block" : "hidden"
-                      }`}
-                      style={{
-                        bottom: "100%",
-                        left: 0,
-                        transform: "translateY(4rem) translateX(-8rem)",
-                      }}
-                    >
+                    {selectedItemId === item.id && (
                       <div
-                        onClick={() => editHandler(item)}
-                        className="w-4/6 bg-green-500 p-2 rounded-md hover:bg-green-600 text-center cursor-pointer"
+                        className={`absolute z-10 p-2 w-32 bg-white rounded-md shadow-lg flex flex-col justify-center items-center gap-y-3 text-white ${
+                          selectedItemId === item.id ? "block" : "hidden"
+                        }`}
+                        style={{
+                          bottom: "100%",
+                          left: 0,
+                          transform: "translateY(4rem) translateX(-8rem)",
+                        }}
                       >
-                        Edit
+                        <EditBtn stock_no={item.stock_no} />
+                        <DeleteStockBtn stock_no={item.stock_no} id={item.id} />
                       </div>
-                      <DeleteStockBtn
-                        key={item.id}
-                        stock_no={item.stock_no}
-                        id={item.id}
-                      />
-                    </div>
+                    )}
+                  </td>
+                  <td>
                     <button
                       onClick={() => handleButtonClick(item)}
                       className="font-bold text-center w-full text-lg"

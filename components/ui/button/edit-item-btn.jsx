@@ -1,19 +1,32 @@
-import React from "react";
+"use client";
+import React, { Fragment, useRef, useState, useEffect } from "react";
+import axios from "axios";
+import EditItemModal from "@/components/stock/edit-item-modal";
 
-const EditBtn = (props) => {
-  const editHandler = () => {
-    if (props.id) {
-      document.getElementById(`${props.id}`).showModal();
+const EditBtn = ({ stock_no }) => {
+  const modalRef = useRef();
+  const [data, setData] = useState([]);
+
+  const editHandler = async () => {
+    const response = await axios.get(
+      `${process.env.NEXT_PUBLIC_BASE_URL}/admin/edit-item/${stock_no}`
+    );
+    setData(response.data?.data);
+    if (modalRef.current) {
+      modalRef.current.showModal();
     }
   };
 
   return (
-    <div
-      onClick={editHandler}
-      className="w-4/6 bg-green-500 p-2 rounded-md hover:bg-green-600 text-center cursor-pointer"
-    >
-      {props.title}
-    </div>
+    <Fragment>
+      <div
+        onClick={editHandler}
+        className="w-4/6 bg-green-500 p-2 rounded-md hover:bg-green-600 text-center cursor-pointer"
+      >
+        Edit
+      </div>
+      <EditItemModal modalRef={modalRef} data={data} />
+    </Fragment>
   );
 };
 

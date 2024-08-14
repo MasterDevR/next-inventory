@@ -7,7 +7,7 @@ import useInventoryStore from "@/components/store/store";
 
 const AlertModal = () => {
   const { modalMessage, modalStatus } = useInventoryStore();
-  const modalRef = useRef(null);
+  const modalRef = useRef();
 
   useEffect(() => {
     if (modalRef.current) {

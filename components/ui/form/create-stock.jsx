@@ -1,67 +1,69 @@
 "use client";
-import React, { useEffect, useRef, useState } from "react";
+import React, { useRef } from "react";
 import styles from "@/public/style/modal-form.module.css";
 import StockType from "../select/select-stock-type";
 import HideModal from "../button/hide-modal";
-import OpenItemListBtn from "../button/open-modal";
+import axios from "axios";
+import { useMutation } from "@tanstack/react-query";
+import { useQueryClient } from "@tanstack/react-query";
+import { useSession } from "next-auth/react";
 import useInventoryStore from "@/components/store/store";
-import Image from "next/image";
 
 const InventoryForm = () => {
-  const { updatePreStockList, preStockList } = useInventoryStore();
-  const [formData, setFormData] = useState({});
+  const session = useSession();
+  const queryClient = useQueryClient();
   const modalRef = useRef();
+  const { updateSuccessModal, updateModalMessage, updateStatuss } =
+    useInventoryStore();
 
-  // manage input
-  const handleChange = (e) => {
-    const { name, value, type, files } = e.target;
-    if (type === "file" && files) {
-      setFormData((prevFormData) => ({ ...prevFormData, [name]: files[0] }));
-    } else {
-      setFormData((prevFormData) => ({ ...prevFormData, [name]: value }));
-    }
-  };
-
-  // manage stock type
-  const handleStockTypeChange = (value) => {
-    setFormData((prevFormData) => ({ ...prevFormData, stockType: value }));
-  };
+  const mutation = useMutation({
+    mutationFn: async (formData) => {
+      const token = session.data?.user.accessToken;
+      return await axios.post(
+        `${process.env.NEXT_PUBLIC_BASE_URL}/admin/create-new-supply`,
+        formData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+    },
+  });
 
   const submitHandler = async (e) => {
-    e.preventDefault();
-    const data = new FormData();
+    try {
+      e.preventDefault();
+      const formData = new FormData(e.target);
 
-    for (const [key, value] of Object.entries(formData)) {
-      if (value !== null && value !== undefined) {
-        data.append(key, value);
-      }
+      mutation.mutate(formData, {
+        onSuccess: (response) => {
+          if (response && response.data) {
+            console.log(response);
+            updateSuccessModal(true);
+            updateModalMessage(response.data.message);
+            updateStatuss(response.data.status);
+            queryClient.invalidateQueries({ queryKey: ["items"] });
+          }
+        },
+        onError: (error) => {
+          console.log(error);
+          updateSuccessModal(true);
+          updateModalMessage(error.message);
+          updateStatuss(error.status);
+        },
+      });
+    } catch (error) {
+      console.log(error.message);
     }
-
-    const formDataObject = {};
-
-    data.forEach((value, key) => {
-      formDataObject[key] = value;
-    });
-
-    formDataObject.id = Date.now().toString();
-
-    updatePreStockList([formDataObject]);
   };
 
   return (
     <dialog id="create-stock" className="modal" ref={modalRef}>
       <div className="modal-box max-w-5xl">
-        <div className="flex justify-between">
-          <div className="w-auto">
-            <OpenItemListBtn
-              modalRef={modalRef}
-              title="View List"
-              id="stock-list"
-            />
-          </div>
-          <div className="w-auto">
-            <HideModal modalRef={modalRef} />
-          </div>
+        <div className="w-fit relative float-end">
+          <HideModal modalRef={modalRef} />
         </div>
         <h3 className="pt-2 text-center text-lg font-bold tracking-widest text-green-500">
           ADD ITEM
@@ -80,8 +82,6 @@ const InventoryForm = () => {
                 id="userInput_name"
                 className={styles.input}
                 name="name"
-                value={formData.name || ""}
-                onChange={handleChange}
                 required
               />
               <label className={styles.userLabel} htmlFor="userInput_name">
@@ -94,8 +94,6 @@ const InventoryForm = () => {
                 id="userInput_price"
                 className={styles.input}
                 name="price"
-                value={formData.price || ""}
-                onChange={handleChange}
                 required
               />
               <label className={styles.userLabel} htmlFor="userInput_price">
@@ -108,8 +106,6 @@ const InventoryForm = () => {
                 id="userInput_description"
                 className={styles.input}
                 name="description"
-                value={formData.description || ""}
-                onChange={handleChange}
                 required
               />
               <label
@@ -125,8 +121,6 @@ const InventoryForm = () => {
                 id="userInput_measurement"
                 className={styles.input}
                 name="measurement"
-                value={formData.measurement || ""}
-                onChange={handleChange}
                 required
               />
               <label
@@ -142,8 +136,6 @@ const InventoryForm = () => {
                 id="userInput_stock"
                 className={styles.input}
                 name="stock"
-                value={formData.stock || ""}
-                onChange={handleChange}
                 required
               />
               <label className={styles.userLabel} htmlFor="userInput_stock">
@@ -156,8 +148,6 @@ const InventoryForm = () => {
                 id="userInput_order"
                 className={styles.input}
                 name="order"
-                value={formData.order || ""}
-                onChange={handleChange}
                 required
               />
               <label className={styles.userLabel} htmlFor="userInput_order">
@@ -170,8 +160,6 @@ const InventoryForm = () => {
                 id="userInput_quantity"
                 className={styles.input}
                 name="quantity"
-                value={formData.quantity || ""}
-                onChange={handleChange}
                 required
               />
               <label className={styles.userLabel} htmlFor="userInput_quantity">
@@ -184,8 +172,6 @@ const InventoryForm = () => {
                 id="userInput_reference"
                 className={styles.input}
                 name="reference"
-                value={formData.reference || ""}
-                onChange={handleChange}
                 required
               />
               <label className={styles.userLabel} htmlFor="userInput_reference">
@@ -198,8 +184,6 @@ const InventoryForm = () => {
                 id="userInput_consume"
                 className={styles.input}
                 name="consume"
-                value={formData.consume || ""}
-                onChange={handleChange}
                 required
               />
               <label className={styles.userLabel} htmlFor="userInput_consume">
@@ -212,8 +196,6 @@ const InventoryForm = () => {
                 id="userInput_distributor"
                 className={styles.input}
                 name="distributor"
-                value={formData.distributor || ""}
-                onChange={handleChange}
                 required
               />
               <label
@@ -229,36 +211,18 @@ const InventoryForm = () => {
                 id="userInput_image"
                 className={styles.input}
                 name="image"
-                onChange={handleChange}
                 accept="image/jpeg, image/png"
                 required
               />
-              <label className={styles.userLabel} htmlFor="userInput_image">
-                Image
-              </label>
-              {formData.image && (
-                <div className="mt-2">
-                  <Image
-                    src={URL.createObjectURL(formData.image)}
-                    alt="Selected"
-                    height={50}
-                    width={50}
-                    priority
-                  />
-                </div>
-              )}
             </div>
             <div className="w-5/12">
-              <StockType
-                value={formData.stockType || ""}
-                onChange={handleStockTypeChange}
-              />
+              <StockType />
             </div>
             <button
               className="btn btn-success mt-5 w-full font-bold text-white"
               type="submit"
             >
-              Add to list
+              Create
             </button>
           </form>
         </div>

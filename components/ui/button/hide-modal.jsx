@@ -21,8 +21,8 @@ const HideModal = ({ modalRef }) => {
       className="flex w-full justify-center rounded-lg border-2 border-red-500 p-2 text-red-500 transition-all delay-75 ease-in-out hover:bg-red-500 hover:text-white"
       onClick={modalHandler}
     >
-      <RxCross2 size={"1.5rem"} className="block lg:hidden" />
-      <span className="hidden lg:block">Close</span>
+      <RxCross2 size={".7rem"} className="block lg:hidden" />
+      <span className="hidden lg:block text-lg">Close</span>
     </button>
   );
 };

@@ -1,6 +1,5 @@
 import OpenItemListBtn from "@/components/ui/button/open-modal";
 import InventoryForm from "@/components/ui/form/create-stock";
-import EditItemModal from "@/components/stock/edit-item-modal";
 import StockListModal from "@/components/stock/stock-list/stock-list-modal";
 import InventoryTable from "@/components/stock/stock-table";
 import React, { Fragment } from "react";
@@ -27,7 +26,6 @@ const page = () => {
       <AddStock /> {/* add stock   table */}
       <InventoryForm /> {/* Inventroy table */}
       <StockListModal /> {/* Inventroy list table */}
-      <EditItemModal /> {/* edit item modal */}
     </Fragment>
   );
 };

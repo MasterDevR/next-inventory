@@ -2,7 +2,7 @@ import React, { Fragment, useRef, useState } from "react";
 
 import VerifyAction from "@/components/ui/modal/modal-verify-action";
 const DeleteStock = ({ stock_no, id }) => {
-  const modalRef = useRef(null);
+  const modalRef = useRef();
 
   const deleteHandler = () => {
     if (modalRef.current) {
