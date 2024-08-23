@@ -15,6 +15,8 @@ const config: Config = {
       },
       colors: {
         "custom-bg": "#1F2633",
+        "custom-bg-2": "#eeeeee",
+        "custom-bg-3": "#00712D",
       },
     },
   },

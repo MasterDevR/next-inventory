@@ -1,15 +1,16 @@
 "use client";
 import React, { useRef, useState } from "react";
-import HideModal from "../button/hide-modal";
 import axios from "axios";
 import useInventoryStore from "@/components/store/store";
+import FormModal from "../modal/form-modal";
 import { useMutation } from "@tanstack/react-query";
 import { useQueryClient } from "@tanstack/react-query";
 import { useSession } from "next-auth/react";
+import Input from "@/components/ui/input/Input";
 const AddStock = () => {
   const queryClient = useQueryClient();
   const session = useSession();
-  const { updateModalMessage, updateSuccessModal, updateStatuss } =
+  const { updateModalMessage, updateSuccessModal, updateStatuss, theme } =
     useInventoryStore();
   const modalRef = useRef();
   const [isSubmitting, setSubmitting] = useState(false);
@@ -41,7 +42,7 @@ const AddStock = () => {
             updateSuccessModal(true);
             updateModalMessage(response.data.message);
             updateStatuss(response.data.status);
-            queryClient.invalidateQueries({ queryKey: ["items"] });
+            queryClient.invalidateQueries({ queryKey: ["stock"] });
           }
         },
         onError: (error) => {
@@ -58,66 +59,32 @@ const AddStock = () => {
   };
 
   return (
-    <dialog id="add-stock" className="modal" ref={modalRef}>
-      <div className="modal-box space-y-5 max-w-3xl ">
-        <div className="w-fit relative float-end">
-          <HideModal modalRef={modalRef} />
-        </div>
-        <h1 className=" lg:text-xl text-center p-2 uppercase text-green-500 font-bold">
-          Add Stock To Existing Item
-        </h1>
-        <form
-          onSubmit={submitHandler}
-          method="dialog"
-          className="flex flex-col justify-between gap-5 bg-inherit lg:w-5/6 mx-auto w-full "
-          id="add-stock-form"
+    <FormModal id="add-stock" modalRef={modalRef}>
+      <h1 className=" lg:text-xl text-center p-2 uppercase text-green-500 font-bold">
+        Add Stock To Existing Item
+      </h1>
+      <form
+        onSubmit={submitHandler}
+        method="dialog"
+        className="flex flex-col justify-between gap-5 bg-inherit lg:w-5/6 mx-auto w-full "
+        id="add-stock-form"
+      >
+        <Input name="stock_no" title={"Stock No."} type={"text"} />
+        <Input name="price" title={"Price"} type={"number"} />
+        <Input name="quantity" title={"Quantity"} type={"number"} />
+        <Input name="distributor" title={"Distributor"} type={"number"} />
+        <Input name="purchase_order" title={"P.O"} type={"text"} />
+        <Input name="purchase_request" title={"P.R"} type={"text"} />
+
+        <button
+          type="submit"
+          className="btn btn-success btn-outline font-bold tracking-widest"
+          disabled={isSubmitting}
         >
-          <label className="input input-bordered flex items-center gap-2">
-            Stock No.
-            <input
-              type="text"
-              className="grow font-light"
-              placeholder="Stock Number"
-              name="stock_no"
-            />
-          </label>
-          <label className="input input-bordered flex items-center gap-2">
-            Price
-            <input
-              type="number"
-              className="grow font-light"
-              placeholder="Price"
-              name="price"
-            />
-          </label>
-          <label className="input input-bordered flex items-center gap-2">
-            Quantity
-            <input
-              type="number"
-              className="grow font-light"
-              placeholder="Quantity"
-              name="quantity"
-            />
-          </label>
-          <label className="input input-bordered flex items-center gap-2">
-            Distributor
-            <input
-              type="text"
-              className="grow font-light"
-              placeholder="Distributor"
-              name="distributor"
-            />
-          </label>
-          <button
-            type="submit"
-            className="btn btn-success btn-outline font-bold tracking-widest"
-            disabled={isSubmitting}
-          >
-            {isSubmitting ? "Submitting..." : "Submit"}
-          </button>
-        </form>
-      </div>
-    </dialog>
+          {isSubmitting ? "Submitting..." : "Submit"}
+        </button>
+      </form>
+    </FormModal>
   );
 };
 

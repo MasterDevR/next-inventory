@@ -9,8 +9,8 @@ import EditBtn from "@/components/ui/button/edit-item-btn";
 const InventoryTable = () => {
   const { theme } = useInventoryStore();
   const { data, isLoading } = useFetchData({
-    path: "/admin/get-item",
-    key: "items",
+    path: "/admin/get-stock",
+    key: "stock",
   });
   const [selectedItemId, setSelectedItemId] = useState(null);
   const handleButtonClick = (itemData) => {
@@ -28,7 +28,7 @@ const InventoryTable = () => {
   return (
     <Fragment>
       <div className="overflow-x-auto min-h-52">
-        <table className="table table-xs overflow-hidden">
+        <table className="table table-xs overflow-hidden ">
           <thead className="">
             <tr
               className={`text-lg ${

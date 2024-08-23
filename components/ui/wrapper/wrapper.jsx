@@ -7,9 +7,16 @@ import useInventoryStore from "@/components/store/store";
 import LoginForm from "../form/login-form";
 import axios from "axios";
 import AlertModal from "@/components/ui/modal/modal-message";
+import CartModal from "@/components/ui/form/cart-form";
 const Wrapper = ({ children }) => {
-  const { theme, showSideBar, updateTheme, updateRole, isSuccessModal } =
-    useInventoryStore();
+  const {
+    theme,
+    showSideBar,
+    updateTheme,
+    updateRole,
+    isSuccessModal,
+    updateDepartmentId,
+  } = useInventoryStore();
   const { data: session, status } = useSession();
 
   useEffect(() => {
@@ -27,7 +34,9 @@ const Wrapper = ({ children }) => {
     const token = session?.user.accessToken;
     if (status === "authenticated" && token) {
       const role = session?.user.Role.name;
+      const id = session?.user.department_id;
       updateRole(role);
+      updateDepartmentId(id);
       const checkToken = async () => {
         try {
           const response = await axios.post(
@@ -64,12 +73,13 @@ const Wrapper = ({ children }) => {
 
   return (
     <Fragment>
+      <CartModal />
       {isSuccessModal === true && <AlertModal />}
       {session ? (
         <div
           className={`${
             theme !== true ? "text-black" : "text-white"
-          } h-screen ${theme === true ? "bg-custom-bg" : "bg-gray-100"}  `}
+          } h-screen ${theme === true ? "bg-custom-bg" : "bg-white"}  `}
         >
           <NavBar />
           <main className={`h-full w-12/12  flex `}>
@@ -80,8 +90,7 @@ const Wrapper = ({ children }) => {
               } lg:relative`}
             >
               <div
-                className={`my-20 container  h-screen p-10 shadow-lx text-inherit rounded-3xl `}
-                data-theme={`${theme === true ? "dim" : "light"}`}
+                className={`my-10 lg:w-11/12 m-auto h-screen p-5  text-inherit `}
               >
                 {children}
               </div>

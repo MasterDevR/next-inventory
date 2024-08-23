@@ -1,6 +1,6 @@
 import React, { Fragment, useRef, useState } from "react";
 
-import VerifyAction from "@/components/ui/modal/modal-verify-action";
+import VerifyActionModal from "../modal/modal-verify-action";
 const DeleteStock = ({ stock_no, id }) => {
   const modalRef = useRef();
 
@@ -19,7 +19,7 @@ const DeleteStock = ({ stock_no, id }) => {
         Delete
       </button>
 
-      <VerifyAction stock_no={stock_no} id={id} modalRef={modalRef} />
+      <VerifyActionModal stock_no={stock_no} id={id} modalRef={modalRef} />
     </Fragment>
   );
 };

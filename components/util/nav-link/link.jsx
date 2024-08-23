@@ -1,6 +1,7 @@
 import { MdDashboard, MdOutlineInventory } from "react-icons/md";
 import { FaFileAlt, FaChartBar } from "react-icons/fa";
 import { FaUsersRectangle } from "react-icons/fa6";
+import { FaListUl } from "react-icons/fa6";
 const adminLink = [
   {
     href: "/",
@@ -27,6 +28,11 @@ const adminLink = [
     name: "Departments",
     icon: <FaUsersRectangle size={"1.5rem"} />,
   },
+  {
+    href: "/stock",
+    name: "Request Item",
+    icon: <FaListUl size={"1.5rem"} />,
+  },
 ];
 
 const department = [
@@ -49,6 +55,11 @@ const department = [
     href: "/report",
     name: "Report",
     icon: <FaChartBar size={"1.5rem"} />,
+  },
+  {
+    href: "/stock",
+    name: "Request Item",
+    icon: <FaListUl size={"1.5rem"} />,
   },
 ];
 const loadingNavLink = [

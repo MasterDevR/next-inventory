@@ -1,16 +1,15 @@
 "use client";
-import React, { useState } from "react";
+import React, { useRef, useState } from "react";
 import SelectRole from "../select/select-user-role";
 import styles from "@/public/style/modal-form.module.css";
 import axios from "axios";
 import { useSession } from "next-auth/react";
 import HideModal from "../button/hide-modal";
-
+import FormModal from "../modal/form-modal";
 const CreateUserForm = () => {
   const [isSuccess, setIsSuccess] = useState(false);
   const session = useSession();
-  const [isMessage, setmessage] = useState();
-  const [status, setStatus] = useState();
+  const modalRef = useRef();
   const submitHandler = async (e) => {
     e.preventDefault();
     try {
@@ -42,110 +41,104 @@ const CreateUserForm = () => {
     }
   };
   return (
-    <dialog id="create-user" className=" modal">
-      <div className="modal-box max-w-5xl">
-        <div className="relative float-end">
-          <HideModal id="create-user" />
-        </div>
-        <div className="modal-action flex flex-col">
-          <form
-            method="dialog"
-            className="flex w-full flex-wrap justify-around items-end gap-5"
-            onSubmit={submitHandler}
-          >
-            <div className={`${styles.inputGroup} `}>
-              <input
-                type="text"
-                id="userInput"
-                className={styles.input}
-                name="username"
-                placeholder="username (optional)"
-              />
-              <label className={styles.userLabel} htmlFor="userInput">
-                UserName
-              </label>
-            </div>
-            <div className={`${styles.inputGroup} `}>
-              <input
-                type="text"
-                id="userInput"
-                className={styles.input}
-                name="department_id"
-                required
-              />
-              <label className={styles.userLabel} htmlFor="userInput">
-                Department ID
-              </label>
-            </div>
-            <div className={styles.inputGroup}>
-              <input
-                type="text"
-                id="userInput"
-                className={styles.input}
-                name="department_code"
-                required
-              />
-              <label className={styles.userLabel} htmlFor="userInput">
-                Department Code
-              </label>
-            </div>
-            <div className={styles.inputGroup}>
-              <input
-                type="text"
-                id="userInput"
-                className={styles.input}
-                name="department"
-                required
-              />
-              <label className={styles.userLabel} htmlFor="userInput">
-                Department
-              </label>
-            </div>
-            <div className={`${styles.inputGroup} `}>
-              <input
-                type="text"
-                id="userInput"
-                className={styles.input}
-                name="email"
-                placeholder="Email (optional)"
-              />
-              <label className={styles.userLabel} htmlFor="userInput">
-                Email
-              </label>
-            </div>
-            <div className={styles.inputGroup}>
-              <input
-                type="text"
-                id="userInput"
-                className={styles.input}
-                defaultValue={"password"}
-                name="password"
-                required
-              />
-            </div>
+    <FormModal id="create-user" modalRef={modalRef}>
+      <div className="modal-action flex flex-col">
+        <form
+          className="flex w-full flex-wrap justify-around items-end gap-5"
+          onSubmit={submitHandler}
+        >
+          <div className={`${styles.inputGroup} `}>
+            <input
+              type="text"
+              id="userInput"
+              className={styles.input}
+              name="username"
+              placeholder="username (optional)"
+            />
+            <label className={styles.userLabel} htmlFor="userInput">
+              UserName
+            </label>
+          </div>
+          <div className={`${styles.inputGroup} `}>
+            <input
+              type="text"
+              id="userInput"
+              className={styles.input}
+              name="department_id"
+              required
+            />
+            <label className={styles.userLabel} htmlFor="userInput">
+              Department ID
+            </label>
+          </div>
+          <div className={styles.inputGroup}>
+            <input
+              type="text"
+              id="userInput"
+              className={styles.input}
+              name="department_code"
+              required
+            />
+            <label className={styles.userLabel} htmlFor="userInput">
+              Department Code
+            </label>
+          </div>
+          <div className={styles.inputGroup}>
+            <input
+              type="text"
+              id="userInput"
+              className={styles.input}
+              name="department"
+              required
+            />
+            <label className={styles.userLabel} htmlFor="userInput">
+              Department
+            </label>
+          </div>
+          <div className={`${styles.inputGroup} `}>
+            <input
+              type="text"
+              id="userInput"
+              className={styles.input}
+              name="email"
+              placeholder="Email (optional)"
+            />
+            <label className={styles.userLabel} htmlFor="userInput">
+              Email
+            </label>
+          </div>
+          <div className={styles.inputGroup}>
+            <input
+              type="text"
+              id="userInput"
+              className={styles.input}
+              defaultValue={"password"}
+              name="password"
+              required
+            />
+          </div>
 
-            <div className={styles.inputGroup}>
-              <input
-                type="file"
-                id="userInput"
-                className="file-input file-input-bordered w-full max-w-xs"
-                name="image"
-                accept="image/jpeg, image/png"
-              />
-            </div>
-            <div className={`${styles.inputGroup} relative`}>
-              <SelectRole />
-            </div>
-            <button
-              className="btn btn-success mt-5 w-full font-bold text-white"
-              type="submit"
-            >
-              Create User
-            </button>
-          </form>
-        </div>
+          <div className={styles.inputGroup}>
+            <input
+              type="file"
+              id="userInput"
+              className="file-input file-input-bordered w-full max-w-xs"
+              name="image"
+              accept="image/jpeg, image/png"
+            />
+          </div>
+          <div className={`${styles.inputGroup} relative`}>
+            <SelectRole />
+          </div>
+          <button
+            className="btn btn-success mt-5 w-full font-bold text-white"
+            type="submit"
+          >
+            Create User
+          </button>
+        </form>
       </div>
-    </dialog>
+    </FormModal>
   );
 };
 

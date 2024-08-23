@@ -1,7 +1,7 @@
 "use client";
 import React, { Fragment, useRef, useState, useEffect } from "react";
 import axios from "axios";
-import EditItemModal from "@/components/stock/edit-item-modal";
+import EditItemModal from "../modal/edit-item-modal";
 
 const EditBtn = ({ stock_no }) => {
   const modalRef = useRef();
@@ -9,7 +9,7 @@ const EditBtn = ({ stock_no }) => {
 
   const editHandler = async () => {
     const response = await axios.get(
-      `${process.env.NEXT_PUBLIC_BASE_URL}/admin/edit-item/${stock_no}`
+      `${process.env.NEXT_PUBLIC_BASE_URL}/admin/edit-stock/${stock_no}`
     );
     setData(response.data?.data);
     if (modalRef.current) {

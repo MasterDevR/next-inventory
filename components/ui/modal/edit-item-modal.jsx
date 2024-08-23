@@ -3,8 +3,8 @@ import React, { Fragment, useEffect, useState } from "react";
 import styles from "@/public/style/modal-form.module.css";
 import axios from "axios";
 
-import HideModal from "../ui/button/hide-modal";
-import useInventoryStore from "../store/store";
+import HideModal from "../button/hide-modal";
+import useInventoryStore from "../../store/store";
 import Image from "next/image";
 import { useMutation } from "@tanstack/react-query";
 import { useSession } from "next-auth/react";
@@ -25,7 +25,7 @@ const EditItemModal = ({ data, modalRef }) => {
       const token = session.data?.user.accessToken;
       let stock_no = data[0].stock_no;
       const response = await axios.put(
-        `${process.env.NEXT_PUBLIC_BASE_URL}/admin/edit-item/${stock_no}`,
+        `${process.env.NEXT_PUBLIC_BASE_URL}/admin/edit-stock/${stock_no}`,
         formData,
         {
           headers: {
@@ -50,7 +50,7 @@ const EditItemModal = ({ data, modalRef }) => {
             updateSuccessModal(true);
             updateModalMessage(response.data.message);
             updateStatuss(response.data.status);
-            queryClient.invalidateQueries({ queryKey: ["items"] });
+            queryClient.invalidateQueries({ queryKey: ["stock"] });
           }
         },
         onError: (error) => {
@@ -77,8 +77,8 @@ const EditItemModal = ({ data, modalRef }) => {
     <dialog id="edi-modal" className="modal " ref={modalRef}>
       <div
         className={`modal-box ${
-          theme !== true ? "text-black" : "text-white"
-        }  max-w-5xl space-y-20`}
+          theme !== true ? "text-black bg-white" : "text-white bg-custom-bg"
+        }  max-w-5xl space-y-20 `}
       >
         <div className="w-fit relative float-end">
           <HideModal modalRef={modalRef} />
@@ -94,7 +94,7 @@ const EditItemModal = ({ data, modalRef }) => {
         </div>
         <form
           onSubmit={submitHandler}
-          className="flex w-full flex-wrap justify-between gap-5 text-sm lg:text-md"
+          className={`flex w-full flex-wrap justify-between gap-5 text-sm lg:text-md  `}
         >
           {data &&
             data.map((item, index) => (
@@ -259,14 +259,16 @@ const EditItemModal = ({ data, modalRef }) => {
                   </label>
                   {item.image && (
                     <div className="mt-2 ">
-                      <img
+                      <Image
                         src={
                           IsImage.urlBlobImg !== ""
                             ? IsImage.urlBlobImg
                             : item.image
-                        } // Use the URL or path of the current image
+                        }
+                        height={50}
+                        width={59}
                         alt="Current item"
-                        className="w-32 h-32 object-contain" // Adjust dimensions and styles as needed
+                        className="w-32 h-32 object-contain"
                       />
                     </div>
                   )}

@@ -18,7 +18,7 @@ const VerifyAction = ({ stock_no, id, modalRef }) => {
   const deleteHandler = async ({ stock_no }) => {
     try {
       const response = await axios.delete(
-        `${process.env.NEXT_PUBLIC_BASE_URL}/admin/delete-item/${stock_no}`
+        `${process.env.NEXT_PUBLIC_BASE_URL}/admin/delete-stock/${stock_no}`
       );
 
       return response.data;
