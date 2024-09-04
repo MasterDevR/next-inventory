@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
-
+import Select from "./select";
 const SelectRole = () => {
   const [userRole, setUserRole] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -27,21 +27,22 @@ const SelectRole = () => {
   if (error) return <p>{error}</p>;
 
   return (
-    <select
-      className="select select-bordered w-full "
-      defaultValue=""
-      name="role"
-      required
-    >
-      <option value="" disabled>
-        Select User Role.
-      </option>
-      {userRole.map((item, index) => (
-        <option key={index} value={item.id} className=" uppercase">
-          {item.name}
-        </option>
-      ))}
-    </select>
+    // <select
+    //   className="select select-bordered w-full "
+    //   defaultValue=""
+    //   name="role"
+    //   required
+    // >
+    //   <option value="" disabled>
+    //     Select User Role.
+    //   </option>
+    //   {userRole.map((item, index) => (
+    //     <option key={index} value={item.id} className=" uppercase">
+    //       {item.name}
+    //     </option>
+    //   ))}
+    // </select>
+    <Select data={userRole} title={"Select Stock Type"} />
   );
 };
 

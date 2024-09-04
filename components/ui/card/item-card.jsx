@@ -16,33 +16,40 @@ const ItemCard = () => {
   }
 
   return (
-    <div className="flex flex-row gap-x-4 p-2">
+    <div className="flex md:flex-row gap-4 p-2 ">
       {data && data.data.length > 0 ? (
-        data.data.map((item, index) => (
-          <div
-            className={`lg:w-[23vw] w-96 flex  rounded-2xl   border-black text-md ${
-              theme === true ? "glass" : "shadow-sm shadow-gray-400"
-            }`}
-            key={index}
-          >
-            <figure className="  w-2/6 flex justify-center items-center">
-              <Image
-                src={item.image}
-                height={100}
-                width={100}
-                alt="Album"
-                className=" aspect-square"
-              />
-            </figure>
-            <div className="card-body">
-              <h2 className="card-title uppercase">Item: {item.item}</h2>
-              <p>Available: {item.quantity}</p>
-              <p>Total Request : {item.stock_counter}</p>
-              <p>Total Quantity Request : {item.total_quantity_request}</p>
-              <p>Price: {item.price}</p>
+        data.data.map((item, index) => {
+          const totalRequest =
+            item.stockHistories.length > 1
+              ? item.stockHistories[1].total_request
+              : item.stockHistories[0].total_request;
+
+          return (
+            <div
+              className={`lg:w-[20vw] w-[88dvw] flex rounded-2xl text-sm ${
+                theme === true ? "glass" : "shadow-sm shadow-gray-400"
+              }`}
+              key={index}
+            >
+              <figure className="w-2/6 flex justify-center items-center">
+                <Image
+                  src={item.image}
+                  height={70}
+                  width={70}
+                  alt="Item Image"
+                  className="aspect-square"
+                />
+              </figure>
+              <div className="card-body">
+                <p>Item: {item.item}</p>
+                <p>Available: {item.quantity_on_hand}</p>
+                <p>Quantity Issued: {item.quantity_issued}</p>
+                <p>Total Quantity Request: {totalRequest}</p>
+                <p>Price: {item.price}</p>
+              </div>
             </div>
-          </div>
-        ))
+          );
+        })
       ) : (
         <div>No items available</div>
       )}

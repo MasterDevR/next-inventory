@@ -7,7 +7,11 @@ const UserIcon = () => {
   const session = useSession();
 
   return (
-    <div tabIndex={0} role="button" className="btn btn-ghost btn-circle avatar">
+    <div
+      tabIndex={0}
+      role="button"
+      className="btn btn-ghost rounded-btn    avatar"
+    >
       {/* user image */}
 
       <div className="w-10 h-10 rounded-full">

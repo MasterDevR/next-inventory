@@ -2,8 +2,7 @@
 import useInventoryStore from "@/components/store/store";
 import Image from "next/image";
 import React, { useEffect } from "react";
-
-const itemCard = ({ item }) => {
+const ItemCard = ({ item }) => {
   const { theme, updateCartItem, cartItem } = useInventoryStore();
 
   const btnHandler = () => {
@@ -20,31 +19,31 @@ const itemCard = ({ item }) => {
 
   return (
     <div
-      className={`card  w-96 h-fit shadow-md p-2  ${
+      className={`card relative w-80 h-fit shadow-md p-2  ${
         theme === true ? "glass" : "bg-base-100"
       }   `}
     >
-      <section className="flex w-full h-52 ">
+      <section className="flex w-full h-52">
         <figure className="w-2/6  ">
           <Image
             src={item.image}
             alt={item.item}
-            width={100}
-            height={100}
+            width={70}
+            height={70}
             className="aspect-square "
           />
         </figure>
-        <div className="w-4/6 self-center space-y-2 font-bold">
-          <h2 className=" text-sm md:text-lg">
+        <div className="w-4/6 self-center space-y-2 font-bold  ">
+          <h2 className=" text-base">
             Item : <span className="font-light">{item.item}</span>
           </h2>
-          <p className="text-sm md:text-lg break-words">
+          <p className="text-base break-words">
             Description : <span className="font-light">{item.description}</span>
           </p>
-          <p className="text-sm md:text-lg">
+          <p className="text-base">
             Unit : <span className="font-light">{item.measurement}</span>{" "}
           </p>
-          <p className="text-sm md:text-lg">
+          <p className="text-base">
             Price : <span className="font-light">₱ {item.price}</span>
           </p>
         </div>
@@ -60,4 +59,4 @@ const itemCard = ({ item }) => {
   );
 };
 
-export default React.memo(itemCard);
+export default React.memo(ItemCard);

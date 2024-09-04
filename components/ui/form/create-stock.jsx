@@ -1,24 +1,21 @@
 "use client";
-import React, { useRef } from "react";
-import styles from "@/public/style/modal-form.module.css";
+import React, { useRef, useState } from "react";
 import StockType from "../select/select-stock-type";
 import axios from "axios";
 import { useMutation } from "@tanstack/react-query";
 import { useQueryClient } from "@tanstack/react-query";
-import { useSession } from "next-auth/react";
 import useInventoryStore from "@/components/store/store";
 import FormModal from "@/components/ui/modal/form-modal";
 import Input from "@/components/ui/input/Input";
 const InventoryForm = () => {
-  const session = useSession();
   const queryClient = useQueryClient();
   const modalRef = useRef();
-  const { updateSuccessModal, updateModalMessage, updateStatuss, theme } =
+  const { updateSuccessModal, updateModalMessage, updateStatuss, token } =
     useInventoryStore();
+  const [stockType, setStockType] = useState();
 
   const mutation = useMutation({
     mutationFn: async (formData) => {
-      const token = session.data?.user.accessToken;
       return await axios.post(
         `${process.env.NEXT_PUBLIC_BASE_URL}/admin/create-stock`,
         formData,
@@ -36,7 +33,7 @@ const InventoryForm = () => {
     try {
       e.preventDefault();
       const formData = new FormData(e.target);
-
+      formData.append("stockType", stockType);
       mutation.mutate(formData, {
         onSuccess: (response) => {
           if (response && response.data) {
@@ -73,18 +70,18 @@ const InventoryForm = () => {
         >
           <Input name="name" title={"Item"} type={"text"} />
           <Input name="price" title={"Price"} type={"number"} />
+          <Input name="quantity" title={"Quantity"} type={"number"} />
           <Input name="description" title={"Description"} type={"text"} />
           <Input name="measurement" title={"Measurement"} type={"text"} />
           <Input name="stock" title={"Stock No."} type={"text"} />
           <Input name="order" title={"Re-Order-Point"} type={"text"} />
           <Input name="reference" title={"Reference"} type={"text"} />
-          <Input name="consume" title={"Date To Consume"} type={"text"} />
+          <Input name="consume" title={"Date To Consume"} type={"number"} />
           <Input name="distributor" title={"Distributor"} type={"text"} />
           <Input name="purchase_order" title={"P.O Number."} type={"text"} />
-          <Input name="distributor" title={"Distributor"} type={"text"} />
           <Input name="date" title={"Date"} type={"date"} />
           <Input name="image" title={" "} type={"file"} />
-          <StockType />
+          <StockType onChange={setStockType} />
           <button
             className="btn btn-success mt-5 w-full font-bold text-white"
             type="submit"

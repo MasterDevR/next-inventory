@@ -29,8 +29,8 @@ const adminLink = [
     icon: <FaUsersRectangle size={"1.5rem"} />,
   },
   {
-    href: "/stock",
-    name: "Request Item",
+    href: "/available-item",
+    name: "Available Item",
     icon: <FaListUl size={"1.5rem"} />,
   },
 ];
@@ -41,11 +41,7 @@ const department = [
     name: "Dashboard",
     icon: <MdDashboard size={"1.5rem"} />,
   },
-  {
-    href: "/inventory",
-    name: "Inventory",
-    icon: <MdOutlineInventory size={"1.5rem"} />,
-  },
+
   {
     href: "/transaction",
     name: "Transaction",
@@ -57,8 +53,8 @@ const department = [
     icon: <FaChartBar size={"1.5rem"} />,
   },
   {
-    href: "/stock",
-    name: "Request Item",
+    href: "/available-item",
+    name: "Available Item",
     icon: <FaListUl size={"1.5rem"} />,
   },
 ];

@@ -1,13 +1,13 @@
 import React from "react";
 
-const Input = ({ title, name, type }) => {
+const Input = ({ title, name, type, defaultValue, step }) => {
   return (
     <label className="input input-bordered flex items-center gap-2 text-sm lg:text-lg">
-      <span>{title}</span>
+      {title && <span>{title}</span>}
       {type === "file" ? (
         <input
           type={type}
-          className="grow"
+          className="file-input file-input-bordered w-full"
           placeholder={title}
           name={name}
           accept="image/jpeg, image/png"
@@ -16,10 +16,12 @@ const Input = ({ title, name, type }) => {
       ) : (
         <input
           type={type}
-          className="grow"
+          className={`grow`}
           placeholder={title}
           name={name}
           required
+          step="any"
+          defaultValue={defaultValue && defaultValue}
         />
       )}
     </label>

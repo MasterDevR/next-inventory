@@ -5,19 +5,16 @@ import useInventoryStore from "@/components/store/store";
 import FormModal from "../modal/form-modal";
 import { useMutation } from "@tanstack/react-query";
 import { useQueryClient } from "@tanstack/react-query";
-import { useSession } from "next-auth/react";
 import Input from "@/components/ui/input/Input";
 const AddStock = () => {
   const queryClient = useQueryClient();
-  const session = useSession();
-  const { updateModalMessage, updateSuccessModal, updateStatuss, theme } =
+  const { updateModalMessage, updateSuccessModal, updateStatuss, token } =
     useInventoryStore();
   const modalRef = useRef();
   const [isSubmitting, setSubmitting] = useState(false);
 
   const mutation = useMutation({
     mutationFn: async (formData) => {
-      const token = session.data?.user.accessToken;
       let stock_no = formData.get("stock_no");
       return await axios.post(
         `${process.env.NEXT_PUBLIC_BASE_URL}/admin/add-stock/${stock_no}`,
@@ -72,7 +69,7 @@ const AddStock = () => {
         <Input name="stock_no" title={"Stock No."} type={"text"} />
         <Input name="price" title={"Price"} type={"number"} />
         <Input name="quantity" title={"Quantity"} type={"number"} />
-        <Input name="distributor" title={"Distributor"} type={"number"} />
+        <Input name="distributor" title={"Distributor"} type={"text"} />
         <Input name="purchase_order" title={"P.O"} type={"text"} />
         <Input name="purchase_request" title={"P.R"} type={"text"} />
 

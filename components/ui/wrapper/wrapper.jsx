@@ -7,7 +7,7 @@ import useInventoryStore from "@/components/store/store";
 import LoginForm from "../form/login-form";
 import axios from "axios";
 import AlertModal from "@/components/ui/modal/modal-message";
-import CartModal from "@/components/ui/form/cart-form";
+import CartModal from "@/components/ui/form/requisition-form";
 const Wrapper = ({ children }) => {
   const {
     theme,
@@ -16,6 +16,7 @@ const Wrapper = ({ children }) => {
     updateRole,
     isSuccessModal,
     updateDepartmentId,
+    updateToken,
   } = useInventoryStore();
   const { data: session, status } = useSession();
 
@@ -37,6 +38,7 @@ const Wrapper = ({ children }) => {
       const id = session?.user.department_id;
       updateRole(role);
       updateDepartmentId(id);
+      updateToken(token);
       const checkToken = async () => {
         try {
           const response = await axios.post(
@@ -61,7 +63,7 @@ const Wrapper = ({ children }) => {
 
       checkToken();
     }
-  }, [session, status, signOut]);
+  }, [session, status]);
 
   if (status === "loading") {
     return (
@@ -85,13 +87,11 @@ const Wrapper = ({ children }) => {
           <main className={`h-full w-12/12  flex `}>
             <SideBar />
             <section
-              className={` w-screen overflow-auto ${
+              className={` w-screen overflow-auto  ${
                 showSideBar ? "absolute" : " relative"
               } lg:relative`}
             >
-              <div
-                className={`my-10 lg:w-11/12 m-auto h-screen p-5  text-inherit `}
-              >
+              <div className={`my-10 w-full m-auto h-screen p-5 text-inherit`}>
                 {children}
               </div>
             </section>

@@ -55,7 +55,7 @@ const InventoryTable = () => {
                 <tr key={index}>
                   <td>{item.item}</td>
                   <td>{item.price}</td>
-                  <td>{item.quantity}</td>
+                  <td>{item.quantity_on_hand}</td>
                   <td>{item.measurement}</td>
                   <td>{item.description}</td>
                   <td>{item.stock_no}</td>

@@ -10,7 +10,9 @@ const useInventoryStore = create((set) => ({
   modalMessage: null,
   isSuccessModal: false,
   cartItem: [],
-
+  token: "",
+  selectedOption: "",
+  transactionDetails: [],
   updateTheme: (bool) => set({ theme: bool }),
   updateShowSideBar: () =>
     set((state) => ({ showSideBar: !state.showSideBar })),
@@ -22,6 +24,10 @@ const useInventoryStore = create((set) => ({
   updateCartItem: (item) =>
     set((state) => ({ cartItem: [...state.cartItem, item] })),
   overrideCartItem: (item) => set(() => ({ cartItem: [...item] })),
+  updateToken: (Token) => set(() => ({ token: Token })),
+  updateSelectedOption: (seletected) =>
+    set(() => ({ selectedOption: seletected })),
+  setTransactionDetails: (item) => set(() => ({ transactionDetails: item })),
 }));
 
 export default useInventoryStore;

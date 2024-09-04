@@ -16,10 +16,10 @@ const SideBar = () => {
 
   return (
     <aside
-      className={`top-0 left-0 h-full shadow-2xl transition-all duration-300 ease-in-out z-40 lg:relative ${
+      className={`top-0 left-0 h-full    shadow-sm shadow-gray-400 transition-all duration-300 ease-in-out z-40 lg:relative ${
         showSideBar ? "w-4/6  lg:w-2/12   " : "w-0 lg:w-24   "
       } overflow-hidden flex justify-center  ${
-        theme === true ? "bg-custom-bg" : " bg-gray-100 "
+        theme === true ? "bg-custom-bg" : " bg-custom-bg-2 "
       }`}
     >
       <div className="relative top-20 flex flex-col w-5/6 space-y-2 ">
@@ -32,9 +32,9 @@ const SideBar = () => {
             key={index}
             className={`${
               pathname === item.href
-                ? "text-white font-bold bg-slate-500"
-                : "text-gray-500"
-            } menu menu-sm hover:bg-slate-400 hover:text-white rounded-lg ${
+                ? "text-white font-bold bg-custom-bg-3"
+                : "text-gray-200"
+            } menu menu-sm hover:bg-custom-bg-3 hover:text-white rounded-lg ${
               !showSideBar && "tooltip self-center"
             }`}
           >

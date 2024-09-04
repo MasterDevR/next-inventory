@@ -1,12 +1,16 @@
 "use client";
 import useInventoryStore from "@/components/store/store";
 import React, { useRef, useState } from "react";
-import HideModal from "../button/hide-modal";
 import { FaTrash } from "react-icons/fa";
 import axios from "axios";
 import useFetchData from "@/components/util/custom-hook/useFetchData";
 import FormModal from "../modal/form-modal";
+import Image from "next/image";
+import { useSession } from "next-auth/react";
+
 const CartModal = () => {
+  const session = useSession();
+
   const {
     cartItem,
     overrideCartItem,
@@ -54,7 +58,6 @@ const CartModal = () => {
     } finally {
       setIsLoading(false);
       cartItem.length = 0;
-      console.log(cartItem);
     }
   };
 
@@ -73,38 +76,95 @@ const CartModal = () => {
 
   return (
     <FormModal id="cart-modal" modalRef={modalRef}>
-      <h3 className="pt-2 text-center text-lg font-bold tracking-widest text-green-500">
-        Cart Items
+      <header className="flex flex-row gap-x-5 items-center">
+        <Image
+          src="/images/Universidad_de_Manila_seal.png"
+          alt="Universidad_de_Manila_seal.png"
+          width="100"
+          height="100"
+          priority
+        />
+        <section>
+          <h1 className="font-bold  lg:text-5xl tracking-widest text-custom-bg-2 ">
+            UNIVERSIDAD DE MANILA
+          </h1>
+          <p>Republic of the Philippines</p>
+          <p>City of Manila</p>
+        </section>
+      </header>
+      <h3 className="text-center font-black tracking-widest underline lg:text-2xl ">
+        REQUISITION FORM
       </h3>
-      <form onSubmit={btnSubmit} className="relative top-10 p-4  w-full ">
-        <div className="overflow-x-auto">
-          <table className="table text-base  ">
+      <div className="mx-auto mt-5  ">
+        <div className="flex flex-row justify-around font-bold">
+          <label className="label cursor-pointer  w-fit space-x-4">
+            <input type="checkbox" className="checkbox" name="office" />
+            <span className="label-text">Office Supplies</span>
+          </label>
+          <label className="label cursor-pointer  w-fit space-x-4">
+            <input type="checkbox" className="checkbox" name="other" />
+            <span className="label-text">Other Supplies & Materials</span>
+          </label>
+        </div>
+      </div>
+      <div className="flex justify-end mt-5">
+        <p className="w-80 ">
+          Date : {` `}
+          <span className="underline">{`${new Date().toLocaleDateString(
+            "en-GB"
+          )}`}</span>
+        </p>
+      </div>
+
+      <div className="flex flex-row gap-x-2">
+        <h3 className="font-bold">Office/COllege/Department : </h3>
+        <span className="w-4/6 border-black border-b-2">
+          {session.data?.user.name
+            ? session.data?.user.name
+            : session.data?.user.department}
+          {session.status === "loading" && (
+            <div className="skeleton h-4 w-28"></div>
+          )}
+        </span>
+      </div>
+      <form
+        onSubmit={btnSubmit}
+        className="relative top-10 p-4  w-full border border-black min-h-[80dvh] mb-20 space-y-10  "
+      >
+        <div className="overflow-auto">
+          <table className="table text-base ">
             <thead>
-              <tr className="text-base">
-                <th></th>
-                <th>Item</th>
-                <th>Description</th>
-                <th>Price</th>
-                <th>Stock No.</th>
-                <th>Quantity</th>
-                <th>Delete</th>
+              <tr className="text-base text-center text-black">
+                <th className="border border-black">QTY</th>
+                <th className="border border-black">UNIT</th>
+                <th className="border border-black">DESCRIPTION</th>
+                <th className="border border-black">REMARKS</th>
+                <th className="border border-black">Delete</th>
               </tr>
             </thead>
             <tbody>
               {cartItem?.length > 0 ? (
                 cartItem.map((item, index) => (
-                  <tr key={index}>
-                    <td>{index + 1}</td>
-                    <td>
+                  <tr key={item.item + index} className="text-center">
+                    <td className="border border-black">
+                      <input
+                        type="number"
+                        name={"quantity"}
+                        defaultValue={1}
+                        min={1}
+                        className="border w-14 p-1 text-center"
+                      />
+                    </td>
+                    <td className="border border-black">
                       <input
                         type="text"
                         name="item"
-                        defaultValue={item.item}
+                        defaultValue={item.measurement}
                         disabled={!loading}
                         className="w-32 disabled:bg-transparent  "
                       />
                     </td>
-                    <td>
+                    <td className="border border-black">
                       <textarea
                         name="description"
                         defaultValue={item.description}
@@ -114,7 +174,7 @@ const CartModal = () => {
                         className="resize-none disabled:bg-transparent "
                       ></textarea>
                     </td>
-                    <td>
+                    <td className="border border-black">
                       <input
                         type="text"
                         name="price"
@@ -122,26 +182,14 @@ const CartModal = () => {
                         disabled={!loading}
                         className="w-32 disabled:bg-transparent"
                       />
-                    </td>
-                    <td>
                       <input
-                        type="text"
+                        type="hidden"
                         name="stock"
                         defaultValue={item.stock_no}
-                        disabled={!loading}
-                        className="w-32 disabled:bg-transparent"
                       />
                     </td>
 
-                    <td>
-                      <input
-                        type="number"
-                        name={"quantity"}
-                        defaultValue={1}
-                        className="border border-black w-14 p-1 text-center"
-                      />
-                    </td>
-                    <td>
+                    <td className="border border-black">
                       <button
                         className="text-red-500 flex justify-center items-center gap-x-1 m-auto"
                         onClick={() => btnDelete(item.id)}
@@ -165,11 +213,13 @@ const CartModal = () => {
 
         {cartItem && cartItem.length !== 0 && (
           <select
-            className={`select select-bordered w-full border bg-inherit  `}
+            className={`select select-bordered w-full   bg-inherit  border border-black  `}
             name="purpose"
+            defaultValue=""
+            required
           >
-            <option value="" disabled>
-              Select Purpose
+            <option value="" disabled selected>
+              Transaction Purpose
             </option>
             {data &&
               data?.data?.map((purpose, index) => {
@@ -181,13 +231,11 @@ const CartModal = () => {
               })}
           </select>
         )}
-        <button
-          type="submit"
-          className="btn btn-success btn-outline w-full my-5 "
-          disabled={cartItem.length <= 0 || loading}
-        >
-          {loading ? "...Submiting" : "Submit Request"}
-        </button>
+        {cartItem?.length > 0 && (
+          <button type="submit" className="btn btn-success btn-outline w-full">
+            {loading ? "...Submiting" : "Submit Request"}
+          </button>
+        )}
       </form>
     </FormModal>
   );
