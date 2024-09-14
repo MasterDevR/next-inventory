@@ -23,32 +23,31 @@ const SideBar = () => {
       }`}
     >
       <div className="relative top-20 flex flex-col w-5/6 space-y-2 ">
-        {(session.data.user.Role.name !== "department"
-          ? adminLink
-          : department
-        ).map((item, index) => (
-          <li
-            data-tip={item.name}
-            key={index}
-            className={`${
-              pathname === item.href
-                ? "text-white font-bold bg-custom-bg-3"
-                : "text-gray-200"
-            } menu menu-sm hover:bg-custom-bg-3 hover:text-white rounded-lg ${
-              !showSideBar && "tooltip self-center"
-            }`}
-          >
-            <Link
-              href={item.href}
-              className={`${!showSideBar ? "self-center" : "self-start"}`}
+        {(session.data.user.Role.name !== "user" ? adminLink : department).map(
+          (item, index) => (
+            <li
+              data-tip={item.name}
+              key={index}
+              className={`${
+                pathname.startsWith(`/${item.name.toLocaleLowerCase()}`)
+                  ? "text-white font-bold bg-custom-bg-3"
+                  : "text-gray-200"
+              } menu menu-sm hover:bg-custom-bg-3 hover:text-white rounded-lg ${
+                !showSideBar && "tooltip self-center"
+              }`}
             >
-              {item.icon}
-              <span className={`${!showSideBar ? "hidden" : "block"}`}>
-                {item.name}
-              </span>
-            </Link>
-          </li>
-        ))}
+              <Link
+                href={`${item.href}`}
+                className={`${!showSideBar ? "self-center" : "self-start"}`}
+              >
+                {item.icon}
+                <span className={`${!showSideBar ? "hidden" : "block"}`}>
+                  {item.name}
+                </span>
+              </Link>
+            </li>
+          )
+        )}
 
         {session.status == "loading" &&
           loadingNavLink?.map((item, index) => {

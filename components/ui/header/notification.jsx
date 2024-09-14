@@ -7,11 +7,7 @@ const Notification = () => {
   const { role } = useInventoryStore();
   return (
     <div className="dropdown dropdown-end">
-      {role !== "department" ? (
-        <Admin_Notification />
-      ) : (
-        <Department_Notification />
-      )}
+      {role !== "user" ? <Admin_Notification /> : <Department_Notification />}
     </div>
   );
 };

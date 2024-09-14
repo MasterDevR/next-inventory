@@ -13,7 +13,7 @@ import { useQueryClient } from "@tanstack/react-query";
 const EditItemModal = ({ data, modalRef }) => {
   const queryClient = useQueryClient();
   const session = useSession();
-  const { theme, updateSuccessModal, updateModalMessage, updateStatuss } =
+  const { updateSuccessModal, updateModalMessage, updateStatuss } =
     useInventoryStore();
   const [isSubmitting, setSubmitting] = useState(false);
   const [IsImage, setImageData] = useState({
@@ -34,7 +34,7 @@ const EditItemModal = ({ data, modalRef }) => {
           },
         }
       );
-
+      console.log(response.data);
       return response;
     },
   });
@@ -46,7 +46,6 @@ const EditItemModal = ({ data, modalRef }) => {
       mutation.mutate(formData, {
         onSuccess: (response) => {
           if (response && response.data) {
-            console.log(response.data);
             updateSuccessModal(true);
             updateModalMessage(response.data.message);
             updateStatuss(response.data.status);
@@ -73,13 +72,17 @@ const EditItemModal = ({ data, modalRef }) => {
       setImageData({ urlBlobImg: imgUrl, image: file });
     }
   };
+
   return (
-    <dialog id="edi-modal" className="modal " ref={modalRef}>
-      <div
-        className={`modal-box ${
-          theme !== true ? "text-black bg-white" : "text-white bg-custom-bg"
-        }  max-w-5xl space-y-20 `}
-      >
+    <dialog
+      id="edi-modal"
+      className="modal text-black "
+      ref={modalRef}
+      onClick={(event) => {
+        event.stopPropagation();
+      }}
+    >
+      <div className={`modal-box  max-w-5xl space-y-20 `}>
         <div className="w-fit relative float-end">
           <HideModal modalRef={modalRef} />
         </div>
@@ -171,7 +174,7 @@ const EditItemModal = ({ data, modalRef }) => {
                     type="number"
                     className={styles.input}
                     name="quantity"
-                    defaultValue={item.quantity}
+                    defaultValue={item.quantity_on_hand}
                     required
                   />
                   <label

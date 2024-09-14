@@ -4,7 +4,9 @@ import VerifyActionModal from "../modal/modal-verify-action";
 const DeleteStock = ({ stock_no, id }) => {
   const modalRef = useRef();
 
-  const deleteHandler = () => {
+  const deleteHandler = (event) => {
+    event.stopPropagation();
+
     if (modalRef.current) {
       modalRef.current.showModal();
     }
@@ -14,7 +16,7 @@ const DeleteStock = ({ stock_no, id }) => {
     <Fragment>
       <button
         className="w-4/6 bg-red-500 p-2 rounded-md hover:bg-red-600"
-        onClick={deleteHandler}
+        onClick={(event) => deleteHandler(event)}
       >
         Delete
       </button>

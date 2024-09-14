@@ -33,11 +33,24 @@ const Transaction_Details_Modal = () => {
     },
   });
 
-  // Mutation for rejecting the transaction
   const rejectMutation = useMutation({
     mutationFn: (formData) => {
       return axios.put(
         `${process.env.NEXT_PUBLIC_BASE_URL}/admin/reject-transaction`,
+        formData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+    },
+  });
+  const readyMutation = useMutation({
+    mutationFn: (formData) => {
+      return axios.put(
+        `${process.env.NEXT_PUBLIC_BASE_URL}/admin/ready-transaction`,
         formData,
         {
           headers: {
@@ -92,6 +105,27 @@ const Transaction_Details_Modal = () => {
     });
   };
 
+  const handleReady = () => {
+    const formData = new FormData();
+    formData.append("transaction_id", transactionDetails.id);
+    formData.append("status", "ready");
+
+    readyMutation.mutate(formData, {
+      onSuccess: (response) => {
+        if (response && response.data) {
+          updateSuccessModal(true);
+          updateModalMessage(response.data.message);
+          updateStatuss(response.data.status);
+          queryClient.invalidateQueries({ queryKey: ["transaction"] });
+        }
+      },
+      onError: (error) => {
+        updateSuccessModal(true);
+        updateModalMessage(error.message);
+        updateStatuss(error.response?.status || "error");
+      },
+    });
+  };
   const {
     id,
     created_at,
@@ -264,6 +298,17 @@ const Transaction_Details_Modal = () => {
                   onClick={handleReject}
                 >
                   Reject Request
+                </button>
+              </div>
+            )}
+            {Status?.name === "approved" && (
+              <div className="w-full p-5 text-center">
+                <button
+                  type="submit"
+                  className="btn btn-primary text-white w-full"
+                  onClick={handleReady}
+                >
+                  Ready
                 </button>
               </div>
             )}

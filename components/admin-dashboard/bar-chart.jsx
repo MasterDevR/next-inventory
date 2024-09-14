@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import {
   BarChart,
   Bar,
@@ -10,63 +10,54 @@ import {
   Legend,
   ResponsiveContainer,
 } from "recharts";
-import axios from "axios";
+import { useQueryClient } from "@tanstack/react-query";
+
+import useFetchData from "@/components/util/custom-hook/useFetchData";
+
+const months = [
+  "Jan",
+  "Feb",
+  "Mar",
+  "Apr",
+  "May",
+  "Jun ",
+  "Jul",
+  "Aug",
+  "Sep",
+  "Oct",
+  "Nov",
+  "Dec",
+];
 
 const CustomTooltip = ({ payload }) => {
   if (!payload || payload.length === 0) return null;
-
-  const {
-    name,
-    Available,
-    Total_Stock,
-    approved_request,
-    Total_Request,
-    date,
-  } = payload[0].payload;
+  const { name, Stock, Request, Issued } = payload[0].payload;
 
   return (
-    <div className="bg-white  p-2 rounded shadow-lg">
+    <div className="border border-black p-2 rounded shadow-lg bg-white">
       <p className="font-bold">{name}</p>
-      <p>Total Stock: {Total_Stock}</p>
-      <p>Available: {Available}</p>
-      <p>Approved Request: {approved_request}</p>
-      <p>Total Request: {Total_Request}</p>
-      <p>Date: {date}</p>
+      <p className="text-blue-500 font-bold">
+        Stock:
+        {Stock}
+      </p>
+      <p className="text-green-600 bold">Request: {Request}</p>
+      <p className="text-red-600 bold">Issued: {Issued}</p>
     </div>
   );
 };
 
 const BarCharts = ({ stock, year }) => {
-  const [data, setData] = useState(null);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState(null);
+  const { data, isLoading } = useFetchData({
+    path: `/admin/get-stock-report/${stock}/${year}`,
+    key: "bar-report",
+  });
+  const queryClient = useQueryClient();
 
   useEffect(() => {
-    const getData = async () => {
-      setIsLoading(true);
-      setError(null);
-      try {
-        console.log("first");
-        const response = await axios.get(
-          `${process.env.NEXT_PUBLIC_BASE_URL}/admin/get-stock-report/${stock}/${year}`
-        );
-        console.log("second");
-        setData(response.data);
-      } catch (error) {
-        setError(error.message);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    if (stock && year) {
-      console.log(stock, year);
-      getData();
-    }
+    queryClient.invalidateQueries(["bar-report"]);
   }, [stock, year]);
 
   if (isLoading) return <div>Loading...</div>;
-  if (error) return <div>Error: {error}</div>;
   if (!data?.result) return <div>No data available</div>;
   if (data?.result.length === 0)
     return (
@@ -78,23 +69,29 @@ const BarCharts = ({ stock, year }) => {
         </h1>
       </div>
     );
-  const transformedData = data.result.map((item) => ({
-    name: item.item || "",
-    Available: item.quantity_on_hand,
-    Total_Stock: item.quantity_on_hand + item.quantity_issued,
-    Total_Request: item.total_request,
-    approved_request: item.quantity_issued,
-    date: new Date(item.created_at).toLocaleDateString(), // Format the date
+
+  const initializedData = months.map((month) => ({
+    month,
+    Total_Stock: 0,
+    Total_Request: 0,
+    date: "",
   }));
 
-  const maxDataValue = Math.max(
-    ...transformedData.flatMap((item) => [
-      item.Total_Stock,
-      item.Available,
-      item.approved_request,
-      item.Total_Request,
-    ])
-  );
+  const transformedData = data.result.reduce((acc, item) => {
+    const month = new Date(item.created_at).toLocaleString("default", {
+      month: "short",
+    });
+    const monthData = acc.find((d) => d.month === month);
+
+    if (monthData) {
+      monthData.Issued = item.quantity_issued;
+      monthData.Stock = item.quantity_on_hand + item.quantity_issued;
+      monthData.Request = item.total_request;
+      monthData.date = new Date(item.created_at).toLocaleDateString();
+    }
+
+    return acc;
+  }, initializedData);
 
   return (
     <ResponsiveContainer width="100%" height="100%">
@@ -106,32 +103,27 @@ const BarCharts = ({ stock, year }) => {
           bottom: 5,
         }}
       >
-        <XAxis dataKey="name" />
+        <XAxis dataKey="month" tick={{ fontSize: 14 }} />
         <YAxis
           domain={[0, (maxDataValue) => maxDataValue * 2]}
           tick={{ fontSize: 14 }}
         />
-        <Tooltip content={<CustomTooltip />} />
+        <Tooltip content={<CustomTooltip />} cursor={false} />
         <Legend />
         <Bar
-          dataKey="Total_Stock"
-          fill="#0865C1"
-          activeBar={<Rectangle fill="#0865C1" stroke="white" />}
+          dataKey="Stock"
+          fill="blue"
+          activeBar={<Rectangle fill="blue" stroke="white" />}
         />
         <Bar
-          dataKey="Available"
-          fill="#01DD05"
-          activeBar={<Rectangle fill="#01DD05" stroke="white" />}
+          dataKey="Request"
+          fill="green"
+          activeBar={<Rectangle fill="green" stroke="white" />}
         />
         <Bar
-          dataKey="approved_request"
+          dataKey="Issued"
           fill="red"
           activeBar={<Rectangle fill="red" stroke="white" />}
-        />
-        <Bar
-          dataKey="Total_Request"
-          fill="orange"
-          activeBar={<Rectangle fill="orange" stroke="white" />}
         />
       </BarChart>
     </ResponsiveContainer>

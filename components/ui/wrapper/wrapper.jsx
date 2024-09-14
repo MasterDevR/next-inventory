@@ -78,11 +78,7 @@ const Wrapper = ({ children }) => {
       <CartModal />
       {isSuccessModal === true && <AlertModal />}
       {session ? (
-        <div
-          className={`${
-            theme !== true ? "text-black" : "text-white"
-          } h-screen ${theme === true ? "bg-custom-bg" : "bg-white"}  `}
-        >
+        <div className={`  h-screen `}>
           <NavBar />
           <main className={`h-full w-12/12  flex `}>
             <SideBar />

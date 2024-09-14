@@ -5,7 +5,6 @@ import React from "react";
 
 const UserIcon = () => {
   const session = useSession();
-
   return (
     <div
       tabIndex={0}

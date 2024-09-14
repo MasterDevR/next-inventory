@@ -15,9 +15,9 @@ const Page = () => {
   }, [role]);
   return (
     <Fragment>
-      <div className="h-full space-y-10">
+      <div className="h-full space-y-10 mt-10">
         <div className="flex flex-row gap-x-5 relative left-7">
-          <div className="w-fit ">
+          <div className="w-fit">
             <OpenItemListBtn title="Create Stock" id="create-stock" />
           </div>
           <div className="w-fit">

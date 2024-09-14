@@ -10,10 +10,9 @@ const TransactionItem = () => {
   const router = useRouter();
   const { setTransactionDetails } = useInventoryStore();
   const queryClient = useQueryClient();
-  const refsearchData = useRef();
   const [searchTransaction, setSearchTransaction] = useState(undefined);
-  const [typingTimeout, setTypingTimeout] = useState(null);
-  const [status, setStatus] = useState();
+  const [status, setStatus] = useState("all");
+
   const { data, isLoading } = useFetchData({
     path: `/admin/get-all-transaction/${status}/${searchTransaction}`,
     key: "transaction",
@@ -22,47 +21,35 @@ const TransactionItem = () => {
   useEffect(() => {
     queryClient.invalidateQueries(["transaction"]);
     router.push("/transaction");
-  }, [status]);
-
-  useEffect(() => {
-    queryClient.invalidateQueries(["transaction"]);
-  }, [searchTransaction]);
+  }, [status, searchTransaction]);
 
   if (isLoading) return <div>Loading...</div>;
   if (!data?.data || !Array.isArray(data.data)) {
     return <div>No data available</div>;
   }
-
   const btnHandler = (item) => {
     setTransactionDetails(item);
     document.getElementById("transactipn-details").showModal();
   };
 
-  const handleChange = () => {
-    clearTimeout(typingTimeout);
-
-    const timeout = setTimeout(() => {
-      const value = refsearchData.current.value;
-      if (value === "") {
-        setSearchTransaction(undefined);
-      } else {
-        setSearchTransaction(value);
-      }
-    }, 1000);
-
-    setTypingTimeout(timeout);
+  const handleChange = (e) => {
+    const value = e.target.value;
+    if (value === "") {
+      setSearchTransaction(undefined);
+    } else {
+      setSearchTransaction(value);
+    }
   };
 
   return (
     <Fragment>
-      <header className="flex flex-row gap-x-10">
+      <header className="flex flex-row gap-x-10 ">
         <FilterTransaction getStatus={setStatus} />
         <input
           type="text"
           placeholder="Search Transaction"
-          onChange={handleChange}
-          ref={refsearchData}
-          className="border border-gray-400 rounded-full pl-10 w-full"
+          onChange={(e) => handleChange(e)}
+          className="border border-gray-400 rounded-full pl-10 w-96"
         />
       </header>
       <div className="overflow-x-auto w-full mt-5 rounded-lg shadow-sm p-5 shadow-gray-400">

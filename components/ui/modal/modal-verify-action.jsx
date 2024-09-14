@@ -9,7 +9,9 @@ const VerifyAction = ({ stock_no, id, modalRef }) => {
   const queryClient = useQueryClient();
   const { updateStatuss, updateModalMessage, updateSuccessModal } =
     useInventoryStore();
-  const cancelDelete = () => {
+  const cancelDelete = (event) => {
+    event.stopPropagation();
+
     if (modalRef.current) {
       modalRef.current.close();
     }
@@ -57,7 +59,7 @@ const VerifyAction = ({ stock_no, id, modalRef }) => {
         <div className="  flex flex-row justify-around">
           <button
             className="btn btn-success btn-outline"
-            onClick={cancelDelete}
+            onClick={(event) => cancelDelete(event)}
           >
             Cancel
           </button>

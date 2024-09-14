@@ -47,11 +47,7 @@ const department = [
     name: "Transaction",
     icon: <FaFileAlt size={"1.5rem"} />,
   },
-  {
-    href: "/report",
-    name: "Report",
-    icon: <FaChartBar size={"1.5rem"} />,
-  },
+
   {
     href: "/available-item",
     name: "Available Item",

@@ -5,7 +5,9 @@ import { RxCross2 } from "react-icons/rx";
 
 const HideModal = ({ modalRef }) => {
   const { updateSuccessModal } = useInventoryStore();
-  const modalHandler = () => {
+  const modalHandler = (event) => {
+    event.stopPropagation();
+
     try {
       if (modalRef.current) {
         modalRef.current.close();
@@ -19,7 +21,7 @@ const HideModal = ({ modalRef }) => {
   return (
     <button
       className="flex w-full justify-center rounded-lg border-2 border-red-500 p-2 text-red-500 transition-all delay-75 ease-in-out hover:bg-red-500 hover:text-white"
-      onClick={modalHandler}
+      onClick={(event) => modalHandler(event)}
     >
       <RxCross2 size={".7rem"} className="block lg:hidden" />
       <span className="hidden lg:block text-lg">Close</span>

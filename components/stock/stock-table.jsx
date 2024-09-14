@@ -1,19 +1,26 @@
 "use client";
-import React, { Fragment, useState } from "react";
+import React, { Fragment, useEffect, useState } from "react";
 import useFetchData from "@/components/util/custom-hook/useFetchData";
-import useInventoryStore from "../store/store";
 import Image from "next/image";
 import DeleteStockBtn from "@/components/ui/button/delete-stock-btn";
 import EditBtn from "@/components/ui/button/edit-item-btn";
-
+import { useRouter } from "next/navigation";
+import { useQueryClient } from "@tanstack/react-query";
 const InventoryTable = () => {
-  const { theme } = useInventoryStore();
+  const queryClient = useQueryClient();
+  const router = useRouter();
+  const [searchItem, setSearchItem] = useState(undefined);
   const { data, isLoading } = useFetchData({
-    path: "/admin/get-stock",
+    path: `/admin/get-stock/${searchItem}`,
     key: "stock",
   });
+
+  useEffect(() => {
+    queryClient.invalidateQueries(["stock"]);
+  }, [searchItem]);
   const [selectedItemId, setSelectedItemId] = useState(null);
-  const handleButtonClick = (itemData) => {
+  const handleButtonClick = (event, itemData) => {
+    event.stopPropagation();
     setSelectedItemId(selectedItemId === itemData.id ? null : itemData.id);
   };
   if (isLoading) {
@@ -24,43 +31,63 @@ const InventoryTable = () => {
       </div>
     );
   }
+  const handleChange = (e) => {
+    const value = e.target.value;
+    if (value === "") {
+      setSearchItem(undefined);
+    } else {
+      setSearchItem(value);
+    }
+  };
 
   return (
     <Fragment>
+      <header className="mb-10 h-10 w-96 relative">
+        <input
+          type="text"
+          placeholder="Search Item"
+          onChange={(e) => handleChange(e)}
+          className="border border-gray-400 rounded-full pl-10 w-full h-full"
+        />
+      </header>
       <div className="overflow-x-auto min-h-52">
         <table className="table table-xs overflow-hidden ">
           <thead className="">
-            <tr
-              className={`text-lg ${
-                theme === true ? "text-white" : "text-black"
-              }`}
-            >
+            <tr className={`text-lg `}>
               <th>Item</th>
               <th>Price</th>
               <th>Quantity</th>
               <th>Measurement</th>
               <th>Description</th>
               <th>Stock Number</th>
-              <th>Re-Order Point</th>
-              <th>Reference</th>
+              <th>Stock Type</th>
+              {/* <th>Re-Order Point</th> */}
+              {/* <th>Reference</th> */}
               <th>Consume Date</th>
               <th>Manufacturer</th>
               <th>Image</th>
-              <th></th>
+              <th> </th>
             </tr>
           </thead>
           <tbody>
             {data && data.item && data?.item.length > 0 ? (
               data.item.map((item, index) => (
-                <tr key={index}>
+                <tr
+                  key={index}
+                  className=" cursor-pointer hover:bg-gray-200"
+                  onClick={() => {
+                    router.push(`/inventory/${item.stock_no}`);
+                  }}
+                >
                   <td>{item.item}</td>
                   <td>{item.price}</td>
                   <td>{item.quantity_on_hand}</td>
                   <td>{item.measurement}</td>
-                  <td>{item.description}</td>
+                  <td className="w-56">{item.description}</td>
                   <td>{item.stock_no}</td>
-                  <td>{item.re_order_point}</td>
-                  <td>{item.reference}</td>
+                  <td>{item.stocktype.name}</td>
+                  {/* <td>{item.re_order_point}</td> */}
+                  {/* <td>{item.reference}</td> */}
                   <td>{item.consume_date}</td>
                   <td>{item.distributor}</td>
                   <td>
@@ -96,7 +123,7 @@ const InventoryTable = () => {
                   </td>
                   <td>
                     <button
-                      onClick={() => handleButtonClick(item)}
+                      onClick={(event) => handleButtonClick(event, item)}
                       className="font-bold text-center w-full text-lg"
                     >
                       ...

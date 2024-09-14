@@ -7,10 +7,12 @@ import useFetchData from "@/components/util/custom-hook/useFetchData";
 import FormModal from "../modal/form-modal";
 import Image from "next/image";
 import { useSession } from "next-auth/react";
+import { useMutation } from "@tanstack/react-query";
+import { useQueryClient } from "@tanstack/react-query";
 
 const CartModal = () => {
   const session = useSession();
-
+  const queryClient = useQueryClient();
   const {
     cartItem,
     overrideCartItem,
@@ -18,6 +20,7 @@ const CartModal = () => {
     updateModalMessage,
     updateSuccessModal,
     updateStatuss,
+    token,
   } = useInventoryStore();
   const [loading, setIsLoading] = useState(false);
   const modalRef = useRef();
@@ -26,39 +29,60 @@ const CartModal = () => {
     key: "transaction-purpose",
   });
 
-  const btnSubmit = async (e) => {
-    try {
-      e.preventDefault();
-      setIsLoading(true);
-      await new Promise((resolve) => setTimeout(resolve, 500));
-      const formData = new FormData(e.target);
-      const items = [];
-      const purpose = formData.get("purpose");
-      const itemCount = formData.getAll("item").length; // Number of items
-
-      for (let i = 0; i < itemCount; i++) {
-        items.push({
-          item: formData.getAll("item")[i],
-          description: formData.getAll("description")[i],
-          price: formData.getAll("price")[i],
-          stock: formData.getAll("stock")[i],
-          quantity: formData.getAll("quantity")[i],
-        });
-      }
-
-      const response = await axios.post(
+  const mutation = useMutation({
+    mutationFn: async (formData) => {
+      return await axios.post(
         `${process.env.NEXT_PUBLIC_BASE_URL}/user/create-transaction/${department_id}`,
-        { data: items, purpose }
+        formData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+            Authorization: `Bearer ${token}`,
+          },
+        }
       );
-      updateSuccessModal(true);
-      updateModalMessage(response.data.message);
-      updateStatuss(response.data.status);
-    } catch (error) {
-      console.log(error.message);
-    } finally {
-      setIsLoading(false);
-      cartItem.length = 0;
-    }
+    },
+  });
+  const btnSubmit = async (e) => {
+    e.preventDefault();
+    setIsLoading(true);
+    await new Promise((resolve) => setTimeout(resolve, 500));
+    const formData = new FormData(e.target);
+    const data = {};
+    formData.forEach((value, key) => {
+      if (data[key]) {
+        if (Array.isArray(data[key])) {
+          data[key].push(value);
+        } else {
+          data[key] = [data[key], value];
+        }
+      } else {
+        data[key] = value;
+      }
+    });
+    console.log(data);
+    mutation.mutate(data, {
+      onSuccess: (response) => {
+        if (response && response.data) {
+          console.log(response.data);
+          updateSuccessModal(true);
+          updateModalMessage(response.data.message);
+          updateStatuss(response.data.status);
+          queryClient.invalidateQueries({
+            queryKey: ["admin-notification"],
+          });
+
+          cartItem.length = 0;
+        }
+      },
+      onError: (error) => {
+        updateSuccessModal(true);
+        updateModalMessage(error.message);
+        updateStatuss(error.status);
+      },
+    });
+
+    setIsLoading(false);
   };
 
   const btnDelete = (id) => {
@@ -73,7 +97,6 @@ const CartModal = () => {
       console.log(error.message);
     }
   };
-
   return (
     <FormModal id="cart-modal" modalRef={modalRef}>
       <header className="flex flex-row gap-x-5 items-center">
@@ -132,13 +155,13 @@ const CartModal = () => {
         className="relative top-10 p-4  w-full border border-black min-h-[80dvh] mb-20 space-y-10  "
       >
         <div className="overflow-auto">
-          <table className="table text-base ">
+          <table className="table text-sm ">
             <thead>
               <tr className="text-base text-center text-black">
                 <th className="border border-black">QTY</th>
-                <th className="border border-black">UNIT</th>
+                <th className="border border-black ">UNIT</th>
                 <th className="border border-black">DESCRIPTION</th>
-                <th className="border border-black">REMARKS</th>
+                <th className="border border-black">Price</th>
                 <th className="border border-black">Delete</th>
               </tr>
             </thead>
@@ -146,52 +169,52 @@ const CartModal = () => {
               {cartItem?.length > 0 ? (
                 cartItem.map((item, index) => (
                   <tr key={item.item + index} className="text-center">
-                    <td className="border border-black">
+                    <td className="border border-black w-20">
                       <input
                         type="number"
                         name={"quantity"}
                         defaultValue={1}
                         min={1}
-                        className="border w-14 p-1 text-center"
+                        className="border w-full  text-center"
                       />
                     </td>
-                    <td className="border border-black">
+                    <td className="border border-black w-20 ">
                       <input
                         type="text"
                         name="item"
                         defaultValue={item.measurement}
                         disabled={!loading}
-                        className="w-32 disabled:bg-transparent  "
+                        className="w-full disabled:bg-transparent"
                       />
                     </td>
                     <td className="border border-black">
-                      <textarea
+                      <input
+                        type="text"
                         name="description"
                         defaultValue={item.description}
                         disabled={!loading}
-                        rows="2"
-                        cols="15"
-                        className="resize-none disabled:bg-transparent "
-                      ></textarea>
+                        className="disabled:bg-transparent text-center min-w-full "
+                      />
                     </td>
-                    <td className="border border-black">
+                    <td className="border border-black w-12 ">
                       <input
                         type="text"
                         name="price"
                         defaultValue={item.price}
                         disabled={!loading}
-                        className="w-32 disabled:bg-transparent"
+                        className="w-full disabled:bg-transparent text-center"
                       />
                       <input
                         type="hidden"
                         name="stock"
                         defaultValue={item.stock_no}
                       />
+                      {/* <input type="hidden" name="id" defaultValue={item.stockHistories.id} /> */}
                     </td>
 
-                    <td className="border border-black">
+                    <td className="border border-black w-28">
                       <button
-                        className="text-red-500 flex justify-center items-center gap-x-1 m-auto"
+                        className="text-red-500 flex justify-center items-center gap-x-1 m-auto w-full"
                         onClick={() => btnDelete(item.id)}
                       >
                         <FaTrash size={".8rem"} />
@@ -209,6 +232,12 @@ const CartModal = () => {
               )}
             </tbody>
           </table>
+          {/* <input
+            type="text"
+            name="purpose"
+            placeholder="Purpose (Optional)"
+            className="border border-black mt-20 p-4 rounded-xl"
+          /> */}
         </div>
 
         {cartItem && cartItem.length !== 0 && (

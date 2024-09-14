@@ -7,10 +7,12 @@ const EditBtn = ({ stock_no }) => {
   const modalRef = useRef();
   const [data, setData] = useState([]);
 
-  const editHandler = async () => {
+  const editHandler = async (event) => {
+    event.stopPropagation();
     const response = await axios.get(
       `${process.env.NEXT_PUBLIC_BASE_URL}/admin/edit-stock/${stock_no}`
     );
+
     setData(response.data?.data);
     if (modalRef.current) {
       modalRef.current.showModal();
@@ -20,7 +22,7 @@ const EditBtn = ({ stock_no }) => {
   return (
     <Fragment>
       <div
-        onClick={editHandler}
+        onClick={(event) => editHandler(event)}
         className="w-4/6 bg-green-500 p-2 rounded-md hover:bg-green-600 text-center cursor-pointer"
       >
         Edit

@@ -9,7 +9,7 @@ const Page = () => {
   const { role } = useInventoryStore();
 
   useEffect(() => {
-    if (role && role === "department") {
+    if (role && role === "user") {
       return redirect("./not-found");
     }
   }, [role]);
