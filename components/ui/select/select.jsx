@@ -8,7 +8,9 @@ const Select = ({ data, title, onChange, defaultValue, width }) => {
 
   return (
     <select
-      className={`select select-bordered ${width ? width : "w-full"} uppercase`}
+      className={`select select-bordered ${
+        width ? width : "w-full"
+      } uppercase text-xs lg:text-base`}
       defaultValue={defaultValue ? defaultValue : ""}
       onChange={handleChange}
       required

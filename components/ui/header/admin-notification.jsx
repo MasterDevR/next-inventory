@@ -1,5 +1,5 @@
 "use client";
-import React, { Fragment, useState } from "react";
+import React, { Fragment, useEffect, useState } from "react";
 import { IoMdNotifications } from "react-icons/io";
 import { useMutation } from "@tanstack/react-query";
 import { useQueryClient } from "@tanstack/react-query";
@@ -8,14 +8,18 @@ import useInventoryStore from "@/components/store/store";
 import useFetchData from "@/components/util/custom-hook/useFetchData";
 import axios from "axios";
 import Link from "next/link";
+import Image from "next/image";
 const Admin_Notification = () => {
   const [toggleBtn, setToggleBtn] = useState(false);
   const queryClient = useQueryClient();
   const { token } = useInventoryStore();
+
   const { data, isLoading } = useFetchData({
     path: "/admin/admin-notification",
+    token: token,
     key: "admin-notification",
   });
+
   const mutation = useMutation({
     mutationFn: async () => {
       const response = await axios.put(
@@ -58,7 +62,7 @@ const Admin_Notification = () => {
         tabIndex={0}
         className={`${
           toggleBtn ? "flex" : "hidden"
-        } absolute bg-base-100 right-12 min-w-[25dvw]  rounded-lg shadow-lg p-5 gap-y-5 flex-col max-h-[50dvh] overflow-y-auto `}
+        } absolute bg-base-100 right-12 min-w-[25dvw]  rounded-lg shadow-lg p-5 gap-y-5 flex-col max-h-[50dvh] overflow-y-auto text-sm`}
       >
         {isLoading && <h1>Loading...</h1>}
         {data &&
@@ -68,7 +72,8 @@ const Admin_Notification = () => {
                 key={item.id + index}
                 className={`hover:bg-black hover:bg-opacity-10 rounded-lg cursor-pointer shadow-inner shadow-gray-300 p-2 ${
                   item.viewed === false && "bg-gray-100"
-                }`}
+                }
+                 `}
                 onClick={() => {
                   setToggleBtn(false);
                 }}
@@ -80,25 +85,35 @@ const Admin_Notification = () => {
                       id: item.transaction_id,
                     },
                   }}
+                  className="flex gap-x-2 items-center"
                 >
-                  <h3>
-                    <span>Office : </span>
-                    <span className="font-light">{item.department}</span>
-                  </h3>
-                  <h4>
-                    <span>Purpose : </span>
-                    <span className="font-light">
-                      {item.transaction_purpose}
-                    </span>
-                  </h4>
-                  <h4>
-                    <span>ID : </span>
-                    <span className="font-light">{item.transaction_id}</span>
-                  </h4>
-                  <h5>
-                    <span>No of Item : </span>
-                    <span className="font-light">{item.no_item}</span>
-                  </h5>
+                  <Image
+                    src={item.Transaction?.user.image}
+                    alt={item.department}
+                    height={70}
+                    width={70}
+                    className="aspect-square"
+                  />
+                  <aside>
+                    <h3>
+                      <span>Office: </span>
+                      <span className="font-light">{item.department}</span>
+                    </h3>
+                    <h4>
+                      <span>Purpose: </span>
+                      <span className="font-light">
+                        {item.transaction_purpose}
+                      </span>
+                    </h4>
+                    <h4>
+                      <span>ID: </span>
+                      <span className="font-light">{item.transaction_id}</span>
+                    </h4>
+                    <h5>
+                      <span>No of Item: </span>
+                      <span className="font-light">{item.no_item}</span>
+                    </h5>
+                  </aside>
                 </Link>
               </li>
             );

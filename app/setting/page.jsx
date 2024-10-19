@@ -1,7 +1,8 @@
-import React from "react";
+"use client";
 
+import ChangePassword from "@/components/ui/form/change-password";
 const page = () => {
-  return <div>page</div>;
+  return <ChangePassword />;
 };
 
 export default page;

@@ -1,28 +1,60 @@
 "use client";
 import React, { Fragment, useEffect, useState } from "react";
+import OpenItemListBtn from "@/components/ui/button/open-modal";
 import useFetchData from "@/components/util/custom-hook/useFetchData";
-import Image from "next/image";
-import DeleteStockBtn from "@/components/ui/button/delete-stock-btn";
-import EditBtn from "@/components/ui/button/edit-item-btn";
 import { useRouter } from "next/navigation";
 import { useQueryClient } from "@tanstack/react-query";
+import useInvetoryStore from "../store/store";
+
+const ITEMS_PER_PAGE = 10;
+
 const InventoryTable = () => {
+  const { token } = useInvetoryStore();
   const queryClient = useQueryClient();
   const router = useRouter();
   const [searchItem, setSearchItem] = useState(undefined);
+  const [currentPage, setCurrentPage] = useState(1);
+
+  // Custom hook for fetching data with pagination
   const { data, isLoading } = useFetchData({
-    path: `/admin/get-stock/${searchItem}`,
+    path: `/admin/get-stock/${searchItem}?page=${currentPage}`, // Include the current page in the API request
+    token: token,
     key: "stock",
   });
 
   useEffect(() => {
     queryClient.invalidateQueries(["stock"]);
-  }, [searchItem]);
-  const [selectedItemId, setSelectedItemId] = useState(null);
-  const handleButtonClick = (event, itemData) => {
-    event.stopPropagation();
-    setSelectedItemId(selectedItemId === itemData.id ? null : itemData.id);
+  }, [searchItem, currentPage]);
+
+  const handleChange = (e) => {
+    const value = e.target.value;
+    if (value === "") {
+      setSearchItem(undefined);
+    } else {
+      setSearchItem(value);
+    }
+    setCurrentPage(1); // Reset to the first page on new search
   };
+
+  // Handle page change
+
+  const getPaginationRange = (currentPage, totalPages) => {
+    const maxVisiblePages = 5;
+    let start = Math.max(1, currentPage - Math.floor(maxVisiblePages / 2));
+    let end = start + maxVisiblePages - 1;
+
+    if (end > totalPages) {
+      end = totalPages;
+      start = Math.max(1, end - maxVisiblePages + 1);
+    }
+
+    return Array.from({ length: end - start + 1 }, (_, index) => start + index);
+  };
+
+  const paginationRange = data
+    ? getPaginationRange(currentPage, data.totalPages)
+    : [];
+
   if (isLoading) {
     return (
       <div className="flex w-full flex-col gap-4">
@@ -31,100 +63,62 @@ const InventoryTable = () => {
       </div>
     );
   }
-  const handleChange = (e) => {
-    const value = e.target.value;
-    if (value === "") {
-      setSearchItem(undefined);
-    } else {
-      setSearchItem(value);
-    }
+  const handlePageChange = (page) => {
+    setCurrentPage(page);
   };
-
   return (
     <Fragment>
-      <header className="mb-10 h-10 w-96 relative">
+      <header className="mb-10 h-auto relative w-full flex gap-5 flex-col md:flex-row">
+        <div className="flex gap-x-5">
+          <OpenItemListBtn title="Create" id="create-stock" />
+          <OpenItemListBtn title="Add" id="add-stock" />
+        </div>
         <input
           type="text"
           placeholder="Search Item"
-          onChange={(e) => handleChange(e)}
-          className="border border-gray-400 rounded-full pl-10 w-full h-full"
+          onChange={handleChange}
+          className="border border-gray-400 rounded-full w-full md:w-96 pl-10"
         />
       </header>
-      <div className="overflow-x-auto min-h-52">
-        <table className="table table-xs overflow-hidden ">
-          <thead className="">
-            <tr className={`text-lg `}>
-              <th>Item</th>
-              <th>Price</th>
-              <th>Quantity</th>
-              <th>Measurement</th>
+      <div className="overflow-x-auto">
+        <table className="table overflow-hidden rounded-none text-center">
+          <thead>
+            <tr>
+              <th></th>
               <th>Description</th>
-              <th>Stock Number</th>
-              <th>Stock Type</th>
-              {/* <th>Re-Order Point</th> */}
-              {/* <th>Reference</th> */}
+              <th>Price</th>
+              <th>Qty</th>
+              <th>Unit</th>
+              <th>Stock No.</th>
+              <th>Type</th>
               <th>Consume Date</th>
               <th>Manufacturer</th>
-              <th>Image</th>
-              <th> </th>
+              <th colSpan={2}>Action</th>
             </tr>
           </thead>
           <tbody>
-            {data && data.item && data?.item.length > 0 ? (
+            {data && data.item && data.item.length > 0 ? (
               data.item.map((item, index) => (
                 <tr
                   key={index}
-                  className=" cursor-pointer hover:bg-gray-200"
+                  className="cursor-pointer hover:bg-gray-200"
                   onClick={() => {
                     router.push(`/inventory/${item.stock_no}`);
                   }}
                 >
-                  <td>{item.item}</td>
+                  <td>{(currentPage - 1) * ITEMS_PER_PAGE + (index + 1)}</td>
+                  <td>{item.description}</td>
                   <td>{item.price}</td>
                   <td>{item.quantity_on_hand}</td>
                   <td>{item.measurement}</td>
-                  <td className="w-56">{item.description}</td>
                   <td>{item.stock_no}</td>
                   <td>{item.stocktype.name}</td>
-                  {/* <td>{item.re_order_point}</td> */}
-                  {/* <td>{item.reference}</td> */}
                   <td>{item.consume_date}</td>
                   <td>{item.distributor}</td>
                   <td>
-                    {item.image && (
-                      <Image
-                        src={item.image}
-                        height={50}
-                        width={50}
-                        placeholder="blur"
-                        sizes="auto"
-                        blurDataURL={item.image}
-                        alt={item.item}
-                        priority
-                      />
-                    )}
-                  </td>
-                  <td className="relative">
-                    {selectedItemId === item.id && (
-                      <div
-                        className={`absolute z-10 p-2 w-32 bg-white rounded-md shadow-lg flex flex-col justify-center items-center gap-y-3 text-white ${
-                          selectedItemId === item.id ? "block" : "hidden"
-                        }`}
-                        style={{
-                          bottom: "100%",
-                          left: 0,
-                          transform: "translateY(4rem) translateX(-8rem)",
-                        }}
-                      >
-                        <EditBtn stock_no={item.stock_no} />
-                        <DeleteStockBtn stock_no={item.stock_no} id={item.id} />
-                      </div>
-                    )}
-                  </td>
-                  <td>
                     <button
-                      onClick={(event) => handleButtonClick(event, item)}
                       className="font-bold text-center w-full text-lg"
+                      onClick={(event) => handleButtonClick(event, item)}
                     >
                       ...
                     </button>
@@ -133,19 +127,46 @@ const InventoryTable = () => {
               ))
             ) : (
               <tr>
-                <td colSpan={12} className="text-center font-bold text-lg">
+                <td colSpan={10} className="text-center font-bold text-lg">
                   No Data Found
                 </td>
               </tr>
             )}
           </tbody>
         </table>
-        {data && data.length <= 0 && (
-          <div className="h-52 flex items-center justify-center">
-            <h1 className="text-center text-lg ">No Data Found</h1>
+      </div>
+
+      {/* Pagination Controls */}
+      {data &&
+        data.totalPages > 1 && ( // Show pagination if totalPages > 1
+          <div className="flex justify-center mt-4 space-x-2">
+            <button
+              onClick={() => handlePageChange(currentPage - 1)}
+              disabled={currentPage === 1}
+              className="btn btn-sm"
+            >
+              &lt; {/* Left arrow */}
+            </button>
+            {paginationRange.map((page) => (
+              <button
+                key={page}
+                onClick={() => handlePageChange(page)}
+                className={`btn btn-sm ${
+                  currentPage === page ? "btn-active" : ""
+                }`}
+              >
+                {page}
+              </button>
+            ))}
+            <button
+              onClick={() => handlePageChange(currentPage + 1)}
+              disabled={currentPage === data.totalPages}
+              className="btn btn-sm"
+            >
+              &gt;
+            </button>
           </div>
         )}
-      </div>
     </Fragment>
   );
 };

@@ -33,6 +33,7 @@ const InventoryForm = () => {
     try {
       e.preventDefault();
       const formData = new FormData(e.target);
+
       formData.append("stockType", stockType);
       mutation.mutate(formData, {
         onSuccess: (response) => {
@@ -51,6 +52,9 @@ const InventoryForm = () => {
           updateStatuss(error.status);
         },
       });
+
+      // const form = e.target;
+      // form.reset();
     } catch (error) {
       console.log(error.message);
     }

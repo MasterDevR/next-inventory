@@ -18,7 +18,7 @@ const ItemCard = ({ item }) => {
 
   return (
     <div
-      className={`w-44 md:w-48 lg:w-64 h-auto p-4 bg-white rounded-3xl shadow-lg text-xs lg:text-sm flex flex-col justify-between`}
+      className={`w-44 md:w-48 lg:w-64 h-auto p-4 bg-white rounded-3xl shadow-lg  flex flex-col justify-between `}
     >
       <section className="flex flex-col items-center w-full gap-y-10 p-2 min-h-44 max-h-max lg:h-72 flex-grow">
         <Image
@@ -30,19 +30,33 @@ const ItemCard = ({ item }) => {
           className="aspect-square object-contain lg:w-50 lg:h-32"
         />
 
-        <div className="font-bold w-full space-y-2 uppercase">
+        <div className="font-bold w-full space-y-2 uppercase text-center">
           <p className="break-words">
-            <span className="font-light">{item.description}</span>
+            <span
+              className={`font-light ${
+                item.quantity_on_hand <= 0 ? "line-through text-red-500" : ""
+              }`}
+            >
+              {item.description}
+            </span>
           </p>
-          <p className="text-red-500">
+          <p>
+            {" "}
+            {item.quantity_on_hand <= 0 && (
+              <span className="text-red-500">Item not available</span>
+            )}
+          </p>
+          {/* <p className="text-red-500">
             Price : <span className="font-light">{`₱ ${item.price}`}</span>
-          </p>
+          </p> */}
         </div>
       </section>
       <button
-        className="btn btn-primary hover:font-bold text-white disabled:text-gray-400 w-full text-xs mt-auto"
+        className="btn btn-primary hover:font-bold text-white disabled:text-gray-400 w-full text-xs mt-auto "
         onClick={btnHandler}
-        disabled={cartItem.includes(item)}
+        disabled={
+          cartItem.includes(item) || (item && item.quantity_on_hand <= 0)
+        }
       >
         Add To Cart
       </button>

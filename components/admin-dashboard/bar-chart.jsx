@@ -13,6 +13,7 @@ import {
 import { useQueryClient } from "@tanstack/react-query";
 
 import useFetchData from "@/components/util/custom-hook/useFetchData";
+import useInventoryStore from "../store/store";
 
 const months = [
   "Jan",
@@ -34,7 +35,7 @@ const CustomTooltip = ({ payload }) => {
   const { name, Stock, Request, Issued } = payload[0].payload;
 
   return (
-    <div className="border border-black p-2 rounded shadow-lg bg-white">
+    <div className="border border-black p-2 rounded shadow-lg bg-white text-xs lg:text-base">
       <p className="font-bold">{name}</p>
       <p className="text-blue-500 font-bold">
         Stock:
@@ -47,8 +48,10 @@ const CustomTooltip = ({ payload }) => {
 };
 
 const BarCharts = ({ stock, year }) => {
+  const { token } = useInventoryStore();
   const { data, isLoading } = useFetchData({
     path: `/admin/get-stock-report/${stock}/${year}`,
+    token: token,
     key: "bar-report",
   });
   const queryClient = useQueryClient();
@@ -94,7 +97,11 @@ const BarCharts = ({ stock, year }) => {
   }, initializedData);
 
   return (
-    <ResponsiveContainer width="100%" height="100%">
+    <ResponsiveContainer
+      width="100%"
+      height="100%"
+      className={`overflow-x-auto`}
+    >
       <BarChart
         data={transformedData}
         margin={{

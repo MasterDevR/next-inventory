@@ -1,11 +1,10 @@
 "use client";
 import React, { useState } from "react";
 import { FaLockOpen, FaLock, FaRegUserCircle } from "react-icons/fa";
-import { signIn, useSession } from "next-auth/react";
+import { signIn } from "next-auth/react";
 import Image from "next/image";
 const LoginForm = () => {
-  const session = useSession();
-
+  const [error, setError] = useState("");
   const [isLocked, setIsLocked] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const showPassword = () => {
@@ -13,30 +12,33 @@ const LoginForm = () => {
   };
 
   const submitHandler = async (e) => {
+    e.preventDefault();
+    setError(""); // Clear any previous errors
+    if (isLoading) return;
+
     try {
-      e.preventDefault();
-      if (isLoading) {
-        return;
-      } else {
-        setIsLoading(true);
-        const formData = new FormData(e.currentTarget);
-        const userId = formData.get("userID");
-        const password = formData.get("password");
-        await signIn("credentials", {
-          username: userId,
-          password: password,
-          redirect: false,
-        });
+      setIsLoading(true);
+      const formData = new FormData(e.currentTarget);
+      const userId = formData.get("userID");
+      const password = formData.get("password");
+
+      const result = await signIn("credentials", {
+        username: userId,
+        password: password,
+        redirect: false,
+      });
+
+      if (result.error) {
+        setError("Invalid credentials. Please try again.");
       }
     } catch (err) {
-      console.log("Caught Errro : ", err);
+      setError("Something went wrong. Please try again later.");
     } finally {
       setIsLoading(false);
     }
   };
-
   return (
-    <div className="flex h-screen items-center justify-center ">
+    <div className="flex h-screen items-center justify-center bg-white md:bg-inherit ">
       <div className="flex w-full max-w-lg flex-col items-center justify-center gap-y-8 rounded-2xl bg-white p-10 md:w-8/12 md:shadow-xl">
         <div className="flex flex-col items-center gap-y-5">
           <Image
@@ -48,9 +50,7 @@ const LoginForm = () => {
             priority
             style={{ width: "100%", height: "auto" }}
           />
-          <h1 className="text-2xl font-black tracking-widest text-green-950">
-            UDM SYSTEM
-          </h1>
+          <h1 className=" font-black text-green-950">UDM INVENTORY PORTAL</h1>
         </div>
         <form className="flex w-full flex-col gap-y-3" onSubmit={submitHandler}>
           <div>

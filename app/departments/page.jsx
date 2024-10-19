@@ -7,18 +7,17 @@ import useInventoryStore from "@/components/store/store";
 import { redirect } from "next/navigation";
 const Page = () => {
   const { role } = useInventoryStore();
-
   useEffect(() => {
     if (role && role === "user") {
       return redirect("./not-found");
     }
   }, [role]);
   return (
-    <div className="space-y-10 w-full  ">
-      <div className="w-1/6">
-        <OpenItemListBtn id="create-user" title="ADD USER" />
-      </div>
-      <main className="md:w-4/6 lg:w-full shadow-sm shadow-gray-400 self-center bg-inherit min-h-96">
+    <div className="space-y-10 w-full text-xs lg:text-base">
+      <main className="container m-auto self-center bg-inherit min-h-96 bg-white p-4 shadow-lg rounded-xl space-y-10">
+        <div className="w-fit">
+          <OpenItemListBtn id="create-user" title="ADD USER" />
+        </div>
         <DepartmentTable />
       </main>
       <CreateUserForm />

@@ -16,7 +16,6 @@ const CreateUserForm = () => {
     try {
       const formData = new FormData(e.currentTarget);
       formData.set("role", role);
-      console.log(role);
       const response = await axios.post(
         `${process.env.NEXT_PUBLIC_BASE_URL}/admin/create-user`,
         formData,
@@ -42,7 +41,7 @@ const CreateUserForm = () => {
     <FormModal id="create-user" modalRef={modalRef}>
       <div className="modal-action flex flex-col">
         <form className="flex flex-col gap-5" onSubmit={submitHandler}>
-          <Input name="username" title={"UserName"} type={"text"} />
+          {/* <Input name="username" title={"UserName"} type={"text"} /> */}
           <Input name="department_id" title={"Department ID"} type={"text"} />
           <Input
             name="department_code"
@@ -60,7 +59,7 @@ const CreateUserForm = () => {
 
           <Input name="image" type={"file"} />
 
-          <SelectRole setRole={setRole} />
+          {/* <SelectRole setRole={setRole} /> */}
           <button
             className="btn btn-success mt-5 w-full font-bold text-white"
             type="submit"

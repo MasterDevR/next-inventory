@@ -1,10 +1,13 @@
 "use client";
-import React from "react";
+import React, { useEffect } from "react";
 import Select from "./select";
 import useFetchData from "@/components/util/custom-hook/useFetchData";
+import useInventoryStore from "@/components/store/store";
 const SelectRole = ({ setRole }) => {
+  const { token } = useInventoryStore();
   const { data, isLoading, error } = useFetchData({
     path: "/admin/get-user-role",
+    token: token,
     key: "user",
   });
 
@@ -12,7 +15,11 @@ const SelectRole = ({ setRole }) => {
   if (error) return <p>{error}</p>;
 
   return (
-    <Select data={data.result} title={"Select Stock Type"} onChange={setRole} />
+    <Select
+      data={data?.result || []}
+      title={"Select Role"}
+      onChange={setRole}
+    />
   );
 };
 

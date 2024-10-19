@@ -2,10 +2,13 @@
 import React, { useEffect, useState } from "react";
 import useFetchData from "@/components/util/custom-hook/useFetchData";
 import Select from "@/components/ui/select/select";
+import useInventoryStore from "@/components/store/store";
 const FilterTransaction = ({ getStatus }) => {
+  const { token } = useInventoryStore();
   const [status, setStatus] = useState();
   const { data } = useFetchData({
     path: "/admin/get-all-transaction-status",
+    token: token,
     key: "transaction-status",
   });
   useEffect(() => {

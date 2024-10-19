@@ -1,30 +1,26 @@
 "use client";
-import { useSession } from "next-auth/react";
-import Image from "next/image";
 import React from "react";
+import useFetchData from "@/components/util/custom-hook/useFetchData";
+import useInventoryStore from "@/components/store/store";
 
 const UserIcon = () => {
-  const session = useSession();
-  return (
-    <div
-      tabIndex={0}
-      role="button"
-      className="btn btn-ghost rounded-btn    avatar"
-    >
-      {/* user image */}
+  const { department_id, token } = useInventoryStore();
+  const { data, isLoading } = useFetchData({
+    path: `/user/user-icon/${department_id}`,
+    token: token,
+    key: "icon",
+  });
 
-      <div className="w-10 h-10 rounded-full">
-        <Image
-          height={50}
-          width={50}
-          priority
-          alt="Tailwind CSS Navbar component"
-          src="https://firebasestorage.googleapis.com/v0/b/inventory-f426a.appspot.com/o/file%2Fpencil.png?alt=media&token=679d7eb1-d3a9-44ac-8431-18b66953d9dd"
-        />
+  if (isLoading) {
+    return (
+      <div className="skeleton h-16 w-16 shrink-0 rounded-full bg-white"></div>
+    );
+  }
+  return (
+    <div tabIndex={0} role="button" className="btn btn-ghost btn-circle avatar">
+      <div className="w-10 rounded-full">
+        <img alt="user icon" src={data && data.icon?.image} />
       </div>
-      {session.status === "loading" && (
-        <div className="skeleton h-4 w-28"></div>
-      )}
     </div>
   );
 };

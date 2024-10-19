@@ -2,18 +2,13 @@
 
 import useInventoryStore from "@/components/store/store";
 import AdminDashboard from "@/components/admin-dashboard/container";
+import UserDashboard from "@/components/user-dashboard/dashboard";
 const ProtectedPage = () => {
-  const { role, token } = useInventoryStore();
+  const { role } = useInventoryStore();
 
   return (
     <div className="space-y-20 ">
-      {role && role === "user" ? (
-        <div>Department</div>
-      ) : (
-        <div>
-          <AdminDashboard />
-        </div>
-      )}
+      {role && role === "user" ? <UserDashboard /> : <AdminDashboard />}
     </div>
   );
 };

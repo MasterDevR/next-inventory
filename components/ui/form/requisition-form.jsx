@@ -26,6 +26,7 @@ const CartModal = () => {
   const modalRef = useRef();
   const { data } = useFetchData({
     path: "/user/get-transaction-purposes",
+    token: token,
     key: "transaction-purpose",
   });
 

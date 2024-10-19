@@ -1,7 +1,12 @@
+"use client";
 import React from "react";
-
-const page = () => {
-  return <div className="  h-screen w-full">page</div>;
+import Summary from "@/components/report/summary/report";
+const Page = () => {
+  return (
+    <div>
+      <Summary />
+    </div>
+  );
 };
 
-export default page;
+export default Page;

@@ -4,10 +4,14 @@ import React, { useRef, useState } from "react";
 import useInventoryStore from "@/components/store/store";
 import FormModal from "@/components/ui/modal/form-modal";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-
+import Download_Report from "@/components/report/summary/download-btn";
 const Transaction_Details_Modal = () => {
-  const modalRef = useRef();
+  const currentDate = new Date();
+  const year = currentDate.getFullYear();
+  const month = currentDate.getMonth() + 1;
 
+  const modalRef = useRef();
+  const tableRef = useRef();
   const queryClient = useQueryClient(); // Initialize query client
   const {
     updateSuccessModal,
@@ -15,6 +19,7 @@ const Transaction_Details_Modal = () => {
     updateStatuss,
     token,
     transactionDetails,
+    role,
   } = useInventoryStore();
 
   // Mutation for approving the transaction
@@ -133,6 +138,7 @@ const Transaction_Details_Modal = () => {
     Status,
     TransactionType,
     user,
+    ris,
     transaction_item = [],
   } = transactionDetails || {};
   const [quantities, setQuantities] = useState({});
@@ -155,41 +161,14 @@ const Transaction_Details_Modal = () => {
 
   return (
     <FormModal id="transactipn-details" modalRef={modalRef}>
-      <div className="border border-black text-base mt-10">
-        <header className="border-b-2 border-black pl-5">
-          <h1 className="text-center p-4 font-bold lg:text-2xl">
-            REQUISITION AND ISSUE SLIP
-          </h1>
-          <h2 className=" mb-5">
-            LGU : <span className="underline"> Universidad De Manila</span>
-          </h2>
+      {Status?.name !== "pending" && Status?.name !== "rejected" && (
+        <header className="float-start relative bottom-10">
+          <Download_Report tableRef={tableRef} status={200} />
         </header>
-        <section className=" h-36 p-5  flex flex-row justify-between  overflow-x-auto gap-x-10 ">
-          <div className=" w-96 space-y-5">
-            <p className="">
-              Division :
-              <span className="underline uppercase">
-                {" "}
-                Universidad De Manila
-              </span>
-            </p>
-            <p className="w-5/6">
-              Office :
-              <span className="underline uppercase">
-                {user && ` ${user.department} & (${user.department_code})`}
-              </span>
-            </p>
-          </div>
-          <div className=" space-y-5">
-            <p>{`FPP CODE : 3323(014)`}</p>
-            <p>{`RIS No. : 2024-05-093`}</p>
-          </div>
-          <div className="space-y-5">
-            <p>{`RC # : AD-003e`}</p>
-            <p>{`Date: ${new Date().toLocaleDateString("en-GB")}`}</p>
-          </div>
-        </section>
-        <form onSubmit={handleSubmit} className="overflow-x-auto">
+      )}
+
+      <div className="border border-black text-base mt-10">
+        <form onSubmit={handleSubmit} className="overflow-x-auto  w-full">
           <input type="hidden" name="transaction_id" value={id} />
           <input type="hidden" name="created_at" value={created_at} />
           <input type="hidden" name="department_id" value={department_id} />
@@ -205,9 +184,55 @@ const Transaction_Details_Modal = () => {
             value={user?.department_code}
           />
 
-          <table className="table  overflow-x-auto">
-            {/* head */}
+          <table className="table " ref={tableRef}>
             <thead>
+              <tr>
+                <td
+                  className="text-center p-4 font-bold lg:text-2xl "
+                  colSpan="6"
+                >
+                  REQUISITION AND ISSUE SLIP
+                </td>
+              </tr>
+              <tr>
+                <td colSpan="6">
+                  LGU :{" "}
+                  <span className="underline"> Universidad De Manila</span>
+                </td>
+              </tr>
+
+              <tr>
+                <td colSpan="4">
+                  Division :
+                  <span className="underline uppercase">
+                    Universidad De Manila
+                  </span>
+                </td>
+                <td colSpan="1">
+                  <td>{`FPP CODE : 3323(014)`}</td>
+                </td>
+                <td colSpan="2">
+                  <td>RC # : AD-003e</td>
+                </td>
+              </tr>
+              <tr>
+                <td colSpan="4">
+                  Office :
+                  <span className="underline uppercase">
+                    {user && ` ${user.department} & (${user.department_code})`}
+                  </span>
+                </td>
+                <td>
+                  <td colSpan="1">{`RIS No. : ${year}-${month}-${
+                    ris ? ris : 0
+                  }`}</td>
+                </td>
+                <td>
+                  <td colSpan="2">{`Date: ${new Date().toLocaleDateString(
+                    "en-GB"
+                  )}`}</td>
+                </td>
+              </tr>
               <tr className="text-center text-black text-lg">
                 <td colSpan={4} className="border border-black">
                   Requisition
@@ -217,21 +242,22 @@ const Transaction_Details_Modal = () => {
                 </td>
               </tr>
               <tr className="text-black text-center">
-                <th className="border border-black"></th>
-                <th className="border border-black">Item</th>
-                <th className="border border-black">Stock No.</th>
-                <th className="border border-black"> Quantity</th>
-                <th className="border border-black"> Quantity</th>
-                <th className="border border-black">Remarks</th>
+                <th>Stock No.</th>
+                <th>Unit</th>
+                <th>Item</th>
+                <th> Quantity</th>
+                <th> Quantity</th>
+                <th>Remarks</th>
               </tr>
             </thead>
             <tbody>
               {transaction_item.length > 0 ? (
                 transaction_item.map((item, index) => (
-                  <tr key={item.stock.item + index}>
-                    <td className="border border-black">{index + 1}</td>
-                    <td className="border border-black">{item.stock.item}</td>
-                    <td className="border border-black">
+                  <tr
+                    key={item.stock.item + index}
+                    className="text-center border-black "
+                  >
+                    <td className="w-32">
                       {item.stock_no}
 
                       <input
@@ -240,38 +266,51 @@ const Transaction_Details_Modal = () => {
                         value={item.stock_no}
                       />
                     </td>
-                    <td className="border border-black text-center">
-                      {item.quantity}
+                    <td className="">{item.stock.measurement}</td>
+                    <td className="">{item.stock.item}</td>
+                    <td>{item.quantity}</td>
+                    <td>
+                      {Status?.name === "pending" ? (
+                        <>
+                          <input
+                            type="number"
+                            disabled={Status?.name !== "pending"}
+                            name={`approved_quantity_${index}`}
+                            className="w-16 border-black border text-center"
+                            defaultValue={1}
+                            min={0}
+                            value={
+                              quantities[index] !== undefined
+                                ? quantities[index]
+                                : 1
+                            } // Explicit check for undefined
+                            onChange={
+                              role === "staff"
+                                ? (e) =>
+                                    handleQuantityChange(
+                                      index,
+                                      Number(e.target.value), // Convert to number
+                                      item.stock.price
+                                    )
+                                : undefined // No handler if not "staff"
+                            }
+                          />
+                          <input
+                            type="hidden"
+                            name={`item_id_${index}`}
+                            value={item.id}
+                          />
+                          <input
+                            type="hidden"
+                            name={`quantity_${index}`}
+                            value={item.quantity}
+                          />
+                        </>
+                      ) : (
+                        <>{item.approved_quantity}</>
+                      )}
                     </td>
-                    <td className="border border-black text-center">
-                      <input
-                        type="number"
-                        disabled={Status?.name !== "pending"}
-                        name={`approved_quantity_${index}`}
-                        className="w-16  border-black border   text-center"
-                        defaultValue={1}
-                        min={1}
-                        value={quantities[index] || 1}
-                        onChange={(e) =>
-                          handleQuantityChange(
-                            index,
-                            e.target.value,
-                            item.stock.price
-                          )
-                        }
-                      />
-                      <input
-                        type="hidden"
-                        name={`item_id_${index}`}
-                        value={item.id}
-                      />
-                      <input
-                        type="hidden"
-                        name={`quantity_${index}`}
-                        value={item.quantity}
-                      />
-                    </td>
-                    <td className="border border-black text-center">
+                    <td>
                       {item.stock.price} / {totals[index] || item.stock.price}
                     </td>
                   </tr>
@@ -284,7 +323,7 @@ const Transaction_Details_Modal = () => {
             </tbody>
           </table>
           <>
-            {Status?.name === "pending" && (
+            {role === "staff" && Status?.name === "pending" && (
               <div className="mt-4 flex flex-row justify-around">
                 <button
                   type="submit"
@@ -301,11 +340,12 @@ const Transaction_Details_Modal = () => {
                 </button>
               </div>
             )}
-            {Status?.name === "approved" && (
+
+            {role === "staff" && Status?.name === "approved" && (
               <div className="w-full p-5 text-center">
                 <button
-                  type="submit"
-                  className="btn btn-primary text-white w-full"
+                  type="button"
+                  className="btn btn-success tracking-widest w-full btn-outline"
                   onClick={handleReady}
                 >
                   Ready
