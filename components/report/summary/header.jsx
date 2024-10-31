@@ -21,6 +21,15 @@ const Header = ({ data }) => {
     );
   }, [data]);
 
+  const formatGrandTotal = (total) => {
+    return total.toLocaleString("en-US", {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
+    });
+  };
+
+  const formattedGrandTotal = formatGrandTotal(grandTotalCost);
+
   return (
     <Fragment>
       <tr>
@@ -48,16 +57,21 @@ const Header = ({ data }) => {
         </th>
       </tr>
       <tr>
-        {Array.from({
-          length: data && data.status === 404 ? 6 : blankColumnsCount,
-        }).map((_, idx) => (
-          <th key={idx} className="border border-black bg-transparent" />
-        ))}
-        <th className="text-end border border-black bg-transparent text-black">
+        <th
+          className="border border-black bg-transparent"
+          colSpan={blankColumnsCount - 2}
+        />
+        <th
+          className="text-end border border-black bg-transparent text-black"
+          colSpan={2}
+        >
           Total Cost:
         </th>
-        <th className="text-end border border-black bg-transparent text-black">
-          {grandTotalCost.toFixed(2)}
+        <th
+          className="text-end border border-black bg-transparent text-black"
+          colSpan={2}
+        >
+          {formattedGrandTotal}
         </th>
       </tr>
     </Fragment>

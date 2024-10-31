@@ -1,8 +1,7 @@
 "use client";
-import React, { Fragment, useEffect, useState } from "react";
+import React, { Fragment, useState } from "react";
 import styles from "@/public/style/modal-form.module.css";
 import axios from "axios";
-
 import HideModal from "../button/hide-modal";
 import useInventoryStore from "../../store/store";
 import Image from "next/image";
@@ -20,6 +19,7 @@ const EditItemModal = ({ data, modalRef }) => {
     urlBlobImg: "",
     image: undefined,
   });
+
   const mutation = useMutation({
     mutationFn: async (formData) => {
       const token = session.data?.user.accessToken;
@@ -38,10 +38,10 @@ const EditItemModal = ({ data, modalRef }) => {
       return response;
     },
   });
+
   const submitHandler = async (e) => {
     try {
       e.preventDefault();
-
       const formData = new FormData(e.target);
       mutation.mutate(formData, {
         onSuccess: (response) => {
@@ -65,6 +65,7 @@ const EditItemModal = ({ data, modalRef }) => {
       setSubmitting(false);
     }
   };
+
   const handleFileChange = (e) => {
     const file = e.target.files[0];
     if (file) {
@@ -76,33 +77,44 @@ const EditItemModal = ({ data, modalRef }) => {
   return (
     <dialog
       id="edi-modal"
-      className="modal text-black "
+      className="modal text-black"
       ref={modalRef}
       onClick={(event) => {
         event.stopPropagation();
       }}
     >
-      <div className={`modal-box  max-w-5xl space-y-20 `}>
-        <div className="w-fit relative float-end">
-          <HideModal modalRef={modalRef} />
+      <div className="modal-box max-w-3xl p-6 space-y-8">
+        <div className="flex justify-end  w-full">
+          <div className="w-fit">
+            <HideModal modalRef={modalRef} />
+          </div>
         </div>
-        <div className="flex flex-wrap justify-evenly text-sm lg:text-2xl text-center   text-green-500 font-bold">
-          <h1>
-            Item : <span className="font-normal">{data && data[0]?.item}</span>
-          </h1>
-          <h1>
-            Stock Number :
-            <span className="font-normal"> {data && data[0]?.stock_no}</span>
-          </h1>
+        <div className="flex flex-col md:flex-row justify-between items-center text-center bg-gray-100 p-4 rounded-lg shadow-md">
+          <div className="mb-2 md:mb-0 md:mr-4">
+            <h1 className="text-lg font-semibold text-gray-700">
+              Item:{" "}
+              <span className="font-normal text-gray-600">
+                {data && data[0]?.item}
+              </span>
+            </h1>
+          </div>
+          <div>
+            <h1 className="text-lg font-semibold text-gray-700">
+              Stock Number:{" "}
+              <span className="font-normal text-gray-600">
+                {data && data[0]?.stock_no}
+              </span>
+            </h1>
+          </div>
         </div>
         <form
           onSubmit={submitHandler}
-          className={`flex w-full flex-wrap justify-between gap-5 text-sm lg:text-md  `}
+          className="flex flex-wrap justify-between gap-4"
         >
           {data &&
             data.map((item, index) => (
               <Fragment key={index}>
-                <div className={`${styles.inputGroup}`}>
+                <div className={`${styles.inputGroup} w-full md:w-1/2`}>
                   <input
                     type="text"
                     className={styles.input}
@@ -114,7 +126,7 @@ const EditItemModal = ({ data, modalRef }) => {
                     Item
                   </label>
                 </div>
-                <div className={`${styles.inputGroup}`}>
+                <div className={`${styles.inputGroup} w-full md:w-1/2`}>
                   <input
                     type="text"
                     className={styles.input}
@@ -129,7 +141,7 @@ const EditItemModal = ({ data, modalRef }) => {
                     Description
                   </label>
                 </div>
-                <div className={`${styles.inputGroup}`}>
+                <div className={`${styles.inputGroup} w-full md:w-1/2`}>
                   <input
                     type="number"
                     className={styles.input}
@@ -141,7 +153,7 @@ const EditItemModal = ({ data, modalRef }) => {
                     Price
                   </label>
                 </div>
-                <div className={`${styles.inputGroup}`}>
+                <div className={`${styles.inputGroup} w-full md:w-1/2`}>
                   <input
                     type="text"
                     className={styles.input}
@@ -156,8 +168,7 @@ const EditItemModal = ({ data, modalRef }) => {
                     Measurement
                   </label>
                 </div>
-
-                <div className={`${styles.inputGroup}`}>
+                <div className={`${styles.inputGroup} w-full md:w-1/2`}>
                   <input
                     type="text"
                     className={styles.input}
@@ -169,7 +180,7 @@ const EditItemModal = ({ data, modalRef }) => {
                     Stock No.
                   </label>
                 </div>
-                <div className={`${styles.inputGroup}`}>
+                <div className={`${styles.inputGroup} w-full md:w-1/2`}>
                   <input
                     type="number"
                     className={styles.input}
@@ -184,7 +195,7 @@ const EditItemModal = ({ data, modalRef }) => {
                     Quantity
                   </label>
                 </div>
-                <div className={`${styles.inputGroup}`}>
+                <div className={`${styles.inputGroup} w-full md:w-1/2`}>
                   <input
                     type="text"
                     className={styles.input}
@@ -196,7 +207,7 @@ const EditItemModal = ({ data, modalRef }) => {
                     Re-Order Point
                   </label>
                 </div>
-                <div className={`${styles.inputGroup}`}>
+                <div className={`${styles.inputGroup} w-full md:w-1/2`}>
                   <input
                     type="text"
                     className={styles.input}
@@ -211,7 +222,7 @@ const EditItemModal = ({ data, modalRef }) => {
                     Reference
                   </label>
                 </div>
-                <div className={`${styles.inputGroup}`}>
+                <div className={`${styles.inputGroup} w-full md:w-1/2`}>
                   <input
                     type="number"
                     className={styles.input}
@@ -226,7 +237,7 @@ const EditItemModal = ({ data, modalRef }) => {
                     No. Of Date To Consume
                   </label>
                 </div>
-                <div className={`${styles.inputGroup}`}>
+                <div className={`${styles.inputGroup} w-full md:w-1/2`}>
                   <input
                     type="text"
                     className={styles.input}
@@ -241,11 +252,10 @@ const EditItemModal = ({ data, modalRef }) => {
                     Distributor
                   </label>
                 </div>
-
-                <div className={`${styles.inputGroup}`}>
+                <div className={`${styles.inputGroup} w-full`}>
                   <input
                     type="file"
-                    className={`hidden`}
+                    className="hidden"
                     name="image"
                     id="image"
                     accept="image/jpeg, image/png"
@@ -253,29 +263,29 @@ const EditItemModal = ({ data, modalRef }) => {
                   />
                   <label
                     htmlFor="image"
-                    className="w-full space-1-2 border border-black py-2 cursor-pointer"
+                    className="w-full border border-black py-2 cursor-pointer flex justify-between items-center"
                   >
                     <span className="bg-slate-900 text-white p-2">
-                      CHOOSE FILE :
+                      CHOOSE FILE:
                     </span>
-                    <span className=" p-2">Select New Image</span>
+                    <span className="p-2">Select New Image</span>
                   </label>
-                  {item.image && (
-                    <div className="mt-2 ">
-                      <Image
-                        src={
-                          IsImage.urlBlobImg !== ""
-                            ? IsImage.urlBlobImg
-                            : item.image
-                        }
-                        height={50}
-                        width={59}
-                        alt="Current item"
-                        className="w-32 h-32 object-contain"
-                      />
-                    </div>
-                  )}
                 </div>
+                {item.image && (
+                  <div className="mt-4 flex justify-center self-center  w-full ">
+                    <Image
+                      src={
+                        IsImage.urlBlobImg !== ""
+                          ? IsImage.urlBlobImg
+                          : item.image
+                      }
+                      height={150}
+                      width={150}
+                      alt="Current item"
+                      className="w-auto h-auto object-cover rounded-md"
+                    />
+                  </div>
+                )}
               </Fragment>
             ))}
           <button

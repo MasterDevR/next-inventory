@@ -6,6 +6,9 @@ import Select from "@/components/ui/select/select";
 import useFetchData from "../util/custom-hook/useFetchData";
 import useInventoryStore from "../store/store";
 import TopStock from "@/components/admin-dashboard/top-stock";
+import RequestSchedule from "@/components/admin-dashboard/request-schedule";
+import SearchSelect from "@/components/ui/select/search-select";
+
 const AdminDashboard = () => {
   const { token } = useInventoryStore();
   const { data } = useFetchData({
@@ -17,6 +20,8 @@ const AdminDashboard = () => {
   const [selectedStock, setSelectedStock] = useState();
   const [selectedYear, setSelectedYear] = useState();
   const [yearOptions, setYearOptions] = useState([]);
+
+  const items = data?.result?.map((item) => item.item) || [];
 
   useEffect(() => {
     if (data?.result) {
@@ -49,36 +54,47 @@ const AdminDashboard = () => {
     }
   }, [selectedStock, data]);
 
+  const handleSelectChange = (value) => {
+    setSelectedStock(value);
+  };
+
   return (
-    <div className="flex flex-col lg:flex-row w-full gap-5 pb-20 h-auto lg:h-[90dvh]">
-      <main className="w-full lg:w-4/6 flex flex-col  justify-between gap-5">
-        <ItemCard />
-        <section className="w-full shadow-md rounded-lg shadow-gray-400 space-y-20 p-4 bg-white">
-          <div className="w-fit flex lg:flex-row gap-2 flex-col ">
-            <Select
-              data={data?.result?.map((item) => item.item) || []}
-              onChange={setSelectedStock}
-              defaultValue={selectedStock}
-              width="w-fit"
-            />
-            <Select
-              data={yearOptions}
-              onChange={setSelectedYear}
-              defaultValue={selectedYear}
-              width="w-fit"
-            />
+    <div className="space-y-5">
+      <ItemCard />
+      <div className="flex flex-col lg:flex-row w-full gap-5 pb-20 h-auto  ">
+        <main className="w-full lg:w-4/6 flex flex-col  justify-between gap-5">
+          <RequestSchedule />
+          <section className="w-full shadow-md rounded-lg shadow-gray-400 space-y-10 p-3 bg-white">
+            <div className="w-full flex lg:flex-row gap-2 flex-col">
+              <SearchSelect
+                data={items}
+                onChange={setSelectedStock}
+                defaultValue={selectedStock}
+                width="w-full"
+              />
+              <Select
+                data={yearOptions}
+                onChange={setSelectedYear}
+                defaultValue={selectedYear}
+                width="w-fit"
+              />
+            </div>
+            <div className="w-full h-72 relative border-2">
+              <BarChart stock={selectedStock} year={selectedYear} />
+            </div>
+          </section>
+        </main>
+        <aside className="bg-white rounded-xl shadow-lg w-full lg:w-2/6 flex flex-col  overflow-hidden">
+          <div className="bg-gradient-to-r from-orange-500 to-orange-600 p-4">
+            <h1 className="text-center text-xl font-semibold text-white">
+              Top 5 Most Requested Items
+            </h1>
           </div>
-          <div className="w-full h-80 relative border-2">
-            <BarChart stock={selectedStock} year={selectedYear} />
+          <div className="flex-1 overflow-auto h-full">
+            <TopStock />
           </div>
-        </section>
-      </main>
-      <aside className="h-full shadow-md rounded-lg shadow-gray-400 bg-white w-full lg:w-2/6 divide-y-2 overflow-hidden ">
-        <h1 className="text-center text-2xl font-bold p-4 text-orange-500">
-          Top 5 Most Requested Item
-        </h1>
-        <TopStock />
-      </aside>
+        </aside>
+      </div>
     </div>
   );
 };

@@ -8,14 +8,14 @@ import useInventoryStore from "@/components/store/store";
 import { useRouter } from "next/navigation";
 
 const Page = () => {
-  const { role, token } = useInventoryStore();
+  const { role, token, requestorType } = useInventoryStore();
   const router = useRouter();
   const [searchItem, setSearchItem] = useState(undefined);
   const [currentPage, setCurrentPage] = useState(1);
   const queryClient = useQueryClient();
-
+  console.log("requestorType: ", requestorType);
   const { data, isLoading } = useFetchData({
-    path: `/admin/get-available-stock/${searchItem}?page=${currentPage}`, // Include current page
+    path: `/admin/get-available-stock/${searchItem}?page=${currentPage}`,
     token: token,
     key: "available-stock",
   });
@@ -31,7 +31,7 @@ const Page = () => {
     } else {
       setSearchItem(undefined);
     }
-    setCurrentPage(1); // Reset to the first page on new search
+    setCurrentPage(1);
   };
 
   const getPaginationRange = (currentPage, totalPages) => {
@@ -51,6 +51,48 @@ const Page = () => {
     ? getPaginationRange(currentPage, data.totalPages)
     : [];
 
+  const canMakeRequest = () => {
+    const currentMonth = new Date().getMonth() + 1;
+    const isOddMonth = currentMonth % 2 !== 0;
+
+    switch (requestorType?.toLowerCase()) {
+      case "executive":
+        return true;
+      case "admin":
+      case "support":
+        return isOddMonth;
+      case "academic":
+        return !isOddMonth;
+      default:
+        return false;
+    }
+  };
+
+  const getCurrentMonthName = () => {
+    return new Date().toLocaleString("default", { month: "long" });
+  };
+
+  const getAccessMessage = () => {
+    const currentMonth = getCurrentMonthName();
+    const isAllowed = canMakeRequest();
+
+    switch (requestorType?.toLowerCase()) {
+      case "executive":
+        return `As an Executive, you have access to make requests at any time.`;
+      case "admin":
+      case "support":
+        return `${requestorType} users are ${
+          isAllowed ? "allowed" : "not allowed"
+        } to make requests in ${currentMonth}.`;
+      case "academic":
+        return `Academic users are ${
+          isAllowed ? "allowed" : "not allowed"
+        } to make requests in ${currentMonth}.`;
+      default:
+        return "You do not have permission to make requests.";
+    }
+  };
+
   if (isLoading) {
     return <div>Loading...</div>;
   }
@@ -60,32 +102,53 @@ const Page = () => {
   };
 
   return (
-    <div className="space-y-16">
-      <header className="flex flex-row items-center gap-x-5">
-        {role && role === "user" && (
+    <div className="space-y-16 relative">
+      {!canMakeRequest() && (
+        <div className="fixed inset-0 z-50 flex flex-col items-center justify-center bg-white/80 backdrop-blur-sm">
+          <p className="text-xl font-semibold text-red-600">
+            Access Restricted
+          </p>
+          <p className="text-gray-600 mt-2 text-center max-w-md">
+            {getAccessMessage()}
+          </p>
           <button
             onClick={() => router.back()}
-            className="btn btn-error btn-outline text-white w-32"
+            className="btn btn-error btn-outline mt-4"
           >
-            <LuArrowLeft color="red" size={"1rem"} />
-            <span className="hidden lg:block">Back</span>
+            Go Back
           </button>
-        )}
+        </div>
+      )}
+
+      <header className="flex flex-row items-center gap-x-5">
+        <button
+          onClick={() => router.back()}
+          className="btn btn-error btn-outline text-white w-fit"
+        >
+          <LuArrowLeft color="red" size={"1rem"} />
+          <span className="hidden lg:block">Back</span>
+        </button>
         <input
           type="text"
           onChange={handleChange}
           placeholder="Search Item"
-          className="border border-gray-400 rounded-2xl pl-10 w-3/6 m-auto h-14"
+          className="border border-gray-400 rounded-2xl pl-10 w-96 lg:w-3/6  m-auto h-14"
         />
       </header>
-      <div className="flex flex-row flex-wrap gap-6 md:gap-4 lg:gap-5 justify-center text-xs lg:text-sm pb-52">
-        {data &&
-          data.item.map((item, index) => <ItemCard item={item} key={index} />)}
+
+      <div className="flex flex-row flex-wrap gap-6 md:gap-4 lg:gap-5 justify-center text-xs lg:text-sm">
+        {data && data.item && data.item.length > 0 ? (
+          data.item.map((item, index) => <ItemCard item={item} key={index} />)
+        ) : (
+          <div className="text-center w-full">
+            <p className="text-lg font-semibold">Stock is not available</p>
+          </div>
+        )}
       </div>
 
       {/* Pagination Controls */}
       {data && data.totalPages > 1 && (
-        <div className="flex justify-center mt-4 space-x-2">
+        <div className="flex justify-center mt-4 space-x-2  pb-52">
           <button
             onClick={() => handlePageChange(currentPage - 1)}
             disabled={currentPage === 1}

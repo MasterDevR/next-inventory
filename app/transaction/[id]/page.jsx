@@ -4,8 +4,9 @@ import { useEffect, useState } from "react";
 import { redirect } from "next/navigation";
 import useFetchData from "@/components/util/custom-hook/useFetchData";
 import { useRouter } from "next/navigation";
-import { LuArrowLeft } from "react-icons/lu";
-export default function SearchBar({ params }) {
+import { LuArrowLeft, LuX, LuAlertCircle } from "react-icons/lu";
+
+export default function TransactionDetails({ params }) {
   const { department_id, token, role } = useInventoryStore();
   const router = useRouter();
   const { data, isLoading, error } = useFetchData({
@@ -13,8 +14,8 @@ export default function SearchBar({ params }) {
     token: token,
     key: "transaction-history-id",
   });
-
   const [currentStatus, setCurrentStatus] = useState("");
+  const [showRejectedMessage, setShowRejectedMessage] = useState(true);
 
   useEffect(() => {
     if (role && role !== "user") {
@@ -41,67 +42,144 @@ export default function SearchBar({ params }) {
 
   const activeSteps = getActiveSteps();
 
-  if (isLoading) return <div>Loading...</div>;
-  if (error) return <div>Error loading data</div>;
-  if (!data?.result.length) return <div>No data available</div>;
+  if (isLoading) return <LoadingSpinner />;
+  if (error) return <ErrorMessage message="Error loading data" />;
+  if (!data?.result.length) return <NoDataMessage />;
 
   const transaction = data.result[0];
+  const isRejected = transaction.Status.name === "rejected";
 
-  console.log(data);
   return (
-    <div className="container m-auto space-y-10">
-      <button
-        className="btn btn-error btn-outline"
-        onClick={() => {
-          router.back();
-        }}
-      >
-        <LuArrowLeft color="red" size={"1rem"} />
-        <span className="hidden lg:block">Back</span>
-      </button>
-      <ul className="steps w-full">
-        {steps.map((step, index) => (
-          <li
-            key={step.value}
-            className={`step ${activeSteps[index] ? "step-primary" : ""}`}
-          >
-            {step.name}
-          </li>
-        ))}
-      </ul>
-      <div className="transaction-details text-center">
-        <p>
-          <strong>Purpose:</strong> {transaction.TransactionType.name}
-        </p>
+    <div className="min-h-screen bg-gray-50 p-4 sm:p-6 lg:p-8">
+      <div className="max-w-7xl mx-auto space-y-6">
+        <BackButton onClick={() => router.back()} />
+        {isRejected && showRejectedMessage && (
+          <div className="fixed inset-0 flex items-center justify-center bg-black/50 backdrop-blur-sm z-50 p-4">
+            <div className="bg-white p-6 sm:p-8 rounded-xl shadow-xl max-w-md w-full mx-4 text-center animate-fade-in relative">
+              <button
+                onClick={() => setShowRejectedMessage(false)}
+                className="absolute top-3 right-3 p-2 hover:bg-gray-100 rounded-full transition-colors"
+              >
+                <LuX className="w-5 h-5 text-gray-500" />
+              </button>
+              <div className="text-red-500 mb-4">
+                <LuAlertCircle className="w-14 h-14 sm:w-16 sm:h-16 mx-auto" />
+              </div>
+              <h2 className="text-xl sm:text-2xl font-bold text-gray-800 mb-3">
+                Transaction Rejected
+              </h2>
+              <p className="text-sm sm:text-base text-gray-600 mb-6">
+                We're sorry, but this transaction request has been rejected.
+                Please review the requirements and submit a new request if
+                needed.
+              </p>
+              <button
+                onClick={() => router.back()}
+                className="btn btn-error w-full sm:w-auto"
+              >
+                Return to Transactions
+              </button>
+            </div>
+          </div>
+        )}
 
-        <div className="w-full m-auto">
-          <details className="collapse collapse-arrow">
-            <summary className="collapse-title text-base">
-              <span>Details</span>
-            </summary>
-            <table key={transaction.id} className="table">
-              <thead>
-                <tr className="text-base bg-custom-bg-2 text-white text-center">
-                  <th></th>
-                  <th>Item</th>
-                  <th>Stock No.</th>
-                  <th>Quantity</th>
-                </tr>
-              </thead>
-              <tbody>
-                {transaction.transaction_item?.map((item, index) => (
-                  <tr key={item.id} className="text-center">
-                    <td>{index + 1}</td>
-                    <td>{item.stock.description}</td>
-                    <td>{item.stock_no}</td>
-                    <td>{item.quantity}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </details>
+        <div className="bg-white rounded-xl shadow-sm p-4 sm:p-6">
+          <TransactionStatus steps={steps} activeSteps={getActiveSteps()} />
         </div>
+
+        <TransactionInfo transaction={transaction} />
       </div>
     </div>
   );
 }
+
+const BackButton = ({ onClick }) => (
+  <button
+    className="btn btn-error btn-outline flex items-center gap-2 text-sm sm:text-base"
+    onClick={onClick}
+  >
+    <LuArrowLeft className="w-4 h-4 sm:w-5 sm:h-5" />
+    <span>Back</span>
+  </button>
+);
+
+const TransactionStatus = ({ steps, activeSteps }) => (
+  <div className="w-full overflow-x-auto pb-2">
+    <ul className="steps steps-horizontal min-w-full">
+      {steps.map((step, index) => (
+        <li
+          key={step.value}
+          className={`step ${
+            activeSteps[index] ? "step-primary" : ""
+          } text-xs sm:text-sm`}
+        >
+          {step.name}
+        </li>
+      ))}
+    </ul>
+  </div>
+);
+
+const TransactionInfo = ({ transaction }) => (
+  <div className="bg-white rounded-xl shadow-sm">
+    <div className="p-4 sm:p-6 space-y-6">
+      <h2 className="text-xl sm:text-2xl font-bold text-gray-800 text-center">
+        {transaction.TransactionType.name}
+      </h2>
+
+      <div className="overflow-x-auto">
+        <table className="table w-full">
+          <thead>
+            <tr className="bg-custom-bg-2 text-white">
+              <th className="hidden sm:table-cell w-16">#</th>
+              <th>Item</th>
+              <th className="hidden md:table-cell">Stock No.</th>
+              <th className="w-24">Quantity</th>
+            </tr>
+          </thead>
+          <tbody>
+            {transaction.transaction_item?.map((item, index) => (
+              <tr key={item.id} className="hover:bg-gray-50">
+                <td className="hidden sm:table-cell text-gray-500">
+                  {index + 1}
+                </td>
+                <td className="font-medium">{item.stock.description}</td>
+                <td className="hidden md:table-cell text-gray-600">
+                  {item.stock_no}
+                </td>
+                <td className="text-right">{item.quantity}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+);
+
+const LoadingSpinner = () => (
+  <div className="min-h-screen flex justify-center items-center bg-gray-50">
+    <div className="animate-spin rounded-full h-16 w-16 sm:h-20 sm:w-20 border-t-2 border-b-2 border-gray-900"></div>
+  </div>
+);
+
+const ErrorMessage = ({ message }) => (
+  <div className="min-h-screen flex justify-center items-center bg-gray-50">
+    <div className="text-center p-4">
+      <LuAlertCircle className="w-12 h-12 text-red-500 mx-auto mb-4" />
+      <div className="text-lg sm:text-xl font-semibold text-red-500">
+        {message}
+      </div>
+    </div>
+  </div>
+);
+
+const NoDataMessage = () => (
+  <div className="min-h-screen flex justify-center items-center bg-gray-50">
+    <div className="text-center p-4">
+      <div className="text-lg sm:text-xl font-medium text-gray-500">
+        No data available
+      </div>
+    </div>
+  </div>
+);

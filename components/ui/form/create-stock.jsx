@@ -61,38 +61,218 @@ const InventoryForm = () => {
   };
 
   return (
-    <FormModal id="create-stock" className="modal" modalRef={modalRef}>
-      <h3 className="pt-2 text-center text-lg font-bold tracking-widest text-green-500">
-        ADD ITEM
-      </h3>
-      <div className="divider"></div>
-      <div className="modal-action flex flex-col">
-        <form
-          className="  space-y-5 "
-          id="create-stock-form"
-          onSubmit={submitHandler}
-        >
-          <Input name="name" title={"Item"} type={"text"} />
-          <Input name="price" title={"Price"} type={"number"} />
-          <Input name="quantity" title={"Quantity"} type={"number"} />
-          <Input name="description" title={"Description"} type={"text"} />
-          <Input name="measurement" title={"Measurement"} type={"text"} />
-          <Input name="stock" title={"Stock No."} type={"text"} />
-          <Input name="order" title={"Re-Order-Point"} type={"text"} />
-          <Input name="reference" title={"Reference"} type={"text"} />
-          <Input name="consume" title={"Date To Consume"} type={"number"} />
-          <Input name="distributor" title={"Distributor"} type={"text"} />
-          <Input name="purchase_order" title={"P.O Number."} type={"text"} />
-          <Input name="date" title={"Date"} type={"date"} />
-          <Input name="image" title={" "} type={"file"} />
-          <StockType onChange={setStockType} />
-          <button
-            className="btn btn-success mt-5 w-full font-bold text-white"
-            type="submit"
+    <FormModal id="create-stock" modalRef={modalRef}>
+      <div className="w-full max-w-3xl mx-auto px-6 py-4">
+        {/* Header Section */}
+        <div className="mb-8">
+          <div className="flex items-center gap-2 mb-3 justify-center">
+            <h1 className="text-2xl font-semibold text-gray-800">
+              Create New Item
+            </h1>
+          </div>
+
+          <div className="p-3 bg-blue-50 border border-blue-100 rounded-lg">
+            <p className="text-sm text-blue-700">
+              Important: Fill in all required details to add a new item to
+              inventory
+            </p>
+          </div>
+          <p className="text-sm text-gray-500 mt-3">
+            Use this form to create a new inventory item. Please provide
+            complete item details below.
+          </p>
+        </div>
+
+        {/* Form Section */}
+        <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
+          <form
+            onSubmit={submitHandler}
+            className="space-y-6"
+            id="create-stock-form"
           >
-            Create
-          </button>
-        </form>
+            {/* Basic Information */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-4">
+              <div className="form-control">
+                <label className="block text-sm font-medium text-gray-700 mb-1.5">
+                  Item Name
+                </label>
+                <input
+                  name="name"
+                  type="text"
+                  required
+                  placeholder="Enter item name"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
+                />
+              </div>
+
+              <div className="form-control">
+                <label className="block text-sm font-medium text-gray-700 mb-1.5">
+                  Stock No.
+                </label>
+                <input
+                  name="stock"
+                  type="text"
+                  required
+                  placeholder="Enter stock number"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
+                />
+              </div>
+
+              <div className="form-control">
+                <label className="block text-sm font-medium text-gray-700 mb-1.5">
+                  Price
+                </label>
+                <input
+                  name="price"
+                  type="number"
+                  min="0"
+                  step="0.01"
+                  required
+                  placeholder="0.00"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
+                />
+              </div>
+
+              <div className="form-control">
+                <label className="block text-sm font-medium text-gray-700 mb-1.5">
+                  Quantity
+                </label>
+                <input
+                  name="quantity"
+                  type="number"
+                  min="0"
+                  required
+                  placeholder="Enter quantity"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
+                />
+              </div>
+
+              <div className="form-control">
+                <label className="block text-sm font-medium text-gray-700 mb-1.5">
+                  Measurement
+                </label>
+                <input
+                  name="measurement"
+                  type="text"
+                  required
+                  placeholder="Enter measurement"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
+                />
+              </div>
+
+              <div className="form-control">
+                <label className="block text-sm font-medium text-gray-700 mb-1.5">
+                  Re-Order Point
+                </label>
+                <input
+                  name="order"
+                  type="number"
+                  min="0"
+                  required
+                  placeholder="Enter reorder point"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
+                />
+              </div>
+
+              <div className="form-control">
+                <label className="block text-sm font-medium text-gray-700 mb-1.5">
+                  Reference
+                </label>
+                <input
+                  name="reference"
+                  type="text"
+                  required
+                  placeholder="Enter reference"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
+                />
+              </div>
+
+              <div className="form-control">
+                <label className="block text-sm font-medium text-gray-700 mb-1.5">
+                  Days to Consume
+                </label>
+                <input
+                  name="consume"
+                  type="number"
+                  min="1"
+                  required
+                  placeholder="Enter days to consume"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
+                />
+              </div>
+
+              <div className="form-control">
+                <label className="block text-sm font-medium text-gray-700 mb-1.5">
+                  Distributor
+                </label>
+                <input
+                  name="distributor"
+                  type="text"
+                  required
+                  placeholder="Enter distributor"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
+                />
+              </div>
+
+              <div className="form-control">
+                <label className="block text-sm font-medium text-gray-700 mb-1.5">
+                  P.O Number
+                </label>
+                <input
+                  name="purchase_order"
+                  type="text"
+                  required
+                  placeholder="Enter P.O number"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
+                />
+              </div>
+
+              <div className="form-control">
+                <label className="block text-sm font-medium text-gray-700 mb-1.5">
+                  Date
+                </label>
+                <input
+                  name="date"
+                  type="date"
+                  required
+                  placeholder="Enter date"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
+                />
+              </div>
+
+              <div className="form-control">
+                <label className="block text-sm font-medium text-gray-700 mb-1.5">
+                  Stock Type
+                </label>
+                <StockType onChange={setStockType} />
+              </div>
+
+              <div className="form-control sm:col-span-2">
+                <label className="block text-sm font-medium text-gray-700 mb-1.5">
+                  Item Image
+                </label>
+                <input
+                  name="image"
+                  type="file"
+                  required
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm text-gray-900 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
+                />
+              </div>
+            </div>
+
+            <button
+              type="submit"
+              className={`mt-6 w-full px-4 py-2.5 text-white rounded-md
+                bg-blue-600 hover:bg-blue-700 
+                disabled:opacity-50 disabled:cursor-not-allowed
+                transition-colors duration-200
+              `}
+              disabled={mutation.isPending}
+            >
+              {mutation.isPending ? "Creating..." : "Create Item"}
+            </button>
+          </form>
+        </div>
       </div>
     </FormModal>
   );

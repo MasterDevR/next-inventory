@@ -11,7 +11,7 @@ const config: Config = {
     extend: {
       colors: {
         "custom-bg": "#1F2633",
-        "custom-bg-2": "#095c1c",
+        "custom-bg-2": "#014422",
         "custom-bg-3": "#0aa32d",
       },
     },

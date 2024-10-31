@@ -5,7 +5,7 @@ import useInventoryStore from "@/components/store/store";
 import FormModal from "../modal/form-modal";
 import { useMutation } from "@tanstack/react-query";
 import { useQueryClient } from "@tanstack/react-query";
-import Input from "@/components/ui/input/Input";
+
 const AddStock = () => {
   const queryClient = useQueryClient();
   const { updateModalMessage, updateSuccessModal, updateStatuss, token } =
@@ -57,30 +57,135 @@ const AddStock = () => {
 
   return (
     <FormModal id="add-stock" modalRef={modalRef}>
-      <h1 className=" lg:text-xl text-center p-2 uppercase text-green-500 font-bold">
-        Add Stock To Existing Item
-      </h1>
-      <form
-        onSubmit={submitHandler}
-        method="dialog"
-        className="flex flex-col justify-between gap-5 bg-inherit lg:w-5/6 mx-auto w-full "
-        id="add-stock-form"
-      >
-        <Input name="stock_no" title={"Stock No."} type={"text"} />
-        <Input name="price" title={"Price"} type={"number"} />
-        <Input name="quantity" title={"Quantity"} type={"number"} />
-        <Input name="distributor" title={"Distributor"} type={"text"} />
-        <Input name="purchase_order" title={"P.O"} type={"text"} />
-        <Input name="purchase_request" title={"P.R"} type={"text"} />
+      <div className="w-full max-w-6xl mx-auto px-6 py-4">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+          {/* Left Side - Information */}
+          <div className="lg:sticky lg:top-4 bg-gray-50 p-6 rounded-xl">
+            <div className="mb-8">
+              <div className="flex items-center gap-2 mb-3">
+                <h1 className="text-2xl font-semibold text-gray-800">
+                  Add Stock
+                </h1>
+              </div>
 
-        <button
-          type="submit"
-          className="btn btn-success btn-outline font-bold tracking-widest"
-          disabled={isSubmitting}
-        >
-          {isSubmitting ? "Submitting..." : "Submit"}
-        </button>
-      </form>
+              <div className="p-3 bg-blue-50 border border-blue-100 rounded-lg">
+                <p className="text-sm text-blue-700">
+                  Important: Stock number must match an existing inventory item
+                </p>
+              </div>
+              <p className="text-sm text-gray-500 mt-3">
+                Use this form to update stock levels for items already in your
+                inventory. Enter the stock number and new quantity details
+                below.
+              </p>
+            </div>
+
+            {/* Additional Guidelines */}
+            <div className="space-y-4 text-sm text-gray-600">
+              <div className="p-4 bg-white rounded-lg border border-gray-100">
+                <h3 className="font-medium mb-2">Required Information:</h3>
+                <ul className="list-disc list-inside space-y-1">
+                  <li>Valid stock number</li>
+                  <li>Current price</li>
+                  <li>Quantity to add</li>
+                  <li>Distributor details</li>
+                  <li>Purchase order number</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+
+          {/* Right Side - Form */}
+          <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
+            <form
+              onSubmit={submitHandler}
+              method="dialog"
+              className="space-y-4"
+              id="add-stock-form"
+            >
+              <div className="space-y-4">
+                <div className="form-control">
+                  <label className="block text-sm font-medium text-gray-700 mb-1.5">
+                    Stock No.
+                  </label>
+                  <input
+                    name="stock_no"
+                    type="text"
+                    required
+                    placeholder="Enter stock number"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
+                  />
+                </div>
+
+                <div className="form-control">
+                  <label className="block text-sm font-medium text-gray-700 mb-1.5">
+                    Price
+                  </label>
+                  <input
+                    name="price"
+                    type="number"
+                    step="0.01"
+                    min="0"
+                    required
+                    placeholder="0.00"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
+                  />
+                </div>
+
+                <div className="form-control">
+                  <label className="block text-sm font-medium text-gray-700 mb-1.5">
+                    Quantity
+                  </label>
+                  <input
+                    name="quantity"
+                    type="number"
+                    min="1"
+                    required
+                    placeholder="Enter quantity"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
+                  />
+                </div>
+
+                <div className="form-control">
+                  <label className="block text-sm font-medium text-gray-700 mb-1.5">
+                    Distributor
+                  </label>
+                  <input
+                    name="distributor"
+                    type="text"
+                    required
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
+                  />
+                </div>
+
+                <div className="form-control">
+                  <label className="block text-sm font-medium text-gray-700 mb-1.5">
+                    Purchase Order
+                  </label>
+                  <input
+                    name="purchase_order"
+                    type="text"
+                    required
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
+                  />
+                </div>
+              </div>
+
+              <button
+                type="submit"
+                className={`mt-6 w-full px-4 py-2.5 text-white rounded-md
+                  bg-blue-600 hover:bg-blue-700 
+                  disabled:opacity-50 disabled:cursor-not-allowed
+                  transition-colors duration-200
+                `}
+                disabled={isSubmitting}
+              >
+                {isSubmitting ? "Adding..." : "Add Stock"}
+              </button>
+            </form>
+          </div>
+        </div>
+      </div>
     </FormModal>
   );
 };

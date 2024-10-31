@@ -16,48 +16,53 @@ const SideBar = () => {
         showSideBar ? "w-3/6  lg:w-2/12   " : "w-0 lg:w-24   "
       } overflow-hidden flex justify-center  bg-custom-bg-2`}
     >
-      <div className="relative top-20 flex flex-col w-5/6 space-y-2 ">
-        {role !== "user" &&
-          adminLink.map((item, index) => (
-            <li
-              data-tip={item.name}
-              key={index}
-              className={`${
-                pathname === item.href
-                  ? "text-white font-bold bg-custom-bg-3"
-                  : "text-gray-200"
-              } ${
-                pathname.startsWith(`/${item.name.toLocaleLowerCase()}`) &&
-                "text-white font-bold bg-custom-bg-3"
-              }
-              && "text-white font-bold bg-custom-bg-3"}
-              menu menu-sm hover:bg-custom-bg-3 hover:text-white rounded-lg ${
-                !showSideBar && "tooltip self-center"
-              }`}
-            >
-              <Link
-                href={`${item.href}`}
+      <div className="relative top-20 flex flex-col w-5/6 space-y-2">
+        <ul className="space-y-2">
+          {role !== "user" &&
+            adminLink.map((item) => (
+              <li
+                data-tip={item.name}
+                key={item.href}
                 className={`${
-                  !showSideBar ? "self-center" : "self-start"
-                } text-xs md:text-base`}
+                  pathname === item.href
+                    ? "text-white font-bold bg-custom-bg-3"
+                    : "text-gray-200"
+                } ${
+                  pathname.startsWith(`/${item.name.toLocaleLowerCase()}`) &&
+                  "text-white font-bold bg-custom-bg-3"
+                }
+                menu menu-sm hover:bg-custom-bg-3 hover:text-white rounded-lg ${
+                  !showSideBar && "tooltip self-center"
+                }`}
               >
-                <span>{item.icon}</span>
-                <span className={`${!showSideBar ? "hidden" : "block"}`}>
-                  {item.name}
-                </span>
-              </Link>
-            </li>
-          ))}
-
-        {session.status == "loading" &&
-          loadingNavLink?.map((item, index) => {
-            return (
-              <li key={index} className="flex items-center gap-5">
-                {item.iconHolder}
-                {item.titleHolder}
+                <Link
+                  href={`${item.href}`}
+                  className={`${
+                    !showSideBar ? "self-center" : "self-start"
+                  } text-xs md:text-base`}
+                >
+                  <span>{item.icon}</span>
+                  <span className={`${!showSideBar ? "hidden" : "block"}`}>
+                    {item.name}
+                  </span>
+                </Link>
               </li>
-            );
-          })}
+            ))}
+
+          {session.status === "loading" && (
+            <ul className="space-y-2">
+              {loadingNavLink?.map((item, index) => (
+                <li
+                  key={index + item.titleHolder}
+                  className="flex items-center gap-5"
+                >
+                  {item.iconHolder}
+                  {item.titleHolder}
+                </li>
+              ))}
+            </ul>
+          )}
+        </ul>
       </div>
     </aside>
   );

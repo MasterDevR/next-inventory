@@ -9,10 +9,15 @@ import axios from "axios";
 import AlertModal from "@/components/ui/modal/modal-message";
 import CartModal from "@/components/ui/form/requisition-form";
 import { usePathname } from "next/navigation";
-
+import { disableDevTools } from "@/components/util/disableDevTools";
 const Wrapper = ({ children }) => {
   const pathname = usePathname();
 
+  useEffect(() => {
+    if (process.env.NODE_ENV === "production") {
+      disableDevTools();
+    }
+  }, []);
   const {
     showSideBar,
     updateRole,
@@ -21,19 +26,21 @@ const Wrapper = ({ children }) => {
     updateToken,
     role,
     updateDepartment,
+    updateRequestorType,
   } = useInventoryStore();
   const { data: session, status } = useSession();
 
   useEffect(() => {
     const token = session?.user.accessToken;
     if (status === "authenticated" && token) {
-      const role = session?.user.Role.name;
+      const role = session?.user.role;
       const id = session?.user.department_id;
       const department = session?.user.department;
       updateDepartment(department);
       updateRole(role);
       updateDepartmentId(id);
       updateToken(token);
+      updateRequestorType(session?.user.Requestor_type?.name);
       const checkToken = async () => {
         try {
           const response = await axios.post(

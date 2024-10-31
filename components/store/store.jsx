@@ -14,6 +14,8 @@ const useInventoryStore = create((set) => ({
   token: "",
   selectedOption: "",
   transactionDetails: [],
+  verifyEmail: "",
+  requestorType: "",
   updateTheme: (bool) => set({ theme: bool }),
   updateShowSideBar: () =>
     set((state) => ({ showSideBar: !state.showSideBar })),
@@ -30,6 +32,8 @@ const useInventoryStore = create((set) => ({
   updateSelectedOption: (seletected) =>
     set(() => ({ selectedOption: seletected })),
   setTransactionDetails: (item) => set(() => ({ transactionDetails: item })),
+  updateVerifyEmail: (email) => set(() => ({ verifyEmail: email })),
+  updateRequestorType: (type) => set(() => ({ requestorType: type })),
 }));
 
 export default useInventoryStore;

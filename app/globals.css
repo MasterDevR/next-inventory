@@ -7,7 +7,9 @@ input {
 }
 body {
   overflow: hidden;
-  background-color: #f2f4f7;
+  /* background-color: #f0f0f0; */
+  /* set a background color for the body that not too bright  and not too dark */
+  background-color: #f3f3f3;
 }
 
 th {

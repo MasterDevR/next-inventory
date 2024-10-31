@@ -1,6 +1,8 @@
 import React, { Fragment, useRef, useState } from "react";
+import { FaTrash } from "react-icons/fa";
 
 import VerifyActionModal from "../modal/modal-verify-action";
+
 const DeleteStock = ({ stock_no, id }) => {
   const modalRef = useRef();
 
@@ -15,10 +17,11 @@ const DeleteStock = ({ stock_no, id }) => {
   return (
     <Fragment>
       <button
-        className="w-4/6 bg-red-500 p-2 rounded-md hover:bg-red-600"
+        className="w-fit btn btn-error btn-sm flex items-center btn-outline"
         onClick={(event) => deleteHandler(event)}
       >
-        Delete
+        <FaTrash className="mr-2" />
+        <span className="hidden md:block">Delete</span>
       </button>
 
       <VerifyActionModal stock_no={stock_no} id={id} modalRef={modalRef} />

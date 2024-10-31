@@ -11,7 +11,7 @@ const Department_Notification = () => {
   const { data, isLoading } = useFetchData({
     path: `/user/user-notification/${department_id}`,
     token: token,
-    key: "admin-notification",
+    key: "user-notification",
   });
   const btnHandler = () => {
     setToggleBtn(!toggleBtn);

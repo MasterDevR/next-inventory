@@ -3,6 +3,7 @@ import React from "react";
 import Link from "next/link";
 import { FaExternalLinkAlt } from "react-icons/fa";
 import Transaction_List from "@/components/user-dashboard/transaction-list";
+import useInventoryStore from "@/components/store/store";
 const dashboard = () => {
   return (
     <div className="container m-auto  flex flex-col gap-10">

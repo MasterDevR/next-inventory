@@ -5,6 +5,10 @@ import useFetchData from "@/components/util/custom-hook/useFetchData";
 import { useRouter } from "next/navigation";
 import { useQueryClient } from "@tanstack/react-query";
 import useInvetoryStore from "../store/store";
+import DeleteStockBtn from "@/components/ui/button/delete-stock-btn";
+import EditBtn from "@/components/ui/button/edit-item-btn";
+import StockMobileView from "./stock-mobile-view";
+import NoDataFound from "./NoDataFound";
 
 const ITEMS_PER_PAGE = 10;
 
@@ -14,17 +18,17 @@ const InventoryTable = () => {
   const router = useRouter();
   const [searchItem, setSearchItem] = useState(undefined);
   const [currentPage, setCurrentPage] = useState(1);
+  const [selectedItemId, setSelectedItemId] = useState(null);
 
-  // Custom hook for fetching data with pagination
   const { data, isLoading } = useFetchData({
-    path: `/admin/get-stock/${searchItem}?page=${currentPage}`, // Include the current page in the API request
+    path: `/admin/get-stock/${searchItem}?page=${currentPage}`,
     token: token,
     key: "stock",
   });
 
   useEffect(() => {
     queryClient.invalidateQueries(["stock"]);
-  }, [searchItem, currentPage]);
+  }, [searchItem, currentPage, queryClient]);
 
   const handleChange = (e) => {
     const value = e.target.value;
@@ -33,10 +37,8 @@ const InventoryTable = () => {
     } else {
       setSearchItem(value);
     }
-    setCurrentPage(1); // Reset to the first page on new search
+    setCurrentPage(1);
   };
-
-  // Handle page change
 
   const getPaginationRange = (currentPage, totalPages) => {
     const maxVisiblePages = 5;
@@ -55,6 +57,10 @@ const InventoryTable = () => {
     ? getPaginationRange(currentPage, data.totalPages)
     : [];
 
+  const handlePageChange = (page) => {
+    setCurrentPage(page);
+  };
+
   if (isLoading) {
     return (
       <div className="flex w-full flex-col gap-4">
@@ -63,13 +69,11 @@ const InventoryTable = () => {
       </div>
     );
   }
-  const handlePageChange = (page) => {
-    setCurrentPage(page);
-  };
+
   return (
     <Fragment>
-      <header className="mb-10 h-auto relative w-full flex gap-5 flex-col md:flex-row">
-        <div className="flex gap-x-5">
+      <header className="mb-10 h-auto relative w-full flex flex-col gap-5 sm:flex-row sm:items-center">
+        <div className="flex flex-col sm:flex-row gap-2 sm:gap-5">
           <OpenItemListBtn title="Create" id="create-stock" />
           <OpenItemListBtn title="Add" id="add-stock" />
         </div>
@@ -77,10 +81,20 @@ const InventoryTable = () => {
           type="text"
           placeholder="Search Item"
           onChange={handleChange}
-          className="border border-gray-400 rounded-full w-full md:w-96 pl-10"
+          className="border border-gray-400 rounded-full w-full sm:w-auto sm:flex-grow pl-4 sm:pl-10 py-2"
         />
       </header>
-      <div className="overflow-x-auto">
+
+      {/* Mobile view */}
+      <StockMobileView
+        data={data}
+        router={router}
+        paginationRange={paginationRange}
+        handlePageChange={handlePageChange}
+      />
+
+      {/* Desktop view */}
+      <div className="overflow-x-auto hidden md:block">
         <table className="table overflow-hidden rounded-none text-center">
           <thead>
             <tr>
@@ -93,14 +107,14 @@ const InventoryTable = () => {
               <th>Type</th>
               <th>Consume Date</th>
               <th>Manufacturer</th>
-              <th colSpan={2}>Action</th>
+              <th>Action</th>
             </tr>
           </thead>
           <tbody>
             {data && data.item && data.item.length > 0 ? (
               data.item.map((item, index) => (
                 <tr
-                  key={index}
+                  key={index + item.stock_no + item.description}
                   className="cursor-pointer hover:bg-gray-200"
                   onClick={() => {
                     router.push(`/inventory/${item.stock_no}`);
@@ -115,20 +129,19 @@ const InventoryTable = () => {
                   <td>{item.stocktype.name}</td>
                   <td>{item.consume_date}</td>
                   <td>{item.distributor}</td>
-                  <td>
-                    <button
-                      className="font-bold text-center w-full text-lg"
-                      onClick={(event) => handleButtonClick(event, item)}
-                    >
-                      ...
-                    </button>
+
+                  <td className="relative">
+                    <div className="flex justify-center items-center gap-5">
+                      <EditBtn stock_no={item.stock_no} />
+                      <DeleteStockBtn stock_no={item.stock_no} id={item.id} />
+                    </div>
                   </td>
                 </tr>
               ))
             ) : (
               <tr>
-                <td colSpan={10} className="text-center font-bold text-lg">
-                  No Data Found
+                <td colSpan={11}>
+                  <NoDataFound />
                 </td>
               </tr>
             )}
@@ -136,37 +149,36 @@ const InventoryTable = () => {
         </table>
       </div>
 
-      {/* Pagination Controls */}
-      {data &&
-        data.totalPages > 1 && ( // Show pagination if totalPages > 1
-          <div className="flex justify-center mt-4 space-x-2">
+      {/* Pagination Controls (for desktop) */}
+      {data && data.totalPages > 1 && (
+        <div className="hidden md:flex justify-center mt-4 space-x-2">
+          <button
+            onClick={() => handlePageChange(currentPage - 1)}
+            disabled={currentPage === 1}
+            className="btn btn-sm"
+          >
+            &lt;
+          </button>
+          {paginationRange.map((page) => (
             <button
-              onClick={() => handlePageChange(currentPage - 1)}
-              disabled={currentPage === 1}
-              className="btn btn-sm"
+              key={page}
+              onClick={() => handlePageChange(page)}
+              className={`btn btn-sm ${
+                currentPage === page ? "btn-active" : ""
+              }`}
             >
-              &lt; {/* Left arrow */}
+              {page}
             </button>
-            {paginationRange.map((page) => (
-              <button
-                key={page}
-                onClick={() => handlePageChange(page)}
-                className={`btn btn-sm ${
-                  currentPage === page ? "btn-active" : ""
-                }`}
-              >
-                {page}
-              </button>
-            ))}
-            <button
-              onClick={() => handlePageChange(currentPage + 1)}
-              disabled={currentPage === data.totalPages}
-              className="btn btn-sm"
-            >
-              &gt;
-            </button>
-          </div>
-        )}
+          ))}
+          <button
+            onClick={() => handlePageChange(currentPage + 1)}
+            disabled={currentPage === data.totalPages}
+            className="btn btn-sm"
+          >
+            &gt;
+          </button>
+        </div>
+      )}
     </Fragment>
   );
 };

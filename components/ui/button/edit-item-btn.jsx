@@ -2,6 +2,7 @@
 import React, { Fragment, useRef, useState, useEffect } from "react";
 import axios from "axios";
 import EditItemModal from "../modal/edit-item-modal";
+import { FaEdit } from "react-icons/fa"; // Import the icon from react-icons
 
 const EditBtn = ({ stock_no }) => {
   const modalRef = useRef();
@@ -23,9 +24,10 @@ const EditBtn = ({ stock_no }) => {
     <Fragment>
       <div
         onClick={(event) => editHandler(event)}
-        className="w-4/6 bg-green-500 p-2 rounded-md hover:bg-green-600 text-center cursor-pointer"
+        className="w-fit btn btn-primary btn-sm flex items-center btn-outline" // Add flex and items-center for alignment
       >
-        Edit
+        <FaEdit className="mr-2" /> {/* Add the icon with some margin */}
+        <span className="hidden md:block">Edit</span>
       </div>
       <EditItemModal modalRef={modalRef} data={data} />
     </Fragment>

@@ -3,10 +3,13 @@ import React, { useState } from "react";
 import { FaLockOpen, FaLock, FaRegUserCircle } from "react-icons/fa";
 import { signIn } from "next-auth/react";
 import Image from "next/image";
+import Link from "next/link";
+
 const LoginForm = () => {
   const [error, setError] = useState("");
   const [isLocked, setIsLocked] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+
   const showPassword = () => {
     setIsLocked(!isLocked);
   };
@@ -37,6 +40,7 @@ const LoginForm = () => {
       setIsLoading(false);
     }
   };
+
   return (
     <div className="flex h-screen items-center justify-center bg-white md:bg-inherit ">
       <div className="flex w-full max-w-lg flex-col items-center justify-center gap-y-8 rounded-2xl bg-white p-10 md:w-8/12 md:shadow-xl">
@@ -88,6 +92,12 @@ const LoginForm = () => {
               />
             )}
           </div>
+          <Link
+            href="/forgot-password"
+            className="mt-2 text-sm text-blue-600 hover:underline"
+          >
+            Forgot Password?
+          </Link>
           <button
             type="submit"
             className={`cursor-pointer rounded-md border-2 bg-blue-700 p-2 font-bold tracking-widest text-white hover:bg-blue-500 ${
@@ -97,6 +107,7 @@ const LoginForm = () => {
             {!isLoading ? "SIGN IN" : "Loading"}
           </button>
         </form>
+        {error && <p className="mt-2 text-sm text-red-600">{error}</p>}
       </div>
     </div>
   );
