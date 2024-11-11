@@ -13,7 +13,7 @@ const NavBar = () => {
   const { role, department } = useInventoryStore();
   return (
     <div
-      className={`navbar shadow-sm flex justify-between bg-custom-bg-2 sticky top-0 z-50 ${
+      className={`navbar shadow-sm flex justify-between border bg-gray-50 sticky top-0 z-50 ${
         pathname !== "/" ? "justify-between" : "justify-end"
       }`}
     >

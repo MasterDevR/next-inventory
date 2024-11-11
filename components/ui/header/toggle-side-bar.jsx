@@ -16,7 +16,7 @@ const ToggleSideBar = () => {
   return (
     <div className="flex-1">
       <button
-        className="btn btn-ghost rounded-btn relative text-white"
+        className="btn btn-ghost rounded-btn relative "
         onClick={sideBardHandler}
       >
         {isOpen ? (

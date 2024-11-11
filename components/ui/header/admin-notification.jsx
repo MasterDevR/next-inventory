@@ -76,7 +76,7 @@ const Admin_Notification = () => {
       <div
         tabIndex={0}
         role="button"
-        className={`btn btn-ghost rounded-btn relative text-white `}
+        className={`btn btn-ghost rounded-btn relative`}
         onClick={btnHandler}
       >
         <IoMdNotifications size={"1.7rem"} cursor="pointer" />

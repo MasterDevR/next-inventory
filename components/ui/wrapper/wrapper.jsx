@@ -93,7 +93,7 @@ const Wrapper = ({ children }) => {
                 showSideBar ? "absolute" : "relative"
               } lg:relative`}
             >
-              <div className="my-10 w-full m-auto h-screen p-5 text-inherit">
+              <div className="my-10 w-full m-auto h-screen p-5 text-inherit  ">
                 {children}
               </div>
             </section>

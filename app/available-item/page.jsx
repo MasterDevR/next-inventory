@@ -13,7 +13,6 @@ const Page = () => {
   const [searchItem, setSearchItem] = useState(undefined);
   const [currentPage, setCurrentPage] = useState(1);
   const queryClient = useQueryClient();
-  console.log("requestorType: ", requestorType);
   const { data, isLoading } = useFetchData({
     path: `/admin/get-available-stock/${searchItem}?page=${currentPage}`,
     token: token,
@@ -53,16 +52,18 @@ const Page = () => {
 
   const canMakeRequest = () => {
     const currentMonth = new Date().getMonth() + 1;
-    const isOddMonth = currentMonth % 2 !== 0;
+
+    const academicSupportMonths = [1, 3, 5, 7, 9, 11];
+    const adminMonths = [2, 4, 6, 8, 10, 12];
 
     switch (requestorType?.toLowerCase()) {
       case "executive":
         return true;
-      case "admin":
-      case "support":
-        return isOddMonth;
       case "academic":
-        return !isOddMonth;
+      case "support":
+        return academicSupportMonths.includes(currentMonth);
+      case "admin":
+        return adminMonths.includes(currentMonth);
       default:
         return false;
     }
@@ -79,15 +80,15 @@ const Page = () => {
     switch (requestorType?.toLowerCase()) {
       case "executive":
         return `As an Executive, you have access to make requests at any time.`;
-      case "admin":
+      case "academic":
       case "support":
         return `${requestorType} users are ${
           isAllowed ? "allowed" : "not allowed"
-        } to make requests in ${currentMonth}.`;
-      case "academic":
-        return `Academic users are ${
+        } to make requests in ${currentMonth}. (Allowed months: Jan, Mar, May, Jul, Sept, Nov)`;
+      case "admin":
+        return `Admin users are ${
           isAllowed ? "allowed" : "not allowed"
-        } to make requests in ${currentMonth}.`;
+        } to make requests in ${currentMonth}. (Allowed months: Feb, Apr, June, Aug, Oct, Dec)`;
       default:
         return "You do not have permission to make requests.";
     }

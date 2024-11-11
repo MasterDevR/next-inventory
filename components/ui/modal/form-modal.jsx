@@ -6,11 +6,7 @@ const FormModal = ({ children, id, modalRef }) => {
   const { theme } = useInventoryStore();
   return (
     <dialog id={id} className="modal" ref={modalRef}>
-      <div
-        className={`modal-box max-w-5xl ${
-          theme === true ? "bg-custom-bg" : "bg-white"
-        }`}
-      >
+      <div className={`modal-box max-w-5xl bg-gray-50`}>
         <div className="w-fit relateive ml-auto">
           <HideModal modalRef={modalRef} />
         </div>

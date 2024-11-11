@@ -69,9 +69,9 @@ export default function TransactionDetails({ params }) {
                 Transaction Rejected
               </h2>
               <p className="text-sm sm:text-base text-gray-600 mb-6">
-                We're sorry, but this transaction request has been rejected.
+                {`We're sorry, but this transaction request has been rejected.
                 Please review the requirements and submit a new request if
-                needed.
+                needed.`}
               </p>
               <button
                 onClick={() => router.back()}

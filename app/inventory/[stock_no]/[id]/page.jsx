@@ -10,10 +10,13 @@ export default function SearchBar({ params }) {
   });
 
   return (
-    <div className="overflow-x-auto min-h-52 p-5 bg-white">
-      <h1 className="text-center text-white lg:text-3xl font-bold mb-10 bg-custom-bg-2 p-3">
-        Stock Allocation
-      </h1>
+    <div className="overflow-x-auto min-h-52 p-5 bg-white space-y-20">
+      <div className="mt-4 p-4  border-l-4 border-yellow-500 text-yellow-800">
+        <strong>Note:</strong> This page displays the detailed distribution of
+        the selected stock item, including all past transactions, changes in
+        quantity, and other relevant updates.
+      </div>
+
       <div className="overflow-auto">
         <table className="table table-xs text-base text-center  rounded-none">
           <thead>

@@ -25,7 +25,7 @@ const Department_Notification = () => {
         className="btn btn-ghost rounded-btn"
         onClick={btnHandler}
       >
-        <IoMdNotifications size={"1.7rem"} color="white" cursor="pointer" />
+        <IoMdNotifications size={"1.7rem"} cursor="pointer" />
       </div>
       <ul
         tabIndex={0}
@@ -55,8 +55,24 @@ const Department_Notification = () => {
                   }}
                 >
                   <h3>
-                    <span>Your Request has beeng </span>
-                    <strong>{item.Status.name}</strong>
+                    <span>
+                      {item.Status.name === "ready"
+                        ? "Your requested item is ready to pickup "
+                        : "Your Request has been "}
+                    </span>
+                    <strong
+                      className={`${
+                        item.Status.name === "rejected"
+                          ? "text-red-500"
+                          : item.Status.name === "approved"
+                          ? "text-green-500"
+                          : item.Status.name === "ready"
+                          ? "text-blue-500"
+                          : ""
+                      }`}
+                    >
+                      {item.Status.name}
+                    </strong>
                   </h3>
                   <h4>Transaction ID : {item.transaction_id}</h4>
                 </Link>

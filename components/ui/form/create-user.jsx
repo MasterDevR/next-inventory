@@ -9,7 +9,6 @@ const CreateUserForm = () => {
   const queryClient = useQueryClient();
   const { token, updateSuccessModal, updateModalMessage, updateStatuss } =
     useInventoryStore();
-  const [role, setRole] = useState();
   const [requestorTypes, setRequestorTypes] = useState([]);
   const [selectedRequestorType, setSelectedRequestorType] = useState("");
   const [invalidateFlag, setInvalidateFlag] = useState(false);
@@ -45,8 +44,9 @@ const CreateUserForm = () => {
     e.preventDefault();
     try {
       const formData = new FormData(e.currentTarget);
-      formData.set("role", role);
+      formData.set("role", selectedRequestorType);
       formData.set("requestor_type", selectedRequestorType);
+
       const response = await axios.post(
         `${process.env.NEXT_PUBLIC_BASE_URL}/admin/create-user`,
         formData,

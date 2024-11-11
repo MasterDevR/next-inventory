@@ -1,61 +1,74 @@
 import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import useInventoryStore from "@/components/store/store";
+import PropTypes from "prop-types";
+import axios from "axios";
 
-const EditTransactionModal = ({ transaction, onClose, onUpdate }) => {
-  const [items, setItems] = useState([]);
+import { useQueryClient } from "@tanstack/react-query";
+
+const EditTransactionModal = ({
+  transaction = {},
+  onClose,
+  onUpdate,
+  validate,
+}) => {
+  const queryClient = useQueryClient();
+  const [isToInvalidate, setIsToInvalidate] = useState(false);
+  const { updateModalMessage, updateSuccessModal, updateStatuss, token } =
+    useInventoryStore();
   const [isLoading, setIsLoading] = useState(false);
-  const { token } = useInventoryStore();
+  const [transactionItems, setTransactionItems] = useState(
+    transaction.transaction_item
+  );
 
-  useEffect(() => {
-    if (transaction && transaction.transaction_item) {
-      setItems(transaction.transaction_item || []);
-    }
-    console.log(transaction);
-  }, [transaction]);
+  const { id, transaction_item = [], created_at } = transaction;
 
   const handleQuantityChange = (index, newQuantity) => {
-    const updatedItems = [...items];
-    updatedItems[index].quantity = Math.max(0, newQuantity);
-    setItems(updatedItems);
+    console.log(index, newQuantity);
+    const updatedItems = transactionItems.map((item, i) => {
+      if (i === index) {
+        return { ...item, quantity: Math.max(0, newQuantity) };
+      }
+      return item;
+    });
+    setTransactionItems(updatedItems);
   };
 
   const handleDeleteItem = (index) => {
-    const updatedItems = items.filter((_, i) => i !== index);
-    setItems(updatedItems);
+    const updatedItems = transactionItems.filter((_, i) => i !== index);
+    setTransactionItems(updatedItems);
   };
 
   const handleSaveChanges = async () => {
     setIsLoading(true);
     try {
-      const response = await fetch(
-        `/${process.env.NEXT_PUBLIC_BASE_URL}/user/modify-transactions/${transaction.id}`,
+      const response = await axios.put(
+        `${process.env.NEXT_PUBLIC_BASE_URL}/user/modify-transactions/${id}`,
+        { items: transactionItems },
         {
-          method: "PUT",
           headers: {
             "Content-Type": "application/json",
             Authorization: `Bearer ${token}`,
           },
-          body: JSON.stringify({ items }),
         }
       );
-
-      if (response.ok) {
-        onUpdate();
-        onClose();
-      } else {
-        throw new Error("Failed to update transaction");
+      if (response.data.status === 200) {
+        setIsToInvalidate(true);
       }
+      updateSuccessModal(true);
+      updateModalMessage(response.data.message);
+      updateStatuss(response.data.status);
     } catch (error) {
-      console.error("Error updating transaction:", error);
-      // Handle error (e.g., show error message to user)
+      console.error("Error updating transaction:", error.message);
     } finally {
       setIsLoading(false);
     }
   };
-
-  if (!transaction) return null;
-
+  useEffect(() => {
+    if (isToInvalidate === true) {
+      queryClient.invalidateQueries({ queryKey: ["transaction-history"] });
+    }
+  }, [isToInvalidate]);
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4">
       <div className="bg-white rounded-lg p-6 w-full max-w-2xl">
@@ -64,29 +77,27 @@ const EditTransactionModal = ({ transaction, onClose, onUpdate }) => {
         </h2>
         <div className="mb-4">
           <p>
-            <strong>Transaction ID:</strong> {transaction.id}
+            <strong>Transaction ID:</strong> {id}
+          </p>
+
+          <p>
+            <strong>Date Requested:</strong>{" "}
+            {new Date(created_at).toLocaleString()}
           </p>
           <p>
-            <strong>Purpose:</strong> {transaction.TransactionType.name}
-          </p>
-          <p>
-            <strong>Status:</strong> {transaction.Status.name}
-          </p>
-          <p>
-            <strong>Department ID:</strong> {transaction.department_id}
-          </p>
-          <p>
-            <strong>Created At:</strong>{" "}
-            {new Date(transaction.created_at).toLocaleString()}
+            <strong>Date Updated:</strong>{" "}
+            {new Date(created_at).toLocaleString()}
           </p>
         </div>
         <div className="mb-4">
-          <h3 className="text-xl font-semibold mb-2">Items</h3>
-          {items.map((item, index) => (
+          <h3 className="text-xl font-semibold mb-2 text-center">
+            Transaction Items
+          </h3>
+          {transactionItems.map((item, index) => (
             <div key={index} className="flex items-center mb-2 border-b pb-2">
               <div className="flex-grow">
                 <p>
-                  <strong>Item:</strong> {item.stock?.item || "N/A"}
+                  <strong>Item:</strong> {item?.stock?.description || "N/A"}
                 </p>
                 <p>
                   <strong>Stock No:</strong> {item.stock_no || "N/A"}
@@ -98,9 +109,9 @@ const EditTransactionModal = ({ transaction, onClose, onUpdate }) => {
               </div>
               <input
                 type="number"
-                value={item.quantity}
+                value={item.quantity || 0}
                 onChange={(e) =>
-                  handleQuantityChange(index, parseInt(e.target.value))
+                  handleQuantityChange(index, parseInt(e.target.value) || 0)
                 }
                 className="w-20 px-2 py-1 border rounded mr-2"
                 min="0"
@@ -133,6 +144,21 @@ const EditTransactionModal = ({ transaction, onClose, onUpdate }) => {
       </div>
     </div>
   );
+};
+
+EditTransactionModal.propTypes = {
+  transaction: PropTypes.shape({
+    result: PropTypes.shape({
+      id: PropTypes.string,
+      transaction_item: PropTypes.array,
+      transaction_purpose: PropTypes.string,
+      status: PropTypes.string,
+      department_id: PropTypes.string,
+      created_at: PropTypes.string,
+    }),
+  }),
+  onClose: PropTypes.func.isRequired,
+  onUpdate: PropTypes.func.isRequired,
 };
 
 export default EditTransactionModal;

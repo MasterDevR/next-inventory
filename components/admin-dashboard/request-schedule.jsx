@@ -2,11 +2,28 @@
 import React from "react";
 
 const RequestSchedule = () => {
-  // Get current month (1-12)
   const currentMonth = new Date().getMonth() + 1;
   const currentMonthName = new Date().toLocaleString("default", {
     month: "long",
   });
+
+  // Helper function to check if month is allowed for each type
+  const isAllowedMonth = (type) => {
+    const academicSupportMonths = [1, 3, 5, 7, 9, 11];
+    const adminMonths = [2, 4, 6, 8, 10, 12];
+
+    switch (type) {
+      case "executive":
+        return true;
+      case "academic":
+      case "support":
+        return academicSupportMonths.includes(currentMonth);
+      case "admin":
+        return adminMonths.includes(currentMonth);
+      default:
+        return false;
+    }
+  };
 
   return (
     <div className="bg-white rounded-xl shadow-sm border border-gray-100">
@@ -33,11 +50,11 @@ const RequestSchedule = () => {
               </li>
               <li className="flex items-center gap-2">
                 <span className="w-2 h-2 rounded-full bg-blue-500"></span>
-                Academic - Even Months Only
+                Admin - Feb, Apr, June, Aug, Oct, Dec
               </li>
               <li className="flex items-center gap-2">
                 <span className="w-2 h-2 rounded-full bg-purple-500"></span>
-                Academic Support - Odd Months Only
+                Academic & Support - Jan, Mar, May, Jul, Sept, Nov
               </li>
             </ul>
           </div>
@@ -62,17 +79,17 @@ const RequestSchedule = () => {
                 <div className="flex items-center gap-2">
                   <span className="w-2 h-2 rounded-full bg-blue-500"></span>
                   <span className="text-sm font-medium text-gray-700">
-                    Academic
+                    Admin
                   </span>
                 </div>
                 <span
                   className={`text-xs px-2 py-1 rounded-full ${
-                    currentMonth % 2 === 0
+                    isAllowedMonth("admin")
                       ? "bg-green-100 text-green-700"
                       : "bg-gray-100 text-gray-700"
                   }`}
                 >
-                  {currentMonth % 2 === 0 ? "Allowed" : "Not Allowed"}
+                  {isAllowedMonth("admin") ? "Allowed" : "Not Allowed"}
                 </span>
               </div>
 
@@ -80,17 +97,17 @@ const RequestSchedule = () => {
                 <div className="flex items-center gap-2">
                   <span className="w-2 h-2 rounded-full bg-purple-500"></span>
                   <span className="text-sm font-medium text-gray-700">
-                    Academic Support
+                    Academic & Support
                   </span>
                 </div>
                 <span
                   className={`text-xs px-2 py-1 rounded-full ${
-                    currentMonth % 2 !== 0
+                    isAllowedMonth("academic")
                       ? "bg-green-100 text-green-700"
                       : "bg-gray-100 text-gray-700"
                   }`}
                 >
-                  {currentMonth % 2 !== 0 ? "Allowed" : "Not Allowed"}
+                  {isAllowedMonth("academic") ? "Allowed" : "Not Allowed"}
                 </span>
               </div>
             </div>

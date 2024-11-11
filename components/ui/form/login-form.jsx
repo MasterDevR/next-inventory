@@ -42,37 +42,37 @@ const LoginForm = () => {
   };
 
   return (
-    <div className="flex h-screen items-center justify-center bg-white md:bg-inherit ">
-      <div className="flex w-full max-w-lg flex-col items-center justify-center gap-y-8 rounded-2xl bg-white p-10 md:w-8/12 md:shadow-xl">
+    <div className="flex h-screen items-center justify-center bg-gray-100">
+      <div className="flex w-full max-w-md flex-col items-center justify-center gap-y-8 rounded-lg bg-white p-10 shadow-md">
         <div className="flex flex-col items-center gap-y-5">
           <Image
             src="/images/inventory.png"
-            alt="Universidad_de_Manila_seal.png"
-            width="0"
-            height="0"
-            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+            alt="Inventory Logo"
+            width="150"
+            height="150"
             priority
-            style={{ width: "100%", height: "auto" }}
+            className="rounded-full"
           />
-          <h1 className=" font-black text-green-950">UDM INVENTORY PORTAL</h1>
+          <h1 className="text-2xl font-semibold text-gray-800">Welcome Back</h1>
+          <p className="text-md text-gray-600">Please sign in to continue</p>
         </div>
-        <form className="flex w-full flex-col gap-y-3" onSubmit={submitHandler}>
-          <div>
+        <form className="flex w-full flex-col gap-y-4" onSubmit={submitHandler}>
+          <div className="relative">
             <input
-              className={`peer w-full border p-2 pl-10 text-sm tracking-widest text-gray-700 lg:rounded lg:shadow`}
+              className={`peer w-full border-b-2 border-gray-300 p-2 pl-10 text-sm text-gray-700 focus:border-gray-500 focus:outline-none`}
               id="username"
               type="text"
               placeholder="Username"
               name="userID"
             />
             <FaRegUserCircle
-              size={"1.1rem"}
-              className="relative bottom-7 left-2 text-gray-400 peer-focus:text-black"
+              size={"1.5rem"}
+              className="absolute top-2 left-2 text-gray-400"
             />
           </div>
-          <div>
+          <div className="relative">
             <input
-              className={`peer w-full appearance-none rounded border p-2 pl-10 text-sm tracking-widest text-gray-700 shadow`}
+              className={`peer w-full border-b-2 border-gray-300 p-2 pl-10 text-sm text-gray-700 focus:border-gray-500 focus:outline-none`}
               type={isLocked ? "text" : "password"}
               id="password"
               placeholder="Password"
@@ -80,31 +80,31 @@ const LoginForm = () => {
             />
             {isLocked ? (
               <FaLockOpen
-                size={"1rem"}
-                className="relative bottom-7 left-2 cursor-pointer text-gray-400 peer-focus:text-black"
+                size={"1.5rem"}
+                className="absolute top-2 left-2 text-gray-400 cursor-pointer"
                 onClick={showPassword}
               />
             ) : (
               <FaLock
-                size={"1rem"}
-                className="relative bottom-7 left-2 cursor-pointer text-gray-400 peer-focus:text-black"
+                size={"1.5rem"}
+                className="absolute top-2 left-2 text-gray-400 cursor-pointer"
                 onClick={showPassword}
               />
             )}
           </div>
           <Link
             href="/forgot-password"
-            className="mt-2 text-sm text-blue-600 hover:underline"
+            className="mt-2 text-sm text-gray-600 hover:underline"
           >
             Forgot Password?
           </Link>
           <button
             type="submit"
-            className={`cursor-pointer rounded-md border-2 bg-blue-700 p-2 font-bold tracking-widest text-white hover:bg-blue-500 ${
+            className={`mt-4 cursor-pointer rounded-md border-2 border-gray-300 bg-gray-800 p-2 font-bold text-white transition duration-300 hover:bg-gray-700 ${
               !isLoading ? "cursor-pointer" : "cursor-not-allowed"
             }`}
           >
-            {!isLoading ? "SIGN IN" : "Loading"}
+            {!isLoading ? "SIGN IN" : "Loading..."}
           </button>
         </form>
         {error && <p className="mt-2 text-sm text-red-600">{error}</p>}
