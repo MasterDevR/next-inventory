@@ -33,8 +33,6 @@
 .input:focus ~ .userLabel,
 .input:valid ~ .userLabel {
   transform: translateY(-50%) scale(0.8);
-  background-color: #ffff;
-  color: black;
   font-style: bold;
   padding: 0 0.2em;
 }

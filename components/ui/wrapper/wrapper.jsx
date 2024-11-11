@@ -7,27 +7,40 @@ import useInventoryStore from "@/components/store/store";
 import LoginForm from "../form/login-form";
 import axios from "axios";
 import AlertModal from "@/components/ui/modal/modal-message";
+import CartModal from "@/components/ui/form/requisition-form";
+import { usePathname } from "next/navigation";
+import { disableDevTools } from "@/components/util/disableDevTools";
 const Wrapper = ({ children }) => {
-  const { theme, showSideBar, updateTheme, updateRole, isSuccessModal } =
-    useInventoryStore();
-  const { data: session, status } = useSession();
+  const pathname = usePathname();
 
   useEffect(() => {
-    const storage = localStorage.getItem("theme");
-    if (storage) {
-      document.getElementById("mode")?.setAttribute("checked", "true");
-      updateTheme(true);
-    } else {
-      document.getElementById("mode")?.removeAttribute("checked");
-      updateTheme(false);
+    if (process.env.NODE_ENV === "production") {
+      disableDevTools();
     }
-  }, [updateTheme]);
+  }, []);
+  const {
+    showSideBar,
+    updateRole,
+    isSuccessModal,
+    updateDepartmentId,
+    updateToken,
+    role,
+    updateDepartment,
+    updateRequestorType,
+  } = useInventoryStore();
+  const { data: session, status } = useSession();
 
   useEffect(() => {
     const token = session?.user.accessToken;
     if (status === "authenticated" && token) {
-      const role = session?.user.Role.name;
+      const role = session?.user.role;
+      const id = session?.user.department_id;
+      const department = session?.user.department;
+      updateDepartment(department);
       updateRole(role);
+      updateDepartmentId(id);
+      updateToken(token);
+      updateRequestorType(session?.user.Requestor_type?.name);
       const checkToken = async () => {
         try {
           const response = await axios.post(
@@ -39,8 +52,6 @@ const Wrapper = ({ children }) => {
               },
             }
           );
-
-          // logout if token was invalidated on the server side
           if (response.data.status !== 200) {
             signOut();
           }
@@ -49,49 +60,47 @@ const Wrapper = ({ children }) => {
           signOut();
         }
       };
-
       checkToken();
     }
-  }, [session, status, signOut]);
+  }, [session, status]);
 
   if (status === "loading") {
     return (
-      <div className="container h-screen flex justify-center items-center">
+      <div className="container h-screen flex justify-center items-center m-auto">
         <span className="loading loading-spinner loading-lg text-primary"></span>
+      </div>
+    );
+  }
+  if (!session && pathname !== "/forgot-password") {
+    return (
+      <div className="dark:bg-custom-bg w-screen h-screen">
+        <LoginForm />
       </div>
     );
   }
 
   return (
     <Fragment>
-      {isSuccessModal === true && <AlertModal />}
+      <CartModal />
+      {isSuccessModal && <AlertModal />}
       {session ? (
-        <div
-          className={`${
-            theme !== true ? "text-black" : "text-white"
-          } h-screen ${theme === true ? "bg-custom-bg" : "bg-gray-100"}  `}
-        >
+        <div className="h-screen">
           <NavBar />
-          <main className={`h-full w-12/12  flex `}>
-            <SideBar />
+          <main className="h-full w-12/12 flex">
+            {role && role !== "user" && <SideBar />}
             <section
-              className={` w-screen overflow-auto ${
-                showSideBar ? "absolute" : " relative"
+              className={`w-screen overflow-auto ${
+                showSideBar ? "absolute" : "relative"
               } lg:relative`}
             >
-              <div
-                className={`my-20 container  h-screen p-10 shadow-lx text-inherit rounded-3xl `}
-                data-theme={`${theme === true ? "dim" : "light"}`}
-              >
+              <div className="my-10 w-full m-auto h-screen p-5 text-inherit  ">
                 {children}
               </div>
             </section>
           </main>
         </div>
       ) : (
-        <div className="bg-white dark:bg-custom-bg w-screen h-screen">
-          <LoginForm />
-        </div>
+        <Fragment>{children}</Fragment>
       )}
     </Fragment>
   );

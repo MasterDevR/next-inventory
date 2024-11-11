@@ -1,7 +1,14 @@
+"use client";
 import React from "react";
-
-const page = () => {
-  return <div>page</div>;
+import Admin_Transaction_Container from "@/components/transaction/admin/transaction-container";
+import useInventoryStore from "@/components/store/store";
+const Page = () => {
+  const { role } = useInventoryStore();
+  return (
+    <div className=" ">
+      {role && role !== "user" ? <Admin_Transaction_Container /> : <></>}
+    </div>
+  );
 };
 
-export default page;
+export default Page;

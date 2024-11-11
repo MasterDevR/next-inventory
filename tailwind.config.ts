@@ -1,7 +1,7 @@
 import type { Config } from "tailwindcss";
 
 const config: Config = {
-  darkMode: "selector",
+  darkMode: ["selector", "class"],
   content: [
     "./pages/**/*.{js,ts,jsx,tsx,mdx}",
     "./components/**/*.{js,ts,jsx,tsx,mdx}",
@@ -9,18 +9,16 @@ const config: Config = {
   ],
   theme: {
     extend: {
-      container: {
-        center: true,
-        padding: "2rem",
-      },
       colors: {
         "custom-bg": "#1F2633",
+        "custom-bg-2": "#014422",
+        "custom-bg-3": "#0aa32d",
       },
     },
   },
   daisyui: {
     themes: ["light", "dim"],
   },
-  plugins: [require("daisyui")],
+  plugins: [require("daisyui"), require("tailwindcss-animate")],
 };
 export default config;

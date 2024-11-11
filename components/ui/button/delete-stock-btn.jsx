@@ -1,10 +1,14 @@
 import React, { Fragment, useRef, useState } from "react";
+import { FaTrash } from "react-icons/fa";
 
-import VerifyAction from "@/components/ui/modal/modal-verify-action";
+import VerifyActionModal from "../modal/modal-verify-action";
+
 const DeleteStock = ({ stock_no, id }) => {
-  const modalRef = useRef(null);
+  const modalRef = useRef();
 
-  const deleteHandler = () => {
+  const deleteHandler = (event) => {
+    event.stopPropagation();
+
     if (modalRef.current) {
       modalRef.current.showModal();
     }
@@ -13,13 +17,14 @@ const DeleteStock = ({ stock_no, id }) => {
   return (
     <Fragment>
       <button
-        className="w-4/6 bg-red-500 p-2 rounded-md hover:bg-red-600"
-        onClick={deleteHandler}
+        className="w-fit btn btn-error btn-sm flex items-center btn-outline"
+        onClick={(event) => deleteHandler(event)}
       >
-        Delete
+        <FaTrash className="mr-2" />
+        <span className="hidden md:block">Delete</span>
       </button>
 
-      <VerifyAction stock_no={stock_no} id={id} modalRef={modalRef} />
+      <VerifyActionModal stock_no={stock_no} id={id} modalRef={modalRef} />
     </Fragment>
   );
 };

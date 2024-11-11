@@ -5,52 +5,31 @@ const adminLink = [
   {
     href: "/",
     name: "Dashboard",
-    icon: <MdDashboard size={"1.5rem"} />,
-  },
-  {
-    href: "/inventory",
-    name: "Inventory",
-    icon: <MdOutlineInventory size={"1.5rem"} />,
-  },
-  {
-    href: "/transaction",
-    name: "Transaction",
-    icon: <FaFileAlt size={"1.5rem"} />,
+    icon: <MdDashboard size={"1.3rem"} />,
   },
   {
     href: "/report",
     name: "Report",
-    icon: <FaChartBar size={"1.5rem"} />,
+    icon: <FaChartBar />,
   },
   {
+    href: "/inventory",
+    name: "Manage Stock",
+    icon: <MdOutlineInventory size={"1.3rem"} />,
+  },
+  {
+    href: "/transaction",
+    name: "Manage Request",
+    icon: <FaFileAlt size={"1.3rem"} />,
+  },
+
+  {
     href: "/departments",
-    name: "Departments",
-    icon: <FaUsersRectangle size={"1.5rem"} />,
+    name: "Manage Accounts",
+    icon: <FaUsersRectangle size={"1.3rem"} />,
   },
 ];
 
-const department = [
-  {
-    href: "/",
-    name: "Dashboard",
-    icon: <MdDashboard size={"1.5rem"} />,
-  },
-  {
-    href: "/inventory",
-    name: "Inventory",
-    icon: <MdOutlineInventory size={"1.5rem"} />,
-  },
-  {
-    href: "/transaction",
-    name: "Transaction",
-    icon: <FaFileAlt size={"1.5rem"} />,
-  },
-  {
-    href: "/report",
-    name: "Report",
-    icon: <FaChartBar size={"1.5rem"} />,
-  },
-];
 const loadingNavLink = [
   {
     iconHolder: <div className="skeleton h-10 w-10"></div>,
@@ -73,4 +52,4 @@ const loadingNavLink = [
     titleHolder: <div className="skeleton h-4 w-36"></div>,
   },
 ];
-export { adminLink, loadingNavLink, department };
+export { adminLink, loadingNavLink };

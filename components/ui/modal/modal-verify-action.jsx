@@ -9,26 +9,24 @@ const VerifyAction = ({ stock_no, id, modalRef }) => {
   const queryClient = useQueryClient();
   const { updateStatuss, updateModalMessage, updateSuccessModal } =
     useInventoryStore();
-  const cancelDelete = () => {
+  const cancelDelete = (event) => {
+    event.stopPropagation();
+
     if (modalRef.current) {
       modalRef.current.close();
     }
   };
 
-  const deleteHandler = async ({ stock_no, id }) => {
+  const deleteHandler = async ({ stock_no }) => {
     try {
       const response = await axios.delete(
-        `${process.env.NEXT_PUBLIC_BASE_URL}/admin/delete-item/${stock_no}/${id}`
+        `${process.env.NEXT_PUBLIC_BASE_URL}/admin/delete-stock/${stock_no}`
       );
 
       return response.data;
     } catch (error) {
       console.log(error.message);
       updateModalMessage(error.response?.data?.message || "An error occurred");
-    } finally {
-      setInterval(function () {
-        updateSuccessModal(false);
-      }, 2000);
     }
   };
 
@@ -61,7 +59,7 @@ const VerifyAction = ({ stock_no, id, modalRef }) => {
         <div className="  flex flex-row justify-around">
           <button
             className="btn btn-success btn-outline"
-            onClick={cancelDelete}
+            onClick={(event) => cancelDelete(event)}
           >
             Cancel
           </button>
@@ -70,7 +68,6 @@ const VerifyAction = ({ stock_no, id, modalRef }) => {
             onClick={() =>
               mutation.mutate({
                 stock_no: stock_no,
-                id: id,
               })
             }
           >

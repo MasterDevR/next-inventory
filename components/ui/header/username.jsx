@@ -5,7 +5,7 @@ import React from "react";
 const Username = () => {
   const session = useSession();
   return (
-    <h1 className="mx-3 text-xs text-inherit uppercase">
+    <h1 className="mx-3 text-xs text-white uppercase">
       {session.data?.user.name
         ? session.data?.user.name
         : session.data?.user.department}

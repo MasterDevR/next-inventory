@@ -14,18 +14,22 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         password: { type: "password", placeholder: "Password" },
       },
       async authorize(credentials) {
-        const response = await axios.post(`${baseUrl}/login`, {
-          credentials: {
-            username: credentials.username,
-            password: credentials.password,
-          },
-        });
+        try {
+          const response = await axios.post(`${baseUrl}/login`, {
+            credentials: {
+              username: credentials.username,
+              password: credentials.password,
+            },
+          });
 
-        const user = response.data;
-        if (user) {
-          return user.data.userData;
+          const user = response.data;
+          if (user) {
+            return user.data.userData;
+          }
+          return;
+        } catch (error: any) {
+          console.log(error.message);
         }
-        return null;
       },
     }),
   ],

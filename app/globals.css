@@ -7,4 +7,22 @@ input {
 }
 body {
   overflow: hidden;
+  /* background-color: #f0f0f0; */
+  /* set a background color for the body that not too bright  and not too dark */
+  background-color: #f3f3f3;
+}
+
+th {
+  background-color: #095c1c;
+  color: white;
+  font-weight: bold;
+  font-size: 1rem;
+  border-left: solid 1px #f4f4f4f4;
+  padding: 4px;
+  text-align: center;
+}
+
+td {
+  font-size: 0.9rem;
+  padding: 4px;
 }

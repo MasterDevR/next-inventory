@@ -1,269 +1,280 @@
 "use client";
-import React, { useEffect, useRef, useState } from "react";
-import styles from "@/public/style/modal-form.module.css";
+import React, { useRef, useState } from "react";
 import StockType from "../select/select-stock-type";
-import HideModal from "../button/hide-modal";
-import OpenItemListBtn from "../button/open-modal";
+import axios from "axios";
+import { useMutation } from "@tanstack/react-query";
+import { useQueryClient } from "@tanstack/react-query";
 import useInventoryStore from "@/components/store/store";
-import Image from "next/image";
-
+import FormModal from "@/components/ui/modal/form-modal";
+import Input from "@/components/ui/input/Input";
 const InventoryForm = () => {
-  const { updatePreStockList, preStockList } = useInventoryStore();
-  const [formData, setFormData] = useState({});
+  const queryClient = useQueryClient();
   const modalRef = useRef();
+  const { updateSuccessModal, updateModalMessage, updateStatuss, token } =
+    useInventoryStore();
+  const [stockType, setStockType] = useState();
 
-  // manage input
-  const handleChange = (e) => {
-    const { name, value, type, files } = e.target;
-    if (type === "file" && files) {
-      setFormData((prevFormData) => ({ ...prevFormData, [name]: files[0] }));
-    } else {
-      setFormData((prevFormData) => ({ ...prevFormData, [name]: value }));
-    }
-  };
-
-  // manage stock type
-  const handleStockTypeChange = (value) => {
-    setFormData((prevFormData) => ({ ...prevFormData, stockType: value }));
-  };
+  const mutation = useMutation({
+    mutationFn: async (formData) => {
+      return await axios.post(
+        `${process.env.NEXT_PUBLIC_BASE_URL}/admin/create-stock`,
+        formData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+    },
+  });
 
   const submitHandler = async (e) => {
-    e.preventDefault();
-    const data = new FormData();
+    try {
+      e.preventDefault();
+      const formData = new FormData(e.target);
 
-    for (const [key, value] of Object.entries(formData)) {
-      if (value !== null && value !== undefined) {
-        data.append(key, value);
-      }
+      formData.append("stockType", stockType);
+      mutation.mutate(formData, {
+        onSuccess: (response) => {
+          if (response && response.data) {
+            console.log(response);
+            updateSuccessModal(true);
+            updateModalMessage(response.data.message);
+            updateStatuss(response.data.status);
+            queryClient.invalidateQueries({ queryKey: ["stock"] });
+          }
+        },
+        onError: (error) => {
+          console.log(error);
+          updateSuccessModal(true);
+          updateModalMessage(error.message);
+          updateStatuss(error.status);
+        },
+      });
+
+      // const form = e.target;
+      // form.reset();
+    } catch (error) {
+      console.log(error.message);
     }
-
-    const formDataObject = {};
-
-    data.forEach((value, key) => {
-      formDataObject[key] = value;
-    });
-
-    formDataObject.id = Date.now().toString();
-
-    updatePreStockList([formDataObject]);
   };
 
   return (
-    <dialog id="create-stock" className="modal" ref={modalRef}>
-      <div className="modal-box max-w-5xl">
-        <div className="flex justify-between">
-          <div className="w-auto">
-            <OpenItemListBtn
-              modalRef={modalRef}
-              title="View List"
-              id="stock-list"
-            />
+    <FormModal id="create-stock" modalRef={modalRef}>
+      <div className="w-full max-w-3xl mx-auto px-6 py-4">
+        {/* Header Section */}
+        <div className="mb-8">
+          <div className="flex items-center gap-2 mb-3 justify-center">
+            <h1 className="text-2xl font-semibold text-gray-800">
+              Create New Item
+            </h1>
           </div>
-          <div className="w-auto">
-            <HideModal modalRef={modalRef} />
+
+          <div className="p-3 bg-blue-50 border border-blue-100 rounded-lg">
+            <p className="text-sm text-blue-700">
+              Important: Fill in all required details to add a new item to
+              inventory
+            </p>
           </div>
+          <p className="text-sm text-gray-500 mt-3">
+            Use this form to create a new inventory item. Please provide
+            complete item details below.
+          </p>
         </div>
-        <h3 className="pt-2 text-center text-lg font-bold tracking-widest text-green-500">
-          ADD ITEM
-        </h3>
-        <div className="divider"></div>
-        <div className="modal-action flex flex-col">
+
+        {/* Form Section */}
+        <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
           <form
-            method="dialog"
-            className="flex w-full flex-wrap justify-between gap-5"
-            id="create-stock-form"
             onSubmit={submitHandler}
+            className="space-y-6"
+            id="create-stock-form"
           >
-            <div className={`${styles.inputGroup}`}>
-              <input
-                type="text"
-                id="userInput_name"
-                className={styles.input}
-                name="name"
-                value={formData.name || ""}
-                onChange={handleChange}
-                required
-              />
-              <label className={styles.userLabel} htmlFor="userInput_name">
-                Item
-              </label>
+            {/* Basic Information */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-4">
+              <div className="form-control">
+                <label className="block text-sm font-medium text-gray-700 mb-1.5">
+                  Item Name
+                </label>
+                <input
+                  name="name"
+                  type="text"
+                  required
+                  placeholder="Enter item name"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
+                />
+              </div>
+
+              <div className="form-control">
+                <label className="block text-sm font-medium text-gray-700 mb-1.5">
+                  Stock No.
+                </label>
+                <input
+                  name="stock"
+                  type="text"
+                  required
+                  placeholder="Enter stock number"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
+                />
+              </div>
+
+              <div className="form-control">
+                <label className="block text-sm font-medium text-gray-700 mb-1.5">
+                  Price
+                </label>
+                <input
+                  name="price"
+                  type="number"
+                  min="0"
+                  step="0.01"
+                  required
+                  placeholder="0.00"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
+                />
+              </div>
+
+              <div className="form-control">
+                <label className="block text-sm font-medium text-gray-700 mb-1.5">
+                  Quantity
+                </label>
+                <input
+                  name="quantity"
+                  type="number"
+                  min="0"
+                  required
+                  placeholder="Enter quantity"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
+                />
+              </div>
+
+              <div className="form-control">
+                <label className="block text-sm font-medium text-gray-700 mb-1.5">
+                  Measurement
+                </label>
+                <input
+                  name="measurement"
+                  type="text"
+                  required
+                  placeholder="Enter measurement"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
+                />
+              </div>
+
+              <div className="form-control">
+                <label className="block text-sm font-medium text-gray-700 mb-1.5">
+                  Re-Order Point
+                </label>
+                <input
+                  name="order"
+                  type="number"
+                  min="0"
+                  required
+                  placeholder="Enter reorder point"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
+                />
+              </div>
+
+              <div className="form-control">
+                <label className="block text-sm font-medium text-gray-700 mb-1.5">
+                  Reference
+                </label>
+                <input
+                  name="reference"
+                  type="text"
+                  required
+                  placeholder="Enter reference"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
+                />
+              </div>
+
+              <div className="form-control">
+                <label className="block text-sm font-medium text-gray-700 mb-1.5">
+                  Days to Consume
+                </label>
+                <input
+                  name="consume"
+                  type="number"
+                  min="1"
+                  required
+                  placeholder="Enter days to consume"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
+                />
+              </div>
+
+              <div className="form-control">
+                <label className="block text-sm font-medium text-gray-700 mb-1.5">
+                  Distributor
+                </label>
+                <input
+                  name="distributor"
+                  type="text"
+                  required
+                  placeholder="Enter distributor"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
+                />
+              </div>
+
+              <div className="form-control">
+                <label className="block text-sm font-medium text-gray-700 mb-1.5">
+                  P.O Number
+                </label>
+                <input
+                  name="purchase_order"
+                  type="text"
+                  required
+                  placeholder="Enter P.O number"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
+                />
+              </div>
+
+              <div className="form-control">
+                <label className="block text-sm font-medium text-gray-700 mb-1.5">
+                  Date
+                </label>
+                <input
+                  name="date"
+                  type="date"
+                  required
+                  placeholder="Enter date"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
+                />
+              </div>
+
+              <div className="form-control">
+                <label className="block text-sm font-medium text-gray-700 mb-1.5">
+                  Stock Type
+                </label>
+                <StockType onChange={setStockType} />
+              </div>
+
+              <div className="form-control sm:col-span-2">
+                <label className="block text-sm font-medium text-gray-700 mb-1.5">
+                  Item Image
+                </label>
+                <input
+                  name="image"
+                  type="file"
+                  required
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm text-gray-900 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
+                />
+              </div>
             </div>
-            <div className={`${styles.inputGroup}`}>
-              <input
-                type="number"
-                id="userInput_price"
-                className={styles.input}
-                name="price"
-                value={formData.price || ""}
-                onChange={handleChange}
-                required
-              />
-              <label className={styles.userLabel} htmlFor="userInput_price">
-                Price
-              </label>
-            </div>
-            <div className={`${styles.inputGroup}`}>
-              <input
-                type="text"
-                id="userInput_description"
-                className={styles.input}
-                name="description"
-                value={formData.description || ""}
-                onChange={handleChange}
-                required
-              />
-              <label
-                className={styles.userLabel}
-                htmlFor="userInput_description"
-              >
-                Description
-              </label>
-            </div>
-            <div className={`${styles.inputGroup}`}>
-              <input
-                type="text"
-                id="userInput_measurement"
-                className={styles.input}
-                name="measurement"
-                value={formData.measurement || ""}
-                onChange={handleChange}
-                required
-              />
-              <label
-                className={styles.userLabel}
-                htmlFor="userInput_measurement"
-              >
-                Measurement
-              </label>
-            </div>
-            <div className={`${styles.inputGroup}`}>
-              <input
-                type="text"
-                id="userInput_stock"
-                className={styles.input}
-                name="stock"
-                value={formData.stock || ""}
-                onChange={handleChange}
-                required
-              />
-              <label className={styles.userLabel} htmlFor="userInput_stock">
-                Stock No.
-              </label>
-            </div>
-            <div className={`${styles.inputGroup}`}>
-              <input
-                type="text"
-                id="userInput_order"
-                className={styles.input}
-                name="order"
-                value={formData.order || ""}
-                onChange={handleChange}
-                required
-              />
-              <label className={styles.userLabel} htmlFor="userInput_order">
-                Re-Order Point
-              </label>
-            </div>
-            <div className={`${styles.inputGroup}`}>
-              <input
-                type="number"
-                id="userInput_quantity"
-                className={styles.input}
-                name="quantity"
-                value={formData.quantity || ""}
-                onChange={handleChange}
-                required
-              />
-              <label className={styles.userLabel} htmlFor="userInput_quantity">
-                Quantity
-              </label>
-            </div>
-            <div className={`${styles.inputGroup}`}>
-              <input
-                type="text"
-                id="userInput_reference"
-                className={styles.input}
-                name="reference"
-                value={formData.reference || ""}
-                onChange={handleChange}
-                required
-              />
-              <label className={styles.userLabel} htmlFor="userInput_reference">
-                Reference
-              </label>
-            </div>
-            <div className={`${styles.inputGroup}`}>
-              <input
-                type="number"
-                id="userInput_consume"
-                className={styles.input}
-                name="consume"
-                value={formData.consume || ""}
-                onChange={handleChange}
-                required
-              />
-              <label className={styles.userLabel} htmlFor="userInput_consume">
-                No. Of Date To Consume
-              </label>
-            </div>
-            <div className={`${styles.inputGroup}`}>
-              <input
-                type="text"
-                id="userInput_distributor"
-                className={styles.input}
-                name="distributor"
-                value={formData.distributor || ""}
-                onChange={handleChange}
-                required
-              />
-              <label
-                className={styles.userLabel}
-                htmlFor="userInput_distributor"
-              >
-                Distributor
-              </label>
-            </div>
-            <div className={`${styles.inputGroup}`}>
-              <input
-                type="file"
-                id="userInput_image"
-                className={styles.input}
-                name="image"
-                onChange={handleChange}
-                accept="image/jpeg, image/png"
-                required
-              />
-              <label className={styles.userLabel} htmlFor="userInput_image">
-                Image
-              </label>
-              {formData.image && (
-                <div className="mt-2">
-                  <Image
-                    src={URL.createObjectURL(formData.image)}
-                    alt="Selected"
-                    height={50}
-                    width={50}
-                    priority
-                  />
-                </div>
-              )}
-            </div>
-            <div className="w-5/12">
-              <StockType
-                value={formData.stockType || ""}
-                onChange={handleStockTypeChange}
-              />
-            </div>
+
             <button
-              className="btn btn-success mt-5 w-full font-bold text-white"
               type="submit"
+              className={`mt-6 w-full px-4 py-2.5 text-white rounded-md
+                bg-blue-600 hover:bg-blue-700 
+                disabled:opacity-50 disabled:cursor-not-allowed
+                transition-colors duration-200
+              `}
+              disabled={mutation.isPending}
             >
-              Add to list
+              {mutation.isPending ? "Creating..." : "Create Item"}
             </button>
           </form>
         </div>
       </div>
-    </dialog>
+    </FormModal>
   );
 };
 
