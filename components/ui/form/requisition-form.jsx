@@ -62,6 +62,7 @@ const CartModal = () => {
         data[key] = value;
       }
     });
+    console.log(data);
     mutation.mutate(data, {
       onSuccess: (response) => {
         if (response && response.data) {
@@ -131,24 +132,52 @@ const CartModal = () => {
                 >
                   <div className="text-center space-y-2 p-4 bg-white shadow-md rounded-lg">
                     <h4 className="font-semibold text-lg text-gray-800">
-                      {item.description}
+                      <input
+                        type="text"
+                        name="description"
+                        defaultValue={item.description}
+                        disabled={!loading}
+                        className="disabled:bg-transparent text-center min-w-full "
+                      />
                     </h4>
-                    <div className="flex justify-between w-full mt-2">
-                      <p className="text-sm text-gray-500">{`Unit: ${item.measurement}`}</p>
-                      <p className="text-sm text-gray-500">{`Price: $${item.price.toFixed(
-                        2
-                      )}`}</p>
+                    <div className="flex justify-between  w-full mt-2">
+                      <p className="text-sm text-gray-500  flex items-center gap-x-5">
+                        {`Unit:`}
+                        <input
+                          type="text"
+                          name="item"
+                          defaultValue={item.measurement}
+                          disabled={!loading}
+                          className="w-8 disabled:bg-transparent"
+                        />
+                      </p>
+                      <p className="text-sm text-gray-500  flex items-center gap-x-5">
+                        {`Price:`}
+
+                        <input
+                          type="text"
+                          name="price"
+                          defaultValue={item.price}
+                          disabled={!loading}
+                          className="w-12 disabled:bg-transparent text-center"
+                        />
+                      </p>
                     </div>
                     <div className="flex justify-between">
                       <span>Quantity</span>
                       <input
                         type="number"
-                        name={`quantity-${item.id}`}
+                        name={`quantity`}
                         defaultValue={1}
                         min={1}
                         className="border border-gray-300 w-2/4 text-center rounded-md mt-2"
                       />
                     </div>
+                    <input
+                      type="hidden"
+                      name="stock"
+                      defaultValue={item.stock_no}
+                    />
                     <button
                       className="text-red-500 mt-2 hover:text-red-700 flex gap-x-4 m-auto items-center"
                       onClick={() => btnDelete(item.id)}

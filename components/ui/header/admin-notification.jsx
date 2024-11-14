@@ -6,9 +6,10 @@ import useInventoryStore from "@/components/store/store";
 import useFetchData from "@/components/util/custom-hook/useFetchData";
 import Link from "next/link";
 import Image from "next/image";
-
+import axios from "axios";
 const Admin_Notification = () => {
   const [page, setPage] = useState(3);
+  const [isViewed, setIsViewed] = useState(false);
   const [toggleBtn, setToggleBtn] = useState(false);
   const queryClient = useQueryClient();
   const { token } = useInventoryStore();
@@ -20,25 +21,10 @@ const Admin_Notification = () => {
   });
   useEffect(() => {
     queryClient.invalidateQueries({ queryKey: ["admin-notification"] });
-  }, [page]);
+  }, [page, isViewed]);
 
   // when toggleBtn is true, update the fecth data to /update-notification
-  const updateNotification = async () => {
-    await fetch(
-      `${process.env.NEXT_PUBLIC_BASE_URL}/admin/update-notification`,
-      {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-        },
-      }
-    );
-  };
-  useEffect(() => {
-    if (toggleBtn) {
-      updateNotification();
-    }
-  }, [toggleBtn]);
+
   const sortedNotifications = useMemo(() => {
     if (!data) return [];
     const combined = [
@@ -56,20 +42,32 @@ const Admin_Notification = () => {
 
   const hasUnviewedNotifications = useMemo(() => {
     if (!data) return false;
-    // display the data result and lowStockResult view === false
-
-    return (
-      data.result.some((item) => item.viewed === false) ||
-      data.lowStockResult.some((item) => item.viewed === false)
-    );
+    const result = data && data.result?.some((item) => item.viewed === false);
+    return result;
   }, [data]);
 
   const loadMore = () => {
     setPage((prevPage) => prevPage + 2);
   };
 
-  const btnHandler = () => {
+  const viewNotification = () => {
     setToggleBtn(!toggleBtn);
+    setIsViewed((prev) => !prev);
+
+    const updateNotification = async () => {
+      await axios.put(
+        `${process.env.NEXT_PUBLIC_BASE_URL}/admin/update-notification`,
+        {},
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+    };
+    // await updateNotification();
+    updateNotification();
   };
   return (
     <Fragment>
@@ -77,7 +75,7 @@ const Admin_Notification = () => {
         tabIndex={0}
         role="button"
         className={`btn btn-ghost rounded-btn relative`}
-        onClick={btnHandler}
+        onClick={viewNotification}
       >
         <IoMdNotifications size={"1.7rem"} cursor="pointer" />
         {hasUnviewedNotifications && (

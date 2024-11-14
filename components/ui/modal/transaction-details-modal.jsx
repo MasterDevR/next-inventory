@@ -70,7 +70,6 @@ const Transaction_Details_Modal = () => {
     approveMutation.mutate(formData, {
       onSuccess: (response) => {
         if (response && response.data) {
-          console.log(response.data);
           updateSuccessModal(true);
           updateModalMessage(response.data.message);
           updateStatuss(response.data.status);
@@ -136,7 +135,7 @@ const Transaction_Details_Modal = () => {
     transaction_item = [],
     ris,
   } = transactionDetails || {};
-  console.log(transactionDetails);
+
   // Add status check helper
   const isStatusApproved = Status?.name === "approved";
   const isStatusPending = Status?.name === "pending";
@@ -272,7 +271,21 @@ const Transaction_Details_Modal = () => {
                         {item.stock.item}
                       </td>
                       <td className="px-4 py-3 text-sm text-gray-600 ">
-                        {item.quantity}
+                        <input
+                          type="number"
+                          name={`quantity_${index}`}
+                          defaultValue={item.quantity}
+                        />
+                        <input
+                          type="hidden"
+                          name={`stock_no_${index}`}
+                          defaultValue={item.stock_no}
+                        />
+                        <input
+                          type="hidden"
+                          name={`item_id_${index}`}
+                          defaultValue={item.id}
+                        />
                       </td>
                       <td className="px-4 py-3 text-sm text-gray-600 ">
                         {item.stock.measurement}
@@ -288,7 +301,7 @@ const Transaction_Details_Modal = () => {
                           />
                         ) : (
                           <span className="text-gray-600">
-                            {item.approved_quantity || item.quantity}
+                            {item.approved_quantity}
                           </span>
                         )}
                       </td>
