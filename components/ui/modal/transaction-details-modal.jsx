@@ -66,7 +66,7 @@ const Transaction_Details_Modal = () => {
   const handleSubmit = (e) => {
     e.preventDefault();
     const formData = new FormData(e.target);
-
+    formData.append("department_id", department_id);
     approveMutation.mutate(formData, {
       onSuccess: (response) => {
         if (response && response.data) {
@@ -132,10 +132,10 @@ const Transaction_Details_Modal = () => {
     Status,
     TransactionType,
     user,
+    department_id,
     transaction_item = [],
     ris,
   } = transactionDetails || {};
-
   // Add status check helper
   const isStatusApproved = Status?.name === "approved";
   const isStatusPending = Status?.name === "pending";

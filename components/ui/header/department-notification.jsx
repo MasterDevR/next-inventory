@@ -74,7 +74,33 @@ const Department_Notification = () => {
                       {item.Status.name}
                     </strong>
                   </h3>
-                  <h4>Transaction ID : {item.transaction_id}</h4>
+                  <h4 className="font-bold">
+                    Transaction ID:
+                    <span className="font-light">{item.transaction_id}</span>
+                  </h4>
+                  {/* set both date bold but the actual date is normal */}
+                  <h5 className="font-bold">
+                    Date Requested:{" "}
+                    <span className="font-light">
+                      {item.created_at &&
+                        new Date(item.created_at).toLocaleDateString("en-US", {
+                          month: "2-digit",
+                          day: "2-digit",
+                          year: "numeric",
+                        })}
+                    </span>
+                  </h5>{" "}
+                  <h5 className="font-bold">
+                    Date of Approval:{" "}
+                    <span className="font-light">
+                      {item.updated_at &&
+                        new Date(item.updated_at).toLocaleDateString("en-US", {
+                          month: "2-digit",
+                          day: "2-digit",
+                          year: "numeric",
+                        })}
+                    </span>
+                  </h5>
                 </Link>
               </li>
             );

@@ -12,11 +12,9 @@ export default function RIS_Download_Btn({ transactionDetails }) {
     transaction_item,
   } = transactionDetails;
   const date = new Date(created_at);
-  const year = date.getFullYear();
-  const month = String(date.getMonth() + 1).padStart(2, "0");
+
   const formattedDate = new Date(created_at).toLocaleDateString();
-  const formattedRisCount = String(ris).padStart(3, "0");
-  const formattedRisNumber = `${year}-${month}-${formattedRisCount}`;
+
   const downloadHandler = () => {
     // Upper part of the form with merged cells
     const wsData = [
@@ -50,7 +48,7 @@ export default function RIS_Download_Btn({ transactionDetails }) {
       [], // Empty row for spacing below LGU
       [], // Empty row for additional spacing below LGU
       [
-        "Division: " + (user.department || "N/A"),
+        "Division: Universidad De Manila",
         "",
         "",
         "FPP Code: 3323(014)",
@@ -60,7 +58,7 @@ export default function RIS_Download_Btn({ transactionDetails }) {
         "Office: " + (user.department_code || "N/A"),
         "",
         "",
-        "RIS No.: " + (formattedRisNumber || "N/A"),
+        "RIS No.: " + (ris || "N/A"),
         "Date: " + (formattedDate || "N/A"),
       ],
       [], // Empty row for spacing
@@ -78,7 +76,12 @@ export default function RIS_Download_Btn({ transactionDetails }) {
     ];
 
     // Body data for transaction items
+    let totalValue = 0; // Initialize total value
     transaction_item.forEach((item) => {
+      // Calculate the total value for the current item
+      const itemTotalValue = item.stock.price * item.approved_quantity;
+      totalValue += itemTotalValue; // Accumulate total value
+
       // Push item details to wsData
       wsData.push([
         { v: item.stock_no || "N/A" },
@@ -87,10 +90,7 @@ export default function RIS_Download_Btn({ transactionDetails }) {
         { v: item.quantity || 0 }, // Display quantity
         { v: item.approved_quantity || 0 }, // Display approved quantity
         {
-          v:
-            item.stock.price +
-            " / " +
-            item.stock.price * item.approved_quantity,
+          v: itemTotalValue, // Display total value for the item
         }, // Display approved quantity
 
         "", // Placeholder for remarks
@@ -110,15 +110,134 @@ export default function RIS_Download_Btn({ transactionDetails }) {
       wsData.push([""]); // Optional: Add an empty row for better spacing
     });
 
+    // After processing all items, add the total row
+    wsData.push([
+      "", // Empty cell for stock number
+      "", // Empty cell for unit
+      "", // Empty cell for description
+      "", // Empty cell for quantity
+      "", // Empty cell for approved quantity
+      { v: totalValue }, // Total value for all items
+      "", // Placeholder for remarks
+      "",
+      "",
+    ]);
+
+    // Add "Total" label in the appropriate cell
+    wsData[wsData.length - 1][3] = { v: "Total" }; // Set "Total" in the Quantity column
+    // Add vertical spacing (2 empty rows)
+    wsData.push([], []); // Add two empty rows for spacing
+
+    // Add Purpose and other labels
+    wsData.push([
+      { v: "Purpose" }, // Column 0: Purpose
+      "", // Column 1: Empty
+      "", // Column 6: Empty
+      "", // Column 7: Empty
+      "", // Column 8: Empty
+      "", // Column 6: Empty
+      "", // Column 7: Empty
+      "", // Column 8: Empty
+    ]);
+    wsData.push([
+      "",
+      "", // Column 1: Empty
+      { v: "Requested By" }, // Column 2: Requested By
+      { v: "Approved By" }, // Column 3: Approved By
+      { v: "Issued By" }, // Column 4: Issued By
+      { v: "Received By" }, // Column 5: Received By
+      "", // Column 6: Empty
+      "", // Column 7: Empty
+      "", // Column 8: Empty
+    ]);
+
+    // Add vertical spacing (1 empty row)
+    wsData.push([]); // Add one empty row for spacing
+
+    // Add Signature and related labels
+    wsData.push([
+      { v: "Signature" }, // Column 0: Signature
+      "", // Column 1: Empty
+      "", // Column 2: Empty
+      "", // Column 3: Empty
+      "", // Column 4: Empty
+      "", // Column 5: Empty
+      "", // Column 6: Empty
+      "", // Column 7: Empty
+      "", // Column 8: Empty
+    ]);
+
+    wsData.push([
+      { v: "Printed Name" }, // Column 0: Printed Name
+      "", // Column 1: Empty
+      "", // Column 2: Empty
+      "", // Column 3: Empty
+      "", // Column 4: Empty
+      "", // Column 5: Empty
+      "", // Column 6: Empty
+      "", // Column 7: Empty
+      "", // Column 8: Empty
+    ]);
+
+    wsData.push([
+      { v: "Designation" }, // Column 0: Designation
+      "", // Column 1: Empty
+      { v: `Head ${user.department_code}` },
+      { v: "Acting Chief" },
+      { v: "Supply Staff" },
+      { v: `Head ${user.department_code}` },
+      "", // Column 6: Empty
+      "", // Column 7: Empty
+      "", // Column 8: Empty
+    ]);
+
+    wsData.push([
+      { v: "Date" }, // Column 0: Date
+      "", // Column 1: Empty
+      "", // Column 2: Empty
+      "", // Column 3: Empty
+      "", // Column 4: Empty
+      "", // Column 5: Empty
+      "", // Column 6: Empty
+      "", // Column 7: Empty
+      "", // Column 8: Empty
+    ]);
+
     // Create the worksheet
     const ws = XLSX.utils.aoa_to_sheet(wsData);
+
+    // Define maximum widths for each column
+    const maxWidths = [15, 6, null, 15, 15, 15]; // null for column 2 to use max content
+
+    // Calculate column widths based on the content for column 2
+    const colWidths = maxWidths.map((maxWidth, index) => {
+      if (maxWidth === null) {
+        // Calculate max length for column 2
+        let maxLength = 0;
+        wsData.forEach((row) => {
+          const cellValue =
+            typeof row[index] === "object" ? row[index].v : row[index];
+          const cellLength = String(cellValue).length;
+          maxLength = Math.max(maxLength, cellLength);
+        });
+        return { wch: maxLength }; // Use the max length for column 2
+      }
+      return { wch: maxWidth }; // Use the defined max width for other columns
+    });
+
+    // Set the column widths in the worksheet
+    ws["!cols"] = colWidths;
 
     // Set merges for the title and alignment
     ws["!merges"] = [
       { s: { r: 0, c: 0 }, e: { r: 0, c: 5 } }, // Merge cells from A1 to H1 (title)
       { s: { r: 1, c: 0 }, e: { r: 1, c: 2 } }, // Merge cells from A2 to D2 for "LGU: Universidad De Manila"
+      { s: { r: 2, c: 0 }, e: { r: 2, c: 2 } }, // Merge cells from A4 to D4 for "Fund: Other Supplies and Materials Expenses"
+      { s: { r: 2, c: 3 }, e: { r: 2, c: 5 } }, //
+      { s: { r: 5, c: 0 }, e: { r: 5, c: 2 } }, // Merge cells from A7 to D7 for "Office: "
       { s: { r: 8, c: 0 }, e: { r: 8, c: 3 } },
       { s: { r: 8, c: 4 }, e: { r: 8, c: 5 } },
+      { s: { r: 26, c: 1 }, e: { r: 26, c: 5 } },
     ];
 
     // Apply styling for title and merged cells to center text
@@ -140,28 +259,6 @@ export default function RIS_Download_Btn({ transactionDetails }) {
       alignment: { horizontal: "center", vertical: "center" },
     };
 
-    // Column widths for better formatting
-    const colWidths = [];
-
-    // Dynamically adjust column widths based on the longest content in each column
-    wsData.forEach((row) => {
-      row.forEach((cell, colIndex) => {
-        const cellValue = typeof cell === "object" ? cell.v : cell;
-        const cellLength = String(cellValue).length;
-        if (colWidths[colIndex]) {
-          colWidths[colIndex] = Math.max(colWidths[colIndex], cellLength);
-        } else {
-          colWidths[colIndex] = cellLength;
-        }
-      });
-    });
-
-    // Apply column widths (ensure they fit the content)
-    const customWidths = colWidths.map((length) => ({ wch: length + 2 })); // Add a little extra space
-
-    // Merge dynamic widths with custom widths
-    ws["!cols"] = customWidths;
-
     // Create the workbook and download it
     const wb = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(wb, ws, "RIS");
@@ -169,9 +266,9 @@ export default function RIS_Download_Btn({ transactionDetails }) {
   };
 
   return (
-    <button className="btn btn-active cursor-pointer" onClick={downloadHandler}>
+    <button className="btn btn-outline" onClick={downloadHandler}>
       <GoDownload />
-      <span className="hidden lg:block">Download</span>
+      Download
     </button>
   );
 }

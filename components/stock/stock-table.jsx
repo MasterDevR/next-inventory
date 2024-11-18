@@ -9,6 +9,7 @@ import DeleteStockBtn from "@/components/ui/button/delete-stock-btn";
 import EditBtn from "@/components/ui/button/edit-item-btn";
 import StockMobileView from "./stock-mobile-view";
 import NoDataFound from "./NoDataFound";
+import { FaEye } from "react-icons/fa";
 
 const ITEMS_PER_PAGE = 10;
 
@@ -116,9 +117,6 @@ const InventoryTable = () => {
                 <tr
                   key={index + item.stock_no + item.description}
                   className="cursor-pointer hover:bg-gray-200"
-                  onClick={() => {
-                    router.push(`/inventory/${item.stock_no}`);
-                  }}
                 >
                   <td>{(currentPage - 1) * ITEMS_PER_PAGE + (index + 1)}</td>
                   <td>{item.description}</td>
@@ -131,8 +129,17 @@ const InventoryTable = () => {
                   <td>{item.distributor}</td>
 
                   <td className="relative">
-                    <div className="flex justify-center items-center gap-5">
+                    <div className="flex justify-center items-center gap-1">
                       <EditBtn stock_no={item.stock_no} />
+                      <button
+                        onClick={() => {
+                          router.push(`/inventory/${item.stock_no}`);
+                        }}
+                        className="btn btn-sm flex items-center btn-success btn-outline"
+                      >
+                        <FaEye className="mr-2" />
+                        <span className="hidden md:block">View</span>
+                      </button>
                       <DeleteStockBtn stock_no={item.stock_no} id={item.id} />
                     </div>
                   </td>

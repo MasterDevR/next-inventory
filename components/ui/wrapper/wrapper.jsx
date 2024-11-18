@@ -56,7 +56,6 @@ const Wrapper = ({ children }) => {
             signOut();
           }
         } catch (error) {
-          console.error("Error checking token:", error);
           signOut();
         }
       };
