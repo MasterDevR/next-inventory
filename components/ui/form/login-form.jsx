@@ -53,7 +53,9 @@ const LoginForm = () => {
             priority
             className="rounded-full"
           />
-          <h1 className="text-2xl font-semibold text-gray-800">Welcome Back</h1>
+          <h1 className="text-xl font-semibold text-gray-800 text-center">
+            Supply and Materials Inventory System
+          </h1>
           <p className="text-md text-gray-600">Please sign in to continue</p>
         </div>
         <form className="flex w-full flex-col gap-y-4" onSubmit={submitHandler}>
@@ -66,7 +68,7 @@ const LoginForm = () => {
               name="userID"
             />
             <FaRegUserCircle
-              size={"1.5rem"}
+              size={"1rem"}
               className="absolute top-2 left-2 text-gray-400"
             />
           </div>
@@ -80,13 +82,13 @@ const LoginForm = () => {
             />
             {isLocked ? (
               <FaLockOpen
-                size={"1.5rem"}
+                size={"1rem"}
                 className="absolute top-2 left-2 text-gray-400 cursor-pointer"
                 onClick={showPassword}
               />
             ) : (
               <FaLock
-                size={"1.5rem"}
+                size={"1rem"}
                 className="absolute top-2 left-2 text-gray-400 cursor-pointer"
                 onClick={showPassword}
               />

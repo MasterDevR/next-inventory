@@ -3,15 +3,22 @@ import React, { Fragment, useRef, useState, useEffect } from "react";
 import axios from "axios";
 import EditItemModal from "../modal/edit-item-modal";
 import { FaEdit } from "react-icons/fa"; // Import the icon from react-icons
+import useInventoryStore from "@/components/store/store";
 
 const EditBtn = ({ stock_no }) => {
+  const { token } = useInventoryStore();
   const modalRef = useRef();
   const [data, setData] = useState([]);
 
   const editHandler = async (event) => {
     event.stopPropagation();
     const response = await axios.get(
-      `${process.env.NEXT_PUBLIC_BASE_URL}/admin/edit-stock/${stock_no}`
+      `${process.env.NEXT_PUBLIC_BASE_URL}/admin/edit-stock/${stock_no}`,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
     );
 
     setData(response.data?.data);

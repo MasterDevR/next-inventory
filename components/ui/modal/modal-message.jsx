@@ -86,12 +86,7 @@ const AlertModal = () => {
     <dialog ref={modalRef} className="modal">
       <div className="modal-box max-w-md p-0 overflow-hidden">
         <div className="p-6">
-          <div className="flex items-center gap-3 mb-6">
-            {icon}
-            <h1 className="text-lg font-semibold text-gray-900">
-              {modalStatus === 407 ? "Insufficient Stock" : modalMessage}
-            </h1>
-          </div>
+          <div className="flex items-center gap-3 mb-6">{icon}</div>
 
           {modalStatus === 407 && (
             <div className="border rounded-lg divide-y divide-gray-100">
@@ -104,8 +99,8 @@ const AlertModal = () => {
           )}
         </div>
 
-        <div className="modal-action border-t p-4 bg-gray-50">
-          <form method="dialog">
+        <div className="modal-action border-t p-4 ">
+          <form method="dialog" className="w-full">
             <HideModal modalRef={modalRef} />
           </form>
         </div>

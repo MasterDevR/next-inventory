@@ -67,9 +67,9 @@ const ChangeEmail = () => {
     <>
       <ConfimModal modalRef={modalRef} onConfirm={handleConfirm} />
       <div className="bg-white container p-4 shadow-md rounded-md space-y-5 m-auto">
-        <strong className="text-xl">Change Your Email</strong>
+        <strong className="text-xl">Change / Update Your Email</strong>
         <p className="text-sm">
-          To change your email address, please provide the following
+          To change / update your email address, please provide the following
           information:
         </p>
         <ul className="menu">

@@ -168,7 +168,7 @@ const TransactionItem = () => {
                 >
                   <td className="p-3 text-center">{index + 1}</td>
                   <td className="p-3 ">{item.id}</td>
-                  <td className="p-3 ">{item.user.department_code}</td>
+                  <td className="p-3 uppercase">{item.user.department_code}</td>
                   <td
                     className={`p-3  ${
                       item.Status.name === "approved"

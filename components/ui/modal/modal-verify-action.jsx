@@ -7,7 +7,7 @@ import useInventoryStore from "@/components/store/store";
 
 const VerifyAction = ({ stock_no, id, modalRef }) => {
   const queryClient = useQueryClient();
-  const { updateStatuss, updateModalMessage, updateSuccessModal } =
+  const { updateStatuss, updateModalMessage, updateSuccessModal, token } =
     useInventoryStore();
   const cancelDelete = (event) => {
     event.stopPropagation();
@@ -20,9 +20,14 @@ const VerifyAction = ({ stock_no, id, modalRef }) => {
   const deleteHandler = async ({ stock_no }) => {
     try {
       const response = await axios.delete(
-        `${process.env.NEXT_PUBLIC_BASE_URL}/admin/delete-stock/${stock_no}`
+        `${process.env.NEXT_PUBLIC_BASE_URL}/admin/delete-stock/${stock_no}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
       );
-
+      console.log(response.data);
       return response.data;
     } catch (error) {
       console.log(error.message);

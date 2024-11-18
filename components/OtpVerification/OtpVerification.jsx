@@ -4,7 +4,7 @@ import useInventoryStore from "@/components/store/store";
 import SuccessModal from "./SuccessModal";
 
 const OtpVerification = () => {
-  const { verifyEmail } = useInventoryStore();
+  const { verifyEmail, token } = useInventoryStore();
   const [otp, setOtp] = useState(["", "", "", ""]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
@@ -57,6 +57,11 @@ const OtpVerification = () => {
         {
           verifyEmail,
           otp: otpValue,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
         }
       );
       if (response.status === 200) {
@@ -85,7 +90,12 @@ const OtpVerification = () => {
     try {
       const response = await axios.post(
         `${process.env.NEXT_PUBLIC_BASE_URL}/user/resend-otp`,
-        { verifyEmail }
+        { verifyEmail },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
       );
       console.log("OTP resent:", response.data);
     } catch (error) {

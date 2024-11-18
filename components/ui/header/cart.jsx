@@ -7,7 +7,7 @@ const Cart = () => {
   const { cartItem } = useInventoryStore();
   return (
     <div
-      className="btn btn-ghost rounded-btn relative  text-white"
+      className="btn btn-ghost rounded-btn relative  "
       onClick={() => {
         document.getElementById("cart-modal").showModal();
       }}

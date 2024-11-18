@@ -9,6 +9,7 @@ import EditTransactionModal from "./edit-transaction";
 import DeleteTransactionModal from "./delete-transaction";
 import axios from "axios";
 import { useQueryClient } from "@tanstack/react-query";
+import { AiOutlineExclamationCircle } from "react-icons/ai";
 const Transaction_List = () => {
   const queryClient = useQueryClient();
   const [isToInvalidate, setIsToInvalidate] = useState(false);
@@ -90,21 +91,55 @@ const Transaction_List = () => {
 
   return (
     <div>
-      {/* Desktop View */}
-      <div className="hidden md:block overflow-x-auto bg-white min-h-[50vh] shadow-lg rounded-3xl">
-        <table className="table w-full">
-          <thead className="text-base text-center">
-            <tr>
-              <th>Transaction ID</th>
-              <th>Purpose</th>
-              <th>Status</th>
-              <th>Date</th>
-              <th>Actions</th>
-            </tr>
-          </thead>
-          <tbody>
+      {/* Check if data is available */}
+      {data?.result[0]?.length === 0 ? (
+        <div className="flex flex-col items-center justify-center min-h-[50vh] bg-gray-50 rounded-lg shadow-md p-6">
+          <AiOutlineExclamationCircle className="h-12 w-12 text-gray-500 mb-4" />
+          <h2 className="text-xl font-semibold text-gray-700">
+            No Transactions Yet
+          </h2>
+          <p className="text-gray-500">
+            It seems you haven't made any transactions.
+          </p>
+          <button
+            className="mt-4 px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600"
+            onClick={() => router.push("/available-item")}
+          >
+            Make a Request
+          </button>
+        </div>
+      ) : (
+        <>
+          {/* Desktop View */}
+          <div className="hidden md:block overflow-x-auto bg-white min-h-[50vh] shadow-lg rounded-3xl">
+            <table className="table w-full">
+              <thead className="text-base text-center">
+                <tr>
+                  <th>Transaction ID</th>
+                  <th>Purpose</th>
+                  <th>Status</th>
+                  <th>Date</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                {data?.result[0]?.map((item) => (
+                  <DesktopTransactionItem
+                    key={item.id}
+                    transaction={item}
+                    onEdit={handleEdit}
+                    onDelete={handleDelete}
+                    onRowClick={btnHandler}
+                  />
+                ))}
+              </tbody>
+            </table>
+          </div>
+
+          {/* Mobile View */}
+          <div className="md:hidden space-y-4">
             {data?.result[0]?.map((item) => (
-              <DesktopTransactionItem
+              <MobileTransactionItem
                 key={item.id}
                 transaction={item}
                 onEdit={handleEdit}
@@ -112,23 +147,9 @@ const Transaction_List = () => {
                 onRowClick={btnHandler}
               />
             ))}
-          </tbody>
-        </table>
-      </div>
-
-      {/* Mobile View */}
-      <div className="md:hidden space-y-4">
-        {data?.result[0]?.map((item) => (
-          <MobileTransactionItem
-            key={item.id}
-            transaction={item}
-            onEdit={handleEdit}
-            onDelete={handleDelete}
-            onRowClick={btnHandler}
-          />
-        ))}
-      </div>
-
+          </div>
+        </>
+      )}
       {/* Modals */}
       {selectedTransaction && (
         <EditTransactionModal

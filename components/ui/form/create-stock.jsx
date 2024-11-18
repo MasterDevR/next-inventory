@@ -104,7 +104,18 @@ const InventoryForm = () => {
                   className="w-full px-3 py-2 border border-gray-300 rounded-md text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
                 />
               </div>
-
+              <div className="form-control">
+                <label className="block text-sm font-medium text-gray-700 mb-1.5">
+                  Item Description
+                </label>
+                <input
+                  name="description"
+                  type="text"
+                  required
+                  placeholder="Enter item name"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
+                />
+              </div>
               <div className="form-control">
                 <label className="block text-sm font-medium text-gray-700 mb-1.5">
                   Stock No.
@@ -166,7 +177,7 @@ const InventoryForm = () => {
                 </label>
                 <input
                   name="order"
-                  type="number"
+                  type="text"
                   min="0"
                   required
                   placeholder="Enter reorder point"
@@ -247,7 +258,7 @@ const InventoryForm = () => {
                 <StockType onChange={setStockType} />
               </div>
 
-              <div className="form-control sm:col-span-2">
+              <div className="form-control ">
                 <label className="block text-sm font-medium text-gray-700 mb-1.5">
                   Item Image
                 </label>
@@ -255,7 +266,7 @@ const InventoryForm = () => {
                   name="image"
                   type="file"
                   required
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm text-gray-900 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
+                  className=" px-3 py-2 border border-gray-300 rounded-md text-sm text-gray-900 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
                 />
               </div>
             </div>

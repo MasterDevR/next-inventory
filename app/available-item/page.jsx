@@ -53,7 +53,7 @@ const Page = () => {
   const canMakeRequest = () => {
     const currentMonth = new Date().getMonth() + 1;
 
-    const academicSupportMonths = [1, 3, 5, 7, 9, 11];
+    const academicAndAcademicSupportMonths = [1, 3, 5, 7, 9, 11];
     const adminMonths = [2, 4, 6, 8, 10, 12];
 
     switch (requestorType?.toLowerCase()) {
@@ -61,7 +61,7 @@ const Page = () => {
         return true;
       case "academic":
       case "support":
-        return academicSupportMonths.includes(currentMonth);
+        return academicAndAcademicSupportMonths.includes(currentMonth);
       case "admin":
         return adminMonths.includes(currentMonth);
       default:

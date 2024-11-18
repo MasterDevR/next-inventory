@@ -1,140 +1,116 @@
 "use client";
 import useInventoryStore from "@/components/store/store";
 import useFetchData from "@/components/util/custom-hook/useFetchData";
-import { useRouter } from "next/navigation";
-
-export default function SearchBar({ params }) {
+import Download_Stock_Card from "@/components/ui/button/download-btn/download-stock-card";
+const Page = ({ params }) => {
   const { token } = useInventoryStore();
-  const router = useRouter();
   const { data } = useFetchData({
-    path: `/admin/stock-details/${params.stock_no}`,
+    path: `/admin/stock-card/${params.stock_no}`,
     token: token,
-    key: "stock-details",
+    key: "stock-card",
   });
-
   return (
-    <div
-      className="overflow-x-auto min-h-52 shadow-md bg-white space-y-20
- p-4"
-    >
-      {/* Note Section */}
-      <div className="mt-4 p-4  border-l-4 border-yellow-500 text-yellow-800">
-        <strong>Note:</strong> This page displays the detailed history of the
-        selected stock item, including all past transactions, changes in
-        quantity, and other relevant updates.
-      </div>
+    <div className="overflow-hidden bg-gray-50 p-5 rounded-lg ">
+      <header className="mb-4 w-full lg:w-5/6 mx-auto flex flex-col bg-white lg:flex-row lg:justify-between lg:items-center shadow-inner p-4 rounded-lg shadow-gray-200">
+        <h3 className="text-md font-medium ">
+          Item: {data && data.data[0].stock.item}
+        </h3>
+        <h3 className="text-md font-medium ">
+          Description: {data && data.data[0].stock.description}
+        </h3>
+        <h3 className="text-md font-medium ">
+          Stock No: {data && data.data[0].stock.stock_no}
+        </h3>
+        <div className="w-fit">
+          {data && <Download_Stock_Card data={data} />}
+        </div>
+      </header>
+      {/* Table Layout */}
+      <div className=" p-5 w-full  lg:w-5/6 mx-auto border-2 bg-white border-gray-200 rounded-lg overflow-auto">
+        <table className="table w-full table-zebra">
+          <thead>
+            <tr>
+              <th className="w-8" rowSpan={2}>
+                Date
+              </th>
+              <th className="w-8" rowSpan={2}>
+                Reference
+              </th>
+              <th className="w-8">Receipt</th>
+              <th className="w-8" colSpan={2}>
+                Issue
+              </th>
+              <th className="w-8">Balance</th>
+              <th className="w-8" rowSpan={2}>
+                No. of Days to Consume
+              </th>
+            </tr>
+            <tr>
+              <th className="w-8">Qty</th>
+              <th className="w-8">Qty</th>
+              <th className="w-8">Office</th>
+              <th className="w-8">Qty</th>
+            </tr>
+          </thead>
+          <tbody>
+            {data && data.data && data.data.length > 0 ? (
+              data.data.map((item, index) => {
+                // Get transaction items and initial quantity
+                const transactionItems = item.transaction_item || [];
+                const initialQty = data.initialQty;
+                let balance = initialQty;
 
-      <div className="overflow-auto">
-        {/* Responsive Table */}
-        <div className="hidden lg:block">
-          <table className="table table-x rounded-none">
-            <thead>
+                return (
+                  <>
+                    {/* Display the initial balance on the first row */}
+                    {index === 0 && (
+                      <tr key={`initial-${index}`} className="text-center">
+                        <td>
+                          {new Date(data.initialDate).toLocaleDateString()}
+                        </td>
+                        <td colSpan={4} className="font-bold"></td>
+                        <td>{balance}</td>
+                        <td></td>
+                      </tr>
+                    )}
+
+                    {/* Display each transaction item */}
+                    {transactionItems.map((transaction, idx) => {
+                      // Update the balance based on transaction data
+                      const issueQty = transaction.approved_quantity;
+                      balance -= issueQty;
+
+                      return (
+                        <tr key={transaction.id} className="text-center">
+                          <td>
+                            {new Date(
+                              transaction.created_at
+                            ).toLocaleDateString()}
+                          </td>
+                          <td>{transaction.ris}</td>
+                          <td>{transaction.quantity}</td>
+                          <td>{transaction.approved_quantity}</td>
+                          <td>{transaction.office}</td>
+                          <td>{balance}</td>
+                          <td>{item.stock.consume_date}</td>
+                        </tr>
+                      );
+                    })}
+                  </>
+                );
+              })
+            ) : (
               <tr>
-                <th> </th>
-                <th>Stock No.</th>
-                <th>Price</th>
-                <th>Unit</th>
-                <th>Description</th>
-                <th>Stock Type</th>
-                <th>Qty on hand</th>
-                <th>Qty issued</th>
-                <th>Total Qty</th>
-                <th>Consume Date</th>
-                <th>Distributor</th>
-                <th>Date</th>
+                <td colSpan={7} className="text-center font-bold text-lg">
+                  No Data Found
+                </td>
               </tr>
-            </thead>
-            <tbody>
-              {data && data.result && data.result.length > 0 ? (
-                data.result.map((item, index) => (
-                  <tr
-                    key={index}
-                    className="cursor-pointer hover:bg-gray-200 text-center"
-                    onClick={() => {
-                      router.push(`/inventory/${item.stock_no}/${item.id}`);
-                    }}
-                  >
-                    <td>{index + 1}</td>
-                    <td>{item.stock_no}</td>
-                    <td>{item.price}</td>
-                    <td>{item.stock.measurement}</td>
-                    <td>{item.stock.description}</td>
-                    <td>{item.stock.stocktype.name}</td>
-                    <td>{item.quantity_on_hand}</td>
-                    <td>{item.quantity_issued}</td>
-                    <td>{item.quantity_on_hand + item.quantity_issued}</td>
-                    <td>{item.stock.consume_date}</td>
-                    <td>{item.distributor}</td>
-                    <td>
-                      {new Date(item.created_at).toISOString().slice(0, 10)}
-                    </td>
-                  </tr>
-                ))
-              ) : (
-                <tr>
-                  <td colSpan={12} className="text-center font-bold text-lg">
-                    No Data Found
-                  </td>
-                </tr>
-              )}
-            </tbody>
-          </table>
-        </div>
-
-        {/* Card Layout for Smaller Viewports */}
-        <div className="lg:hidden grid grid-cols-1 gap-4">
-          {data && data.result && data.result.length > 0 ? (
-            data.result.map((item, index) => (
-              <div
-                key={index}
-                className="border rounded-lg p-4 shadow-md  cursor-pointer hover:shadow-lg"
-                onClick={() => {
-                  router.push(`/inventory/${item.stock_no}/${item.id}`);
-                }}
-              >
-                <h2 className="font-bold">{item.stock.item}</h2>
-                <p>
-                  <strong>Stock Number:</strong> {item.stock_no}
-                </p>
-                <p>
-                  <strong>Price:</strong> {item.price}
-                </p>
-                <p>
-                  <strong>Measurement:</strong> {item.stock.measurement}
-                </p>
-                <p>
-                  <strong>Description:</strong> {item.stock.description}
-                </p>
-                <p>
-                  <strong>Stock Type:</strong> {item.stock.stocktype.name}
-                </p>
-                <p>
-                  <strong>Quantity on Hand:</strong> {item.quantity_on_hand}
-                </p>
-                <p>
-                  <strong>Quantity Issued:</strong> {item.quantity_issued}
-                </p>
-                <p>
-                  <strong>Total Quantity:</strong>{" "}
-                  {item.quantity_on_hand + item.quantity_issued}
-                </p>
-                <p>
-                  <strong>Consume Date:</strong> {item.stock.consume_date}
-                </p>
-                <p>
-                  <strong>Manufacturer:</strong> {item.distributor}
-                </p>
-                <p>
-                  <strong>Date:</strong>{" "}
-                  {new Date(item.created_at).toISOString().slice(0, 10)}
-                </p>
-              </div>
-            ))
-          ) : (
-            <div className="text-center font-bold text-lg">No Data Found</div>
-          )}
-        </div>
+            )}
+          </tbody>
+        </table>
       </div>
     </div>
   );
-}
+};
+
+export default Page;

@@ -13,15 +13,11 @@ const NavBar = () => {
   const { role, department } = useInventoryStore();
   return (
     <div
-      className={`navbar shadow-sm flex justify-between border bg-gray-50 sticky top-0 z-50 ${
-        pathname !== "/" ? "justify-between" : "justify-end"
+      className={`navbar shadow-sm border bg-gray-50 sticky top-0 z-50 ${
+        role && role === "user" && "justify-end"
       }`}
     >
       {role && role !== "user" && <ToggleSideBar />}
-
-      {role && role === "user" && (
-        <h1 className="font-bold text-2xl text-orange-500">{department}</h1>
-      )}
 
       <aside>
         {role && role === "user" && <Cart />}
