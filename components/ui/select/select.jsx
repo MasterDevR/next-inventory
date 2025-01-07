@@ -20,7 +20,7 @@ const Select = ({ data, title, onChange, defaultValue, width }) => {
           {title}
         </option>
       )}
-      {Array.isArray(data) && data.length > 0 ? (
+      {Array.isArray(data) && data?.length > 0 ? (
         data.map((item, index) => {
           if (typeof item === "object" && item !== null) {
             return (

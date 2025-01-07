@@ -9,16 +9,16 @@ import axios from "axios";
 import AlertModal from "@/components/ui/modal/modal-message";
 import CartModal from "@/components/ui/form/requisition-form";
 import { usePathname } from "next/navigation";
-import { disableDevTools } from "@/components/util/disableDevTools";
+// import { disableDevTools } from "@/components/util/disableDevTools";
 import ActivityTracker from "@/components/util/provider/activity-tracker";
 const Wrapper = ({ children }) => {
   const pathname = usePathname();
 
-  useEffect(() => {
-    if (process.env.NODE_ENV === "production") {
-      disableDevTools();
-    }
-  }, []);
+  // useEffect(() => {
+  //   if (process.env.NODE_ENV === "production") {
+  //     disableDevTools();
+  //   }
+  // }, []);
   const {
     showSideBar,
     updateRole,

@@ -58,7 +58,7 @@ const LineCharts = ({ stock, year }) => {
 
   if (isLoading) return <div>Loading...</div>;
   if (!data?.result) return <div>No data available</div>;
-  if (data?.result.length === 0)
+  if (data?.result?.length === 0)
     return (
       <div className="h-48 md:h-80 flex justify-center items-center shadow-md border rounded-md shadow-gray-400">
         <h1 className="text-red-500 text-sm lg:text-lg font-bold text-center px-2">

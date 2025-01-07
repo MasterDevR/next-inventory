@@ -145,7 +145,7 @@ const Page = () => {
       </header>
 
       <div className="flex flex-row flex-wrap gap-6 md:gap-4 lg:gap-5 justify-center text-xs lg:text-sm  lg:w-5/6 lg:m-auto">
-        {data && data.item && data.item.length > 0 ? (
+        {data && data.item && data.item?.length > 0 ? (
           data.item.map((item, index) => <ItemCard item={item} key={index} />)
         ) : (
           <div className="text-center w-full">

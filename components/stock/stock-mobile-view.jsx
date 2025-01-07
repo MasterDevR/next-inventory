@@ -13,7 +13,7 @@ const StockMobileView = ({
   return (
     <div className="md:hidden pb-52">
       <div className="space-y-4">
-        {data && data.item && data.item.length > 0 ? (
+        {data && data.item && data.item?.length > 0 ? (
           data.item.map((item, index) => (
             <div
               key={index}

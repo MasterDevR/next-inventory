@@ -154,7 +154,7 @@ const Page = ({ params }) => {
             {data &&
             data.status === 200 &&
             data.data &&
-            data.data.length > 0 ? (
+            data.data?.length > 0 ? (
               data.data.map((item, index) => {
                 // Get transaction items and initial quantity
                 const transactionItems = item.transaction_item || [];

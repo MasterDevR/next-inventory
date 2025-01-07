@@ -112,7 +112,7 @@ const InventoryTable = () => {
             </tr>
           </thead>
           <tbody>
-            {data && data.item && data.item.length > 0 ? (
+            {data && data.item && data.item?.length > 0 ? (
               data.item.map((item, index) => (
                 <tr
                   key={index + item.stock_no + item.description}

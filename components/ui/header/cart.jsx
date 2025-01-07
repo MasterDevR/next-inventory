@@ -14,7 +14,7 @@ const Cart = () => {
     >
       <FaCartPlus size={"1.7rem"} />
 
-      {cartItem.length > 0 && (
+      {cartItem?.length > 0 && (
         <span className="absolute top-4 left-7  block size-2 rounded-full bg-red-600"></span>
       )}
     </div>

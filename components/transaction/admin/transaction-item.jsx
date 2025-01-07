@@ -135,7 +135,7 @@ const TransactionItem = () => {
             </tr>
           </thead>
           <tbody>
-            {currentItems.length === 0 ? (
+            {currentItems?.length === 0 ? (
               <tr>
                 <td colSpan={7} className="p-3 text-center">
                   <NoDataFound />
@@ -212,7 +212,7 @@ const TransactionItem = () => {
 
       {/* Mobile Cards View */}
       <div className="md:hidden">
-        {currentItems.length === 0 ? (
+        {currentItems?.length === 0 ? (
           <NoDataFound />
         ) : (
           currentItems.map((item, index) => renderMobileCard(item, index))

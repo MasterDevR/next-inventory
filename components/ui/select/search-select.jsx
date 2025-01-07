@@ -71,7 +71,7 @@ const Select = ({ data, onChange, defaultValue, width = "w-fit" }) => {
                 {item}
               </button>
             ))}
-            {filteredItems.length === 0 && (
+            {filteredItems?.length === 0 && (
               <div className="px-4 py-2 text-gray-500 text-sm">
                 No items found
               </div>

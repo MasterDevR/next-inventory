@@ -45,7 +45,7 @@ export default function TransactionDetails({ params }) {
 
   if (isLoading) return <LoadingSpinner />;
   if (error) return <ErrorMessage message="Error loading data" />;
-  if (!data?.result.length) return <NoDataMessage />;
+  if (!data?.result?.length) return <NoDataMessage />;
 
   const transaction = data.result[0];
   const isRejected = transaction.Status.name === "rejected";

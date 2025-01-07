@@ -97,7 +97,7 @@ const TopStock = () => {
           )}
 
           {/* Empty State */}
-          {!isLoading && (!data?.topStocks || data.topStocks.length === 0) && (
+          {!isLoading && (!data?.topStocks || data.topStocks?.length === 0) && (
             <div className="text-center py-4">
               <p className="text-gray-500">No items to display</p>
             </div>
