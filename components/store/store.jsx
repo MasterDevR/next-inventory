@@ -2,6 +2,7 @@ import { create } from "zustand";
 
 const useInventoryStore = create((set) => ({
   theme: false,
+  department_code: "",
   showSideBar: false,
   role: "",
   department_id: "",
@@ -21,6 +22,7 @@ const useInventoryStore = create((set) => ({
     set((state) => ({ showSideBar: !state.showSideBar })),
   updateRole: (userRole) => set({ role: userRole }),
   updateDepartmentId: (id) => set({ department_id: id }),
+  updateDepartmentCode: (code) => set({ department_code: code }),
   updateDepartment: (dept) => set({ department: dept }),
   updateStatuss: (status) => set(() => ({ modalStatus: status })),
   updateModalMessage: (message) => set(() => ({ modalMessage: message })),

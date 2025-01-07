@@ -21,19 +21,27 @@ const ItemCard = ({ item }) => {
       className={`w-44 md:w-48 lg:w-64 h-auto p-4 bg-white rounded-3xl shadow-lg  flex flex-col justify-between `}
     >
       <section className="flex flex-col items-center w-full gap-y-10 p-2 min-h-44 max-h-max lg:h-72 flex-grow">
-        <Image
-          src={item.image}
-          alt={item.item}
-          width="100"
-          height="100"
-          priority
-          className="aspect-square object-contain lg:w-50 lg:h-32"
-        />
+        {item.image ? (
+          <Image
+            src={item.image}
+            alt={item.item}
+            width="100"
+            height="100"
+            priority
+            className="aspect-square object-contain lg:w-50 lg:h-32"
+          />
+        ) : (
+          <div className="w-full h-32 bg-white flex items-center justify-center border-2 border-dashed border-gray-400 rounded-lg">
+            <span className="text-gray-500 text-lg font-semibold">
+              No Image Available
+            </span>
+          </div>
+        )}
 
         <div className="font-bold w-full space-y-2 uppercase text-center">
           <p className="break-words">
             <span
-              className={`font-light ${
+              className={`font-bold ${
                 item.quantity_on_hand <= 0 ? "line-through text-red-500" : ""
               }`}
             >
@@ -52,7 +60,7 @@ const ItemCard = ({ item }) => {
         </div>
       </section>
       <button
-        className="btn btn-primary hover:font-bold text-white disabled:text-gray-400 w-full text-xs mt-auto "
+        className="btn btn-success btn-outline hover:font-bold text-white disabled:text-gray-400 w-full text-xs mt-auto "
         onClick={btnHandler}
         disabled={
           cartItem.includes(item) || (item && item.quantity_on_hand <= 0)

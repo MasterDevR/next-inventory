@@ -27,7 +27,7 @@ const ItemCard = () => {
   if (!data) return <div>No data available.</div>;
 
   const stats = [
-    { icon: FaDropbox, label: "Total Stock", value: data.Stock },
+    { icon: FaDropbox, label: "Total Item", value: data.Stock },
     { icon: FaUser, label: "Total Users", value: data.User },
     { icon: FaFile, label: "Pending Requests", value: data.Pending },
   ];

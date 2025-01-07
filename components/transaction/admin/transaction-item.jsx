@@ -6,12 +6,16 @@ import FilterTransaction from "./filter-transaction";
 import { useQueryClient } from "@tanstack/react-query";
 import { useSearchParams } from "next/navigation";
 import NoDataFound from "@/components/stock/NoDataFound";
+import { FaSearch } from "react-icons/fa";
+
 const TransactionItem = () => {
   const params = useSearchParams();
   const { setTransactionDetails, token } = useInventoryStore();
   const queryClient = useQueryClient();
   const [searchTransaction, setSearchTransaction] = useState(undefined);
   const [status, setStatus] = useState("all");
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 10;
 
   const { data, isLoading } = useFetchData({
     path: `/admin/get-all-transaction/${status}/${searchTransaction}`,
@@ -41,7 +45,7 @@ const TransactionItem = () => {
     return (
       <div
         key={item.id}
-        className={`md:hidden p-4 rounded-lg border mb-3 ${
+        className={`md:hidden p-4 rounded-lg border mb-3  ${
           params.get("id") === item.id
             ? "bg-gray-50 border-primary"
             : "border-gray-200"
@@ -61,6 +65,8 @@ const TransactionItem = () => {
                 ? "bg-blue-100 text-blue-700"
                 : item.Status.name === "pending"
                 ? "bg-violet-100 text-violet-700"
+                : item.Status.name === "completed"
+                ? "bg-yellow-100 text-yellow-700"
                 : "bg-red-100 text-red-700"
             }`}
           >
@@ -101,90 +107,78 @@ const TransactionItem = () => {
     );
   };
 
-  return (
-    <div className="w-full mt-5 p-3 md:p-5 rounded-xl shadow-md bg-white space-y-6">
-      <header className="flex flex-col md:flex-row gap-4 md:gap-5">
-        <FilterTransaction getStatus={setStatus} />
-        <div className="relative flex-1 max-w-md">
-          <input
-            type="text"
-            placeholder="Search Transaction"
-            onChange={(e) => handleChange(e)}
-            className="w-full border border-gray-300 rounded-full pl-10 pr-4 py-2 focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary"
-          />
-          <svg
-            className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-            />
-          </svg>
-        </div>
-      </header>
+  // Calculate the index of the last item on the current page
+  const indexOfLastItem = currentPage * itemsPerPage;
+  // Calculate the index of the first item on the current page
+  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+  // Get current items
+  const currentItems = data.data.slice(indexOfFirstItem, indexOfLastItem);
 
-      {/* Mobile Cards View */}
-      <div className="md:hidden">
-        {data.data.length === 0 ? (
-          <NoDataFound />
-        ) : (
-          data.data.map((item, index) => renderMobileCard(item, index))
-        )}
-      </div>
+  // Function to handle page change
+  const handlePageChange = (pageNumber) => {
+    setCurrentPage(pageNumber);
+  };
 
-      {/* Desktop Table View */}
+  const renderDesktopTable = () => {
+    return (
       <div className="hidden md:block overflow-x-auto">
-        <table className="table w-full">
+        <table className="table w-full border-collapse border border-gray-300">
           <thead>
-            <tr className="text-base text-center ">
-              <th></th>
-              <th className="p-3 ">Transaction ID</th>
-              <th className="p-3 ">Department</th>
-              <th className="p-3 ">Status</th>
-              <th className="p-3 ">Transaction Purpose</th>
-              <th className="p-3 ">Date</th>
-              <th className="p-3 ">Details</th>
+            <tr className="text-base text-center bg-gray-200">
+              <th className=" border border-gray-300"></th>
+              <th className=" border border-gray-300">Transaction ID</th>
+              <th className=" border border-gray-300">Department</th>
+              <th className=" border border-gray-300">Status</th>
+              <th className=" border border-gray-300">Transaction Purpose</th>
+              <th className=" border border-gray-300">Date</th>
+              <th className=" border border-gray-300">Details</th>
             </tr>
           </thead>
           <tbody>
-            {data.data.length === 0 ? (
+            {currentItems.length === 0 ? (
               <tr>
                 <td colSpan={7} className="p-3 text-center">
                   <NoDataFound />
                 </td>
               </tr>
             ) : (
-              data.data.map((item, index) => (
+              currentItems.map((item, index) => (
                 <tr
                   key={item.id}
                   className={`text-sm text-center ${
                     params.get("id") === item.id && "bg-gray-100"
-                  } `}
+                  } border border-gray-300`}
                 >
-                  <td className="p-3 text-center">{index + 1}</td>
-                  <td className="p-3 ">{item.id}</td>
-                  <td className="p-3 uppercase">{item.user.department_code}</td>
+                  <td className="  text-center border border-gray-300">
+                    {index + indexOfFirstItem + 1}
+                  </td>
+                  <td className="  border border-gray-300">{item.id}</td>
+                  <td className="  uppercase border border-gray-300">
+                    {item.user.department_code}
+                  </td>
                   <td
-                    className={`p-3  ${
+                    class
+                    Name={`   ${
                       item.Status.name === "approved"
                         ? "text-green-500"
                         : item.Status.name === "ready"
                         ? "text-blue-500"
                         : item.Status.name === "pending"
                         ? "text-violet-500"
+                        : item.Status.name === "completed"
+                        ? "text-yellow-500"
                         : "text-red-500"
                     }`}
                   >
                     {item.Status.name}
                   </td>
-                  <td className="p-3 ">{item.TransactionType.name}</td>
-                  <td className="p-3 ">{item.created_at}</td>
-                  <td className="p-3 ">
+                  <td className="  border border-gray-300">
+                    {item.TransactionType.name}
+                  </td>
+                  <td className="  border border-gray-300">
+                    {item.created_at}
+                  </td>
+                  <td className="  border border-gray-300">
                     <button
                       className=" text-sm hover:underline text-red-500"
                       onClick={() => btnHandler(item)}
@@ -197,6 +191,55 @@ const TransactionItem = () => {
             )}
           </tbody>
         </table>
+      </div>
+    );
+  };
+
+  return (
+    <div className="w-full  p-3 rounded-xl shadow-md  space-y-6  pb-20  bg-white ">
+      <header className="flex flex-col md:flex-row gap-4 md:gap-5">
+        <FilterTransaction getStatus={setStatus} />
+        <div className="relative flex-1 max-w-md">
+          <input
+            type="text"
+            placeholder="Search Transaction"
+            onChange={(e) => handleChange(e)}
+            className="w-full border border-gray-300 rounded-full pl-10 pr-4 py-2 focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary"
+          />
+          <FaSearch className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+        </div>
+      </header>
+
+      {/* Mobile Cards View */}
+      <div className="md:hidden">
+        {currentItems.length === 0 ? (
+          <NoDataFound />
+        ) : (
+          currentItems.map((item, index) => renderMobileCard(item, index))
+        )}
+      </div>
+
+      {/* Desktop Table View */}
+      {renderDesktopTable()}
+
+      {/* Pagination Controls - Visible on both mobile and desktop */}
+      <div className="flex justify-center ">
+        {Array.from(
+          { length: Math.ceil(data.data.length / itemsPerPage) },
+          (_, index) => (
+            <button
+              key={index + 1}
+              onClick={() => handlePageChange(index + 1)}
+              className={`mx-1 px-3 py-1 rounded ${
+                currentPage === index + 1
+                  ? "bg-primary text-white"
+                  : "bg-gray-200"
+              }`}
+            >
+              {index + 1}
+            </button>
+          )
+        )}
       </div>
     </div>
   );

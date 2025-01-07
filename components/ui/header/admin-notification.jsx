@@ -47,7 +47,7 @@ const Admin_Notification = () => {
   }, [data]);
 
   const loadMore = () => {
-    setPage((prevPage) => prevPage + 2);
+    setPage((prevPage) => prevPage + 5);
   };
 
   const viewNotification = () => {
@@ -95,7 +95,11 @@ const Admin_Notification = () => {
         {isLoading && <h1>Loading...</h1>}
         {sortedNotifications.map((item, index) => (
           <li
-            key={item.id + index}
+            key={
+              item && item.isLowStock
+                ? item.stock.item
+                : item.transaction_id + index
+            }
             className={`rounded-lg shadow-inner shadow-gray-300 p-2 ${
               item.isLowStock
                 ? "bg-yellow-100"
@@ -137,7 +141,9 @@ const Admin_Notification = () => {
                     id: item.transaction_id,
                   },
                 }}
-                className="flex gap-x-2 items-center"
+                className={`flex gap-x-2 items-center ${
+                  item && item.viewed === false ? "bg-gray-100" : ""
+                }`}
               >
                 <div className="flex-shrink-0">
                   <Image

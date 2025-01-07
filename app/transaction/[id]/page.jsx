@@ -33,6 +33,7 @@ export default function TransactionDetails({ params }) {
     { name: "Pending", value: "pending" },
     { name: "Approved", value: "approved" },
     { name: "Ready", value: "ready" },
+    { name: "Completed", value: "completed" },
   ];
 
   const getActiveSteps = () => {
@@ -123,9 +124,32 @@ const TransactionStatus = ({ steps, activeSteps }) => (
 const TransactionInfo = ({ transaction }) => (
   <div className="bg-white rounded-xl shadow-sm">
     <div className="p-4 sm:p-6 space-y-6">
-      <h2 className="text-xl sm:text-2xl font-bold text-gray-800 text-center">
-        {transaction.TransactionType.name}
-      </h2>
+      {transaction.Status.name === "approved" && (
+        <div className="bg-green-100 border-l-4 border-green-500 text-green-700 p-4 mb-4 rounded-md">
+          <p className="font-bold">Transaction Approved</p>
+          <p>Please wait for the item to be ready for pickup.</p>
+        </div>
+      )}
+      {transaction.Status.name === "ready" && (
+        <div className="bg-blue-100 border-l-4 border-blue-500 text-blue-700 p-4 mb-4 rounded-md">
+          <p className="font-bold">Transaction Ready</p>
+          <p>
+            {`Your request has been completed. You can now pick up your item at the Supply and Equipment Department of the University de Manila.`}
+          </p>
+        </div>
+      )}
+      {transaction.Status.name === "completed" && (
+        <div className="bg-yellow-100 border-l-4 border-yellow-500 text-yellow-700 p-4 mb-4 rounded-md">
+          <p className="font-bold">Transaction Completed</p>
+          <p>Your transaction has been successfully completed.</p>
+        </div>
+      )}
+      {transaction.Status.name === "rejected" && (
+        <div className="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 mb-4 rounded-md">
+          <p className="font-bold">Transaction Rejected</p>
+          <p>Your transaction has been rejected.</p>
+        </div>
+      )}
 
       <div className="overflow-x-auto">
         <table className="table w-full">

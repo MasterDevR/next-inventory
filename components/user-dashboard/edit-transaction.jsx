@@ -24,7 +24,6 @@ const EditTransactionModal = ({
   const { id, transaction_item = [], created_at } = transaction;
 
   const handleQuantityChange = (index, newQuantity) => {
-    console.log(index, newQuantity);
     const updatedItems = transactionItems.map((item, i) => {
       if (i === index) {
         return { ...item, quantity: Math.max(0, newQuantity) };

@@ -90,25 +90,36 @@ export default function RIS_Download_Btn({ transactionDetails }) {
         { v: item.quantity || 0 }, // Display quantity
         { v: item.approved_quantity || 0 }, // Display approved quantity
         {
-          v: itemTotalValue, // Display total value for the item
+          v: `${item.stock.price} / ${
+            item.approved_quantity * item.stock.price
+          }`, // Display total value for the item
         }, // Display approved quantity
 
         "", // Placeholder for remarks
         "",
         "",
       ]);
-
-      // Add 10 empty rows for spacing before the distributor
-      for (let i = 0; i < 10; i++) {
-        wsData.push([{}, {}, {}, {}, {}, {}, {}, {}]); // Empty row for spacing
-      }
-
-      // Add the distributor information, ensuring it only uses columns A to F
-      wsData.push(["", "", { v: item.stock.distributor || "N/A" }, "", "", ""]); // Add distributor below the description, only using A to F
-
-      // Add an empty row for spacing after the distributor
-      wsData.push([""]); // Optional: Add an empty row for better spacing
     });
+
+    // Add an empty row for spacing after the item details
+    wsData.push([], [], [], [], [], [], [], [], [], []); // Add 10 empty rows for vertical spacing
+
+    // Add distributor information after all items have been processed
+    const distributorSet = new Set(); // To track unique distributors
+    transaction_item.forEach((item) => {
+      if (item.stock.distributor) {
+        distributorSet.add(item.stock.distributor); // Add distributor to the set
+      }
+    });
+
+    // Add each unique distributor to wsData
+    distributorSet.forEach((distributor) => {
+      // Add an empty row for spacing before the distributor
+      wsData.push(["", "", { v: distributor }, "", "", ""]); // Add distributor below the description, only using A to F
+    });
+
+    // Add an empty row for spacing after the distributor
+    wsData.push([""]); // Optional: Add an empty row for better spacing
 
     // After processing all items, add the total row
     wsData.push([

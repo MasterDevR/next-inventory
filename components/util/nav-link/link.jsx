@@ -1,6 +1,7 @@
 import { MdDashboard, MdOutlineInventory } from "react-icons/md";
 import { FaFileAlt, FaChartBar } from "react-icons/fa";
 import { FaUsersRectangle } from "react-icons/fa6";
+import { MdAttachMoney } from "react-icons/md";
 const adminLink = [
   {
     href: "/",
@@ -21,6 +22,11 @@ const adminLink = [
     href: "/transaction",
     name: "Manage Request",
     icon: <FaFileAlt size={"1.3rem"} />,
+  },
+  {
+    href: "/monthly-expenses",
+    name: "Monthly Expenses",
+    icon: <MdAttachMoney size={"1.3rem"} />,
   },
 
   {

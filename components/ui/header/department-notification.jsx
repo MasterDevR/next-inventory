@@ -1,22 +1,49 @@
 "use client";
 import Link from "next/link";
-import React, { Fragment, useState } from "react";
+import React, { Fragment, useState, useMemo, useEffect } from "react";
 import { IoMdNotifications } from "react-icons/io";
 import useFetchData from "@/components/util/custom-hook/useFetchData";
 import useInventoryStore from "@/components/store/store";
+import { useQueryClient } from "@tanstack/react-query";
+import axios from "axios";
 const Department_Notification = () => {
   const [toggleBtn, setToggleBtn] = useState(false);
-
+  const [isViewed, setIsViewed] = useState(false);
   const { token, department_id } = useInventoryStore();
+  const queryClient = useQueryClient();
   const { data, isLoading } = useFetchData({
     path: `/user/user-notification/${department_id}`,
     token: token,
     key: "user-notification",
   });
-  const btnHandler = () => {
+  useEffect(() => {
+    queryClient.invalidateQueries({ queryKey: ["user-notification"] });
+  }, [isViewed]);
+  const btnHandler = async () => {
     setToggleBtn(!toggleBtn);
-    // mutation.mutate();
+    setToggleBtn(!toggleBtn);
+    setIsViewed((prev) => !prev);
+
+    const updateNotification = async () => {
+      await axios.put(
+        `${process.env.NEXT_PUBLIC_BASE_URL}/user/update-notification`,
+        {},
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+    };
+    updateNotification();
   };
+  const hasUnviewedNotifications = useMemo(() => {
+    if (!data) return false;
+    const result = data && data.result?.some((item) => item.viewed === false);
+    return result;
+  }, [data]);
+
   return (
     <Fragment>
       <div
@@ -26,6 +53,12 @@ const Department_Notification = () => {
         onClick={btnHandler}
       >
         <IoMdNotifications size={"1.7rem"} cursor="pointer" />
+        {hasUnviewedNotifications && (
+          <span className="absolute top-2 left-7 block size-3 rounded-full bg-red-600"></span>
+        )}
+        {hasUnviewedNotifications && (
+          <span className="absolute top-2 left-7 block size-3 rounded-full bg-red-600"></span>
+        )}
       </div>
       <ul
         tabIndex={0}
@@ -34,6 +67,14 @@ const Department_Notification = () => {
         } absolute bg-base-100 right-12 min-w-[25dvw]  rounded-lg shadow-lg p-5 gap-y-5 flex-col max-h-[50dvh] overflow-y-auto `}
       >
         {isLoading && <h1>Loading...</h1>}
+        {
+          // if no data show no data found add style background and text color and border
+          data && data.result.length === 0 && (
+            <div className="flex justify-center items-center h-full bg-gray-100 rounded-lg p-5">
+              <h1 className="text-gray-500">No Available Notification</h1>
+            </div>
+          )
+        }
         {data &&
           data.result?.map((item, index) => {
             return (
@@ -58,6 +99,8 @@ const Department_Notification = () => {
                     <span>
                       {item.Status.name === "ready"
                         ? "Your requested item is ready to pickup "
+                        : item.Status.name === "completed"
+                        ? "Your Request has been completed "
                         : "Your Request has been "}
                     </span>
                     <strong
@@ -68,6 +111,8 @@ const Department_Notification = () => {
                           ? "text-green-500"
                           : item.Status.name === "ready"
                           ? "text-blue-500"
+                          : item.Status.name === "completed"
+                          ? "text-yellow-500"
                           : ""
                       }`}
                     >

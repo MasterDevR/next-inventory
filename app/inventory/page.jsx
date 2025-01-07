@@ -14,7 +14,7 @@ const Page = () => {
   }, [role]);
   return (
     <Fragment>
-      <div className="h-full space-y-10 mt-10 pb-52">
+      <div className="h-full space-y-10 pb-52">
         <main className="m-auto bg-inherit shadow-lg h-auto max-h-5/6 p-5 overflow-hidden bg-white overflow-y-auto">
           <InventoryTable />
         </main>

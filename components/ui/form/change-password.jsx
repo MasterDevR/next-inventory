@@ -64,7 +64,11 @@ const ChangePassword = () => {
 
   return (
     <>
-      <ConfimModal modalRef={modalRef} onConfirm={handleConfirm} />
+      <ConfimModal
+        modalRef={modalRef}
+        onConfirm={handleConfirm}
+        message={"Password"}
+      />
       <div className="bg-white container p-4 shadow-md rounded-md space-y-5 m-auto">
         <strong className="text-xl">Change Your Password</strong>
         <p className="text-sm">

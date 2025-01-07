@@ -32,9 +32,6 @@ const MobileTransactionItem = ({
       {isExpanded && (
         <div className="mt-2">
           <p>
-            <strong>ID:</strong> {transaction.id}
-          </p>
-          <p>
             <strong>Date:</strong>{" "}
             {new Date(transaction.created_at).toISOString().slice(0, 10)}
           </p>

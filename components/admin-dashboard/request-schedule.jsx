@@ -42,7 +42,7 @@ const RequestSchedule = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {/* Left Side - Schedule Legend */}
           <div className="p-2 bg-blue-50 rounded-lg">
-            <h3 className="font-medium text-gray-800 mb-2">Access Rules:</h3>
+            <h3 className="font-medium text-gray-800 mb-2">Access Roles:</h3>
             <ul className="space-y-2 text-sm text-gray-600">
               <li className="flex items-center gap-2">
                 <span className="w-2 h-2 rounded-full bg-green-500"></span>

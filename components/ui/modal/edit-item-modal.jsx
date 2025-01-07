@@ -34,7 +34,6 @@ const EditItemModal = ({ data, modalRef }) => {
           },
         }
       );
-      console.log(response.data);
       return response;
     },
   });
@@ -195,7 +194,7 @@ const EditItemModal = ({ data, modalRef }) => {
                     Quantity
                   </label>
                 </div>
-                <div className={`${styles.inputGroup} w-full md:w-1/2`}>
+                {/* <div className={`${styles.inputGroup} w-full md:w-1/2`}>
                   <input
                     type="text"
                     className={styles.input}
@@ -206,8 +205,8 @@ const EditItemModal = ({ data, modalRef }) => {
                   <label className={styles.userLabel} htmlFor="userInput_order">
                     Re-Order Point
                   </label>
-                </div>
-                <div className={`${styles.inputGroup} w-full md:w-1/2`}>
+                </div> */}
+                {/* <div className={`${styles.inputGroup} w-full md:w-1/2`}>
                   <input
                     type="text"
                     className={styles.input}
@@ -221,7 +220,7 @@ const EditItemModal = ({ data, modalRef }) => {
                   >
                     Reference
                   </label>
-                </div>
+                </div> */}
                 <div className={`${styles.inputGroup} w-full md:w-1/2`}>
                   <input
                     type="number"
