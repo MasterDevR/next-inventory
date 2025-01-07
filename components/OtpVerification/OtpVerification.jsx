@@ -53,7 +53,7 @@ const OtpVerification = () => {
 
     try {
       const response = await axios.post(
-        `${process.env.NEXT_PUBLIC_BASE_URL}/user/verify-otp`,
+        `${process.env.NEXT_PUBLIC_BASE_URL}/verify-otp`,
         {
           verifyEmail,
           otp: otpValue,
@@ -89,7 +89,7 @@ const OtpVerification = () => {
 
     try {
       const response = await axios.post(
-        `${process.env.NEXT_PUBLIC_BASE_URL}/user/resend-otp`,
+        `${process.env.NEXT_PUBLIC_BASE_URL}/resend-otp`,
         { verifyEmail },
         {
           headers: {

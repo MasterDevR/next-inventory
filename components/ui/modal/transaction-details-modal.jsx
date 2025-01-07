@@ -63,12 +63,50 @@ const Transaction_Details_Modal = () => {
     },
   });
 
+  const completeMutation = useMutation({
+    mutationFn: (formData) => {
+      return axios.put(
+        `${process.env.NEXT_PUBLIC_BASE_URL}/admin/completed-transaction`,
+        formData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+    },
+  });
+
+  const [isLoading, setIsLoading] = useState(false); // Add loading state
+
   const handleSubmit = (e) => {
     e.preventDefault();
-    const formData = new FormData(e.target);
+    setIsLoading(true); // Set loading to true
+    const formData = new FormData();
+    formData.append("transaction_id", id); // Ensure transaction_id is included
+
+    // Collect only checked items
+    transaction_item.forEach((item, index) => {
+      const checkbox = e.target[`approve_stock_${index}`];
+      if (checkbox && checkbox.checked) {
+        formData.append(
+          `approved_quantity_${index}`,
+          e.target[`approved_quantity_${index}`]?.value || item.quantity
+        );
+        formData.append(`item_id_${index}`, item.id);
+        formData.append(`quantity_${index}`, item.quantity);
+        formData.append(`stock_no_${index}`, item.stock_no);
+        formData.append(`price_${index}`, item.price);
+      }
+    });
+
+    // Append department_id
     formData.append("department_id", department_id);
+
     approveMutation.mutate(formData, {
       onSuccess: (response) => {
+        setIsLoading(false); // Reset loading state
         if (response && response.data) {
           updateSuccessModal(true);
           updateModalMessage(response.data.message);
@@ -77,6 +115,7 @@ const Transaction_Details_Modal = () => {
         }
       },
       onError: (error) => {
+        setIsLoading(false); // Reset loading state
         updateSuccessModal(true);
         updateModalMessage(error.message);
         updateStatuss(error.response?.status || "error");
@@ -85,12 +124,14 @@ const Transaction_Details_Modal = () => {
   };
 
   const handleReject = () => {
+    setIsLoading(true); // Set loading to true
     const formData = new FormData();
     formData.append("transaction_id", transactionDetails.id);
     formData.append("status", "rejected");
 
     rejectMutation.mutate(formData, {
       onSuccess: (response) => {
+        setIsLoading(false); // Reset loading state
         if (response && response.data) {
           updateSuccessModal(true);
           updateModalMessage(response.data.message);
@@ -99,6 +140,7 @@ const Transaction_Details_Modal = () => {
         }
       },
       onError: (error) => {
+        setIsLoading(false); // Reset loading state
         updateSuccessModal(true);
         updateModalMessage(error.message);
         updateStatuss(error.response?.status || "error");
@@ -107,11 +149,14 @@ const Transaction_Details_Modal = () => {
   };
 
   const handleReady = () => {
+    setIsLoading(true); // Set loading to true
     const formData = new FormData();
     formData.append("transaction_id", transactionDetails.id);
     formData.append("status", "ready");
+
     readyMutation.mutate(formData, {
       onSuccess: (response) => {
+        setIsLoading(false); // Reset loading state
         if (response && response.data) {
           updateSuccessModal(true);
           updateModalMessage(response.data.message);
@@ -120,12 +165,39 @@ const Transaction_Details_Modal = () => {
         }
       },
       onError: (error) => {
+        setIsLoading(false); // Reset loading state
         updateSuccessModal(true);
         updateModalMessage(error.message);
         updateStatuss(error.response?.status || "error");
       },
     });
   };
+
+  const handleComplete = () => {
+    setIsLoading(true); // Set loading to true
+    const formData = new FormData();
+    formData.append("transaction_id", transactionDetails.id);
+    formData.append("status", "completed");
+
+    completeMutation.mutate(formData, {
+      onSuccess: (response) => {
+        setIsLoading(false); // Reset loading state
+        if (response && response.data) {
+          updateSuccessModal(true);
+          updateModalMessage(response.data.message);
+          updateStatuss(response.data.status);
+          queryClient.invalidateQueries({ queryKey: ["transaction"] });
+        }
+      },
+      onError: (error) => {
+        setIsLoading(false); // Reset loading state
+        updateSuccessModal(true);
+        updateModalMessage(error.message);
+        updateStatuss(error.response?.status || "error");
+      },
+    });
+  };
+
   const {
     id,
     created_at,
@@ -139,6 +211,35 @@ const Transaction_Details_Modal = () => {
   // Add status check helper
   const isStatusApproved = Status?.name === "approved";
   const isStatusPending = Status?.name === "pending";
+  const isStatusReady = Status?.name === "ready";
+  console.log(transaction_item);
+  // Add a state to manage the checked status of all checkboxes
+  const [allChecked, setAllChecked] = useState(false);
+  const [checkedItems, setCheckedItems] = useState(
+    Array(transaction_item.length).fill(false)
+  ); // Track individual checkbox states
+
+  // Function to handle the check all functionality
+  const handleCheckAll = (e) => {
+    const isChecked = e.target.checked;
+    setAllChecked(isChecked);
+    setCheckedItems(Array(transaction_item.length).fill(isChecked)); // Update all individual checkboxes
+  };
+
+  // Function to handle individual checkbox changes
+  const handleCheckboxChange = (index) => {
+    const updatedCheckedItems = [...checkedItems];
+    updatedCheckedItems[index] = !updatedCheckedItems[index]; // Toggle the checked state of the specific checkbox
+    setCheckedItems(updatedCheckedItems);
+    setAllChecked(
+      updatedCheckedItems.every(Boolean) && updatedCheckedItems.length > 0
+    ); // Uncheck "check all" if any checkbox is unchecked
+  };
+
+  // Add this function to check if any items are selected
+  const isAnyItemSelected = () => {
+    return checkedItems.some((checked) => checked);
+  };
 
   return (
     <FormModal id="transactipn-details" modalRef={modalRef}>
@@ -250,6 +351,18 @@ const Transaction_Details_Modal = () => {
               <table className="hidden sm:table w-full">
                 <thead>
                   <tr className="bg-gray-50">
+                    {isStatusPending && (
+                      <th className="px-4 py-3 text-center text-xs font-medium text-white uppercase tracking-wider w-1/3">
+                        {/* check all, if check all then check all the checkbox */}
+                        <input
+                          type="checkbox"
+                          name="approve_all"
+                          className="mx-auto w-4 h-4 cursor-pointer"
+                          checked={allChecked}
+                          onChange={handleCheckAll}
+                        />
+                      </th>
+                    )}
                     <th className="px-4 py-3 text-center text-xs font-medium text-white uppercase tracking-wider w-1/3">
                       Item
                     </th>
@@ -267,6 +380,17 @@ const Transaction_Details_Modal = () => {
                 <tbody className="divide-y divide-gray-200">
                   {transaction_item.map((item, index) => (
                     <tr key={item.id || index} className="hover:bg-gray-50">
+                      {isStatusPending && (
+                        <td className="px-4 py-3 text-sm text-gray-900 text-center ">
+                          <input
+                            type="checkbox"
+                            name={`approve_stock_${index}`}
+                            className="mx-auto w-4 h-4 cursor-pointer"
+                            checked={checkedItems[index]}
+                            onChange={() => handleCheckboxChange(index)}
+                          />
+                        </td>
+                      )}
                       <td className="px-4 py-3 text-sm text-gray-900 ">
                         {item.stock.item}
                       </td>
@@ -285,6 +409,11 @@ const Transaction_Details_Modal = () => {
                           type="hidden"
                           name={`item_id_${index}`}
                           defaultValue={item.id}
+                        />
+                        <input
+                          type="hidden"
+                          name={`price_${index}`}
+                          defaultValue={item.price}
                         />
                       </td>
                       <td className="px-4 py-3 text-sm text-gray-600 ">
@@ -317,14 +446,22 @@ const Transaction_Details_Modal = () => {
                         type="button"
                         onClick={handleReject}
                         className="w-full sm:w-auto px-4 py-2 rounded-lg border border-red-500 text-red-500 hover:bg-red-50 transition-colors"
+                        disabled={isLoading} // Disable button when loading
                       >
-                        Reject
+                        {isLoading ? "Rejecting..." : "Reject"}{" "}
+                        {/* Loading text */}
                       </button>
                       <button
                         type="submit"
-                        className="w-full sm:w-auto px-4 py-2 rounded-lg bg-blue-500 text-white hover:bg-blue-600 transition-colors"
+                        disabled={!isAnyItemSelected() || isLoading} // Disable if no items are selected or loading
+                        className={`w-full sm:w-auto px-4 py-2 rounded-lg ${
+                          isAnyItemSelected() && !isLoading
+                            ? "bg-blue-500 text-white hover:bg-blue-600"
+                            : "bg-gray-300 text-gray-500 cursor-not-allowed"
+                        }`}
                       >
-                        Approve
+                        {isLoading ? "Approving..." : "Approve"}{" "}
+                        {/* Loading text */}
                       </button>
                     </>
                   ) : isStatusApproved ? (
@@ -332,9 +469,20 @@ const Transaction_Details_Modal = () => {
                       type="button"
                       onClick={handleReady}
                       className="w-full btn btn-success btn-outline cursor-pointer"
+                      disabled={isLoading} // Disable button when loading
                     >
-                      <FaCheck className="w-4 h-4" />
-                      Mark as Ready
+                      {isLoading ? "Marking as Ready..." : "Mark as Ready"}{" "}
+                      {/* Loading text */}
+                    </button>
+                  ) : isStatusReady ? (
+                    <button
+                      type="button"
+                      onClick={handleComplete}
+                      className="w-full sm:w-auto px-4 py-2 rounded-lg bg-green-500 text-white hover:bg-green-600 transition-colors"
+                      disabled={isLoading} // Disable button when loading
+                    >
+                      {isLoading ? "Completing..." : "Completed"}{" "}
+                      {/* Loading text */}
                     </button>
                   ) : null}
                 </div>

@@ -13,13 +13,13 @@ body {
 }
 
 th {
-  background-color: #095c1c;
-  color: white;
+  color: black;
   font-weight: bold;
   font-size: 1rem;
   border-left: solid 1px #f4f4f4f4;
   padding: 4px;
   text-align: center;
+  border-bottom: solid 1px black;
 }
 
 td {

@@ -9,6 +9,7 @@ import {
   Tooltip,
   Legend,
   ResponsiveContainer,
+  Bar,
 } from "recharts";
 import { useQueryClient } from "@tanstack/react-query";
 
@@ -80,7 +81,7 @@ const LineCharts = ({ stock, year }) => {
     const monthData = acc.find((d) => d.month === month);
 
     if (monthData) {
-      monthData.Stock = item.quantity_on_hand;
+      monthData.Stock = item.quantity_on_hand + item.quantity_issued;
     }
 
     return acc;
@@ -114,21 +115,7 @@ const LineCharts = ({ stock, year }) => {
           />
           <Tooltip content={<CustomTooltip />} />
           <Legend wrapperStyle={{ fontSize: "12px" }} />
-          <Area
-            type="monotone"
-            dataKey="Stock"
-            fill="#0f5799"
-            stroke="blue"
-            fillOpacity={0.8}
-          />
-          <Line
-            type="monotone"
-            dataKey="Stock"
-            stroke="blue"
-            strokeWidth={1.5}
-            dot={{ r: 2 }}
-            activeDot={{ r: 6 }}
-          />
+          <Bar dataKey="Stock" fill="#0f5799" stroke="blue" fillOpacity={0.8} />
         </ComposedChart>
       </ResponsiveContainer>
     </div>

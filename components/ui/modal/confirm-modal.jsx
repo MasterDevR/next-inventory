@@ -1,7 +1,7 @@
 import React from "react";
 import HideModal from "../button/hide-modal";
 
-const ConfimModal = ({ modalRef, onConfirm }) => {
+const ConfimModal = ({ modalRef, onConfirm, message }) => {
   return (
     <dialog id="my_modal_3" className="modal" ref={modalRef}>
       <div className="modal-box space-y-5">
@@ -9,7 +9,7 @@ const ConfimModal = ({ modalRef, onConfirm }) => {
           <div className="w-fit relative ml-auto">
             <HideModal modalRef={modalRef} />
           </div>
-          <span>Are you sure you want to change your password?</span>
+          <span>{`Are you sure you want to change your ${message}?`}</span>
           <div className="space-x-5">
             <button
               className="btn btn-sm btn-primary"

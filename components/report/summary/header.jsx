@@ -1,11 +1,27 @@
 import React, { Fragment, useMemo } from "react";
 
-const Header = ({ data }) => {
-  const currentDate = new Date();
-  const Year = currentDate.getFullYear();
-  const month = currentDate.toLocaleString("default", { month: "long" });
-  const day = currentDate.getDate();
+// calculate if leap year and return the last date of the month
 
+// how to pass
+const monthEndDates = {
+  January: 31,
+  February: (year) =>
+    year % 4 === 0 && (year % 100 !== 0 || year % 400 === 0) ? 29 : 28,
+  March: 31,
+  April: 30,
+  May: 31,
+  June: 30,
+  July: 31,
+  August: 31,
+  September: 30,
+  October: 31,
+  November: 30,
+  December: 31,
+};
+
+const Header = ({ data, selectedYear, selectedMonth, monthName }) => {
+  const currentDate = new Date();
+  const day = currentDate.getDate();
   const totalColumns = data?.purchaseNo?.length * 3 + 5;
   const blankColumnsCount = totalColumns - 2;
 
@@ -29,7 +45,13 @@ const Header = ({ data }) => {
   };
 
   const formattedGrandTotal = formatGrandTotal(grandTotalCost);
-
+  // if selected month is < current month, then use the last date of the selected month
+  const lastDateOfSelectedMonth =
+    selectedMonth < currentDate.getMonth() + 1
+      ? selectedMonth === 2
+        ? monthEndDates.February(selectedYear)
+        : monthEndDates[Object.keys(monthEndDates)[selectedMonth - 1]]
+      : day;
   return (
     <Fragment>
       <tr>
@@ -53,7 +75,8 @@ const Header = ({ data }) => {
           className="flex-1 border-black border w-full text-center bg-transparent text-black"
           colSpan={data && data.status === 404 ? 8 : totalColumns}
         >
-          UNIVERSIDAD DE MANILA As of {month} {day}, {Year}
+          UNIVERSIDAD DE MANILA As of {monthName} {lastDateOfSelectedMonth},{" "}
+          {selectedYear}
         </th>
       </tr>
       <tr>
@@ -71,7 +94,7 @@ const Header = ({ data }) => {
           className="text-end border border-black bg-transparent text-black"
           colSpan={2}
         >
-          {formattedGrandTotal}
+          {selectedMonth > currentDate.getMonth() + 1 ? 0 : formattedGrandTotal}
         </th>
       </tr>
     </Fragment>

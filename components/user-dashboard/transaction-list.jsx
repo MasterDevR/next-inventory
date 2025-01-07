@@ -89,6 +89,21 @@ const Transaction_List = () => {
     setTransactionToDelete(null);
   };
 
+  const itemsPerPage = 10;
+  const totalItems = data?.result[0]?.length || 0;
+  const totalPages = Math.ceil(totalItems / itemsPerPage);
+
+  const [currentPage, setCurrentPage] = useState(1);
+
+  const handlePageChange = (page) => {
+    setCurrentPage(page);
+  };
+
+  const indexOfLastItem = currentPage * itemsPerPage;
+  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+  const currentItems =
+    data?.result[0]?.slice(indexOfFirstItem, indexOfLastItem) || [];
+
   return (
     <div>
       {/* Check if data is available */}
@@ -99,7 +114,7 @@ const Transaction_List = () => {
             No Transactions Yet
           </h2>
           <p className="text-gray-500">
-            It seems you haven't made any transactions.
+            {`It seems you haven't made any transactions.`}
           </p>
           <button
             className="mt-4 px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600"
@@ -112,24 +127,25 @@ const Transaction_List = () => {
         <>
           {/* Desktop View */}
           <div className="hidden md:block overflow-x-auto bg-white min-h-[50vh] shadow-lg rounded-3xl">
-            <table className="table w-full">
+            <table className="table-auto w-full border-collapse border border-gray-300">
               <thead className="text-base text-center">
-                <tr>
-                  <th>Transaction ID</th>
-                  <th>Purpose</th>
-                  <th>Status</th>
-                  <th>Date</th>
-                  <th>Actions</th>
+                <tr className="bg-gray-200">
+                  <th className="p-2 border border-gray-300">No</th>
+                  <th className="p-2 border border-gray-300">Purpose</th>
+                  <th className="p-2 border border-gray-300">Status</th>
+                  <th className="p-2 border border-gray-300">Date</th>
+                  <th className="p-2 border border-gray-300">Actions</th>
                 </tr>
               </thead>
               <tbody>
-                {data?.result[0]?.map((item) => (
+                {currentItems.map((item, index) => (
                   <DesktopTransactionItem
                     key={item.id}
                     transaction={item}
                     onEdit={handleEdit}
                     onDelete={handleDelete}
                     onRowClick={btnHandler}
+                    index={index + indexOfFirstItem}
                   />
                 ))}
               </tbody>
@@ -166,6 +182,21 @@ const Transaction_List = () => {
           onCancel={handleDeleteCancel}
         />
       )}
+      <div className="flex justify-center mt-4">
+        {Array.from({ length: totalPages }, (_, index) => (
+          <button
+            key={index + 1}
+            onClick={() => handlePageChange(index + 1)}
+            className={`mx-1 px-3 py-1 rounded ${
+              currentPage === index + 1
+                ? "bg-blue-500 text-white"
+                : "bg-gray-200"
+            }`}
+          >
+            {index + 1}
+          </button>
+        ))}
+      </div>
     </div>
   );
 };

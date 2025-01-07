@@ -96,19 +96,19 @@ const InventoryTable = () => {
 
       {/* Desktop view */}
       <div className="overflow-x-auto hidden md:block">
-        <table className="table overflow-hidden rounded-none text-center">
+        <table className="table-auto w-full border-collapse border border-gray-300">
           <thead>
-            <tr>
-              <th></th>
-              <th>Description</th>
-              <th>Price</th>
-              <th>Qty</th>
-              <th>Unit</th>
-              <th>Stock No.</th>
-              <th>Type</th>
-              <th>Consume Date</th>
-              <th>Manufacturer</th>
-              <th>Action</th>
+            <tr className="bg-gray-200">
+              <th className="p-2 border border-gray-300">No.</th>
+              <th className="p-2 border border-gray-300">Description</th>
+              <th className="p-2 border border-gray-300">Price</th>
+              <th className="p-2 border border-gray-300">Qty</th>
+              <th className="p-2 border border-gray-300">Unit</th>
+              <th className="p-2 border border-gray-300">Stock No.</th>
+              <th className="p-2 border border-gray-300">Type</th>
+              <th className="p-2 border border-gray-300">Consume Date</th>
+              <th className="p-2 border border-gray-300">Manufacturer</th>
+              <th className="p-2 border border-gray-300">Action</th>
             </tr>
           </thead>
           <tbody>
@@ -116,19 +116,35 @@ const InventoryTable = () => {
               data.item.map((item, index) => (
                 <tr
                   key={index + item.stock_no + item.description}
-                  className="cursor-pointer hover:bg-gray-200"
+                  className="table-auto w-full border-collapse border border-gray-300 "
                 >
-                  <td>{(currentPage - 1) * ITEMS_PER_PAGE + (index + 1)}</td>
-                  <td>{item.description}</td>
-                  <td>{item.price}</td>
-                  <td>{item.quantity_on_hand}</td>
-                  <td>{item.measurement}</td>
-                  <td>{item.stock_no}</td>
-                  <td>{item.stocktype.name}</td>
-                  <td>{item.consume_date}</td>
-                  <td>{item.distributor}</td>
+                  <td className="p-2 border border-gray-300">
+                    {(currentPage - 1) * ITEMS_PER_PAGE + (index + 1)}
+                  </td>
+                  <td className="p-2 border border-gray-300">
+                    {item.description}
+                  </td>
+                  <td className="p-2 border border-gray-300">{item.price}</td>
+                  <td className="p-2 border border-gray-300">
+                    {item.quantity_on_hand}
+                  </td>
+                  <td className="p-2 border border-gray-300">
+                    {item.measurement}
+                  </td>
+                  <td className="p-2 border border-gray-300">
+                    {item.stock_no}
+                  </td>
+                  <td className="p-2 border border-gray-300">
+                    {item.stocktype.name}
+                  </td>
+                  <td className="p-2 border border-gray-300">
+                    {item.consume_date}
+                  </td>
+                  <td className="p-2 border border-gray-300">
+                    {item.distributor}
+                  </td>
 
-                  <td className="relative">
+                  <td className="p-2 border border-gray-300 relative">
                     <div className="flex justify-center items-center gap-1">
                       <EditBtn stock_no={item.stock_no} />
                       <button

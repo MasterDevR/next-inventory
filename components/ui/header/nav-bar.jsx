@@ -2,11 +2,12 @@
 import useInventoryStore from "@/components/store/store";
 import { signOut } from "next-auth/react";
 import Link from "next/link";
-import React from "react";
+import React, { useEffect } from "react";
 import UserIcon from "./user-icon";
 import Notification from "./notification";
 import Cart from "./cart";
 import ToggleSideBar from "./toggle-side-bar";
+import HomeBtn from "@/components/ui/button/home-btn";
 import { usePathname } from "next/navigation";
 const NavBar = () => {
   const pathname = usePathname();
@@ -14,11 +15,12 @@ const NavBar = () => {
   return (
     <div
       className={`navbar shadow-sm border bg-gray-50 sticky top-0 z-50 ${
-        role && role === "user" && "justify-end"
-      }`}
+        role && role === "user" && "justify-between"
+      } `}
     >
       {role && role !== "user" && <ToggleSideBar />}
 
+      {role && role === "user" && <HomeBtn />}
       <aside>
         {role && role === "user" && <Cart />}
 

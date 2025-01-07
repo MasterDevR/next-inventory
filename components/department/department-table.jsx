@@ -16,7 +16,7 @@ const DepartmentTable = () => {
       {/* Table view for medium and larger screens */}
       <div className="hidden md:block overflow-x-auto w-full text-center">
         <table className="table min-w-full">
-          <thead className="text-white bg-custom-bg-3">
+          <thead className="">
             <tr className="text-sm lg:text-base">
               <th className="px-4 py-3">Department Name</th>
               <th className="px-4 py-3">Department ID</th>

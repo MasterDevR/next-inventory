@@ -10,6 +10,7 @@ import AlertModal from "@/components/ui/modal/modal-message";
 import CartModal from "@/components/ui/form/requisition-form";
 import { usePathname } from "next/navigation";
 import { disableDevTools } from "@/components/util/disableDevTools";
+import ActivityTracker from "@/components/util/provider/activity-tracker";
 const Wrapper = ({ children }) => {
   const pathname = usePathname();
 
@@ -27,6 +28,7 @@ const Wrapper = ({ children }) => {
     role,
     updateDepartment,
     updateRequestorType,
+    updateDepartmentCode,
   } = useInventoryStore();
   const { data: session, status } = useSession();
 
@@ -36,6 +38,8 @@ const Wrapper = ({ children }) => {
       const role = session?.user.role;
       const id = session?.user.department_id;
       const department = session?.user.department;
+      const code = session?.user.department_code;
+      updateDepartmentCode(code);
       updateDepartment(department);
       updateRole(role);
       updateDepartmentId(id);
@@ -67,6 +71,7 @@ const Wrapper = ({ children }) => {
     return (
       <div className="container h-screen flex justify-center items-center m-auto">
         <span className="loading loading-spinner loading-lg text-primary"></span>
+        <p className="text-2xl font-bold">Loading...</p>
       </div>
     );
   }
@@ -80,6 +85,7 @@ const Wrapper = ({ children }) => {
 
   return (
     <Fragment>
+      <ActivityTracker />
       <CartModal />
       {isSuccessModal && <AlertModal />}
       {session ? (

@@ -6,6 +6,7 @@ import ItemCard from "@/components/ui/card/request-item-card";
 import { useQueryClient } from "@tanstack/react-query";
 import useInventoryStore from "@/components/store/store";
 import { useRouter } from "next/navigation";
+import NoDataFound from "@/components/stock/NoDataFound";
 
 const Page = () => {
   const { role, token, requestorType } = useInventoryStore();
@@ -19,6 +20,12 @@ const Page = () => {
     key: "available-stock",
   });
 
+  useEffect(() => {
+    if (role !== "user") {
+      router.push("/");
+      return;
+    }
+  }, [role]);
   useEffect(() => {
     queryClient.invalidateQueries({ queryKey: ["available-stock"] });
   }, [searchItem, currentPage]);
@@ -137,12 +144,12 @@ const Page = () => {
         />
       </header>
 
-      <div className="flex flex-row flex-wrap gap-6 md:gap-4 lg:gap-5 justify-center text-xs lg:text-sm">
+      <div className="flex flex-row flex-wrap gap-6 md:gap-4 lg:gap-5 justify-center text-xs lg:text-sm  lg:w-5/6 lg:m-auto">
         {data && data.item && data.item.length > 0 ? (
           data.item.map((item, index) => <ItemCard item={item} key={index} />)
         ) : (
           <div className="text-center w-full">
-            <p className="text-lg font-semibold">Stock is not available</p>
+            <NoDataFound />
           </div>
         )}
       </div>

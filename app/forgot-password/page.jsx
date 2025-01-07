@@ -30,13 +30,8 @@ const Page = () => {
     try {
       // Check if the email exists in the database
       response = await axios.post(
-        `${process.env.NEXT_PUBLIC_BASE_URL}/user/verify-email`,
-        { email },
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
+        `${process.env.NEXT_PUBLIC_BASE_URL}/verify-email`,
+        { email }
       );
 
       if (response.data.status === 200) {

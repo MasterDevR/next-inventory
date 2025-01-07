@@ -4,7 +4,7 @@ import useFetchData from "@/components/util/custom-hook/useFetchData";
 import useInventoryStore from "@/components/store/store";
 
 const UserIcon = () => {
-  const { department_id, token } = useInventoryStore();
+  const { department_id, token, department_code } = useInventoryStore();
   const { data, isLoading } = useFetchData({
     path: `/user/user-icon/${department_id}`,
     token: token,
@@ -17,9 +17,16 @@ const UserIcon = () => {
     );
   }
   return (
-    <div tabIndex={0} role="button" className="btn btn-ghost btn-circle avatar">
-      <div className="w-10 rounded-full">
-        <img alt="user icon" src={data && data.icon?.image} />
+    <div className="flex flex-row gap-x-5 items-center">
+      <span className="font-bold">{department_code}</span>
+      <div
+        tabIndex={0}
+        role="button"
+        className="btn btn-ghost btn-circle avatar"
+      >
+        <div className="w-10 rounded-full">
+          <img alt="user icon" src={data && data.icon?.image} />
+        </div>
       </div>
     </div>
   );
