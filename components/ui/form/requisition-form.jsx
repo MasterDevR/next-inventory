@@ -81,7 +81,7 @@ const CartModal = () => {
             queryClient.invalidateQueries({
               queryKey: ["admin-notification"],
             });
-            cartItem?.length = 0;
+            cartItem.length = 0;
             // set is data to null
             setIsData(null);
           }
