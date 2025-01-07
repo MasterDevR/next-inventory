@@ -7,7 +7,7 @@ import Error_component from "@/components/monthly-expenses/error";
 import MonthlyExpensesTable from "@/components/monthly-expenses/monthly-expenses-table";
 import { useQueryClient } from "@tanstack/react-query";
 
-const page = () => {
+const Page = () => {
   const { token } = useInventoryStore();
   const queryClient = useQueryClient();
 
@@ -35,4 +35,4 @@ const page = () => {
     </div>
   );
 };
-export default page;
+export default Page;
